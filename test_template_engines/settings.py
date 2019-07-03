@@ -54,10 +54,6 @@ MIDDLEWARE = [
 
 TEMPLATES = [
     {
-        'BACKEND': 'template_engines.backends.odt.OdtEngine',
-        'APP_DIRS': True,
-    },
-    {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
@@ -69,6 +65,14 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
+    },
+    {
+        'BACKEND': 'template_engines.backends.odt.OdtEngine',
+        'APP_DIRS': True,
+    },
+    {
+        'BACKEND': 'template_engines.backends.docx.DocxEngine',
+        'APP_DIRS': True,
     },
 ]
 

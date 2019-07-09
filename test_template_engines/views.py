@@ -1,17 +1,12 @@
-from django.views.generic.detail import BaseDetailView
+from django.views.generic.detail import DetailView
 
-from .mixins.abstract import AbstractTemplateResponseMixin
-from .mixins.single_object import SingleObjectMixin
-from .responses.to_pdf import ToPdfResponse
 from .models import Bidon
 
 
-class TemplateView(AbstractTemplateResponseMixin, SingleObjectMixin,
-                   BaseDetailView):
+class TemplateView(DetailView):
     queryset = Bidon.objects.all()
     template_engine = 'odt'
-    response_class = ToPdfResponse
-    content_type = 'application/pdf'
+    content_type = 'application/vnd.oasis.opendocument.text'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

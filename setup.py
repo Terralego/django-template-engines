@@ -33,5 +33,5 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.6',
     ],
-    install_requires=['Django==2.2.3'],
+    install_requires=['Django>=2.2.3', 'Pillow>=6.1.0', 'requests>=2.22.0', 'python-magic>=0.4.15'],
 )

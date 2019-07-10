@@ -1,2 +1,62 @@
+[![Build Status](https://travis-ci.org/Terralego/django-template-engines.svg?branch=master)](https://travis-ci.org/Terralego/django-template-engines)
+![Python Version](https://img.shields.io/badge/python-%3E%3D%203.6-blue.svg)
+![Django Version](https://img.shields.io/badge/django-%3E%3D%202.2-blue.svg)
+
 # django-template-engines
-Additional template engines for Django (ODT for now)
+
+## Description
+
+Additional template engines for Django (ODT for now).
+
+## How to use a specific template backend
+
+In the settings, add:
+
+```
+INSTALLED_APPS = [
+    ...
+    'template_engines',
+]
+
+...
+
+TEMPLATES = [
+    {
+        'BACKEND': 'template_engines.backends.odt.OdtEngine',
+        'DIRS': [
+        ],
+        'APP_DIRS': True,
+    },
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+```
+
+## A view exemple
+
+```
+from django.views.generic.detail import DetailView
+
+
+class TemplateView(DetailView):
+    queryset = AModel.objects.all()
+    template_engine = 'odt'
+    content_type = 'application/vnd.oasis.opendocument.text'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['image'] = {'content': open(path, 'rb').read()}
+        return context
+```

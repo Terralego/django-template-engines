@@ -7,9 +7,39 @@ from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
 
 
+class AbstractTemplate:
+    """
+    Gives the architecture of a basic template and one implemented method:
+    ``clean``.
+
+    ``render`` must be implemented.
+    """
+
+    def __init__(self, template):
+        self.template = template
+
+    def clean(self, data):
+        """
+        Method for cleaning rendered data. For this to work, you must implement methods whose names
+        start with ``clean_``.
+        """
+        unit_clean_method_names = list(filter(lambda e: e.startswith('clean_'), dir(self)))
+        unit_clean_methods = list(map(lambda e: getattr(self, e), unit_clean_method_names))
+        for clean_method in unit_clean_methods:
+            data = clean_method(data)
+        return data
+
+    def render(self, context=None, request=None):
+        """
+        Fills a template with the context obtained by combining the `context` and` request`
+        parameters and returns a file as a byte object.
+        """
+        raise NotImplementedError()
+
+
 class AbstractEngine(BaseEngine):
     """
-    Gives the architecture of a basic template engine and two methods implemented:
+    Gives the architecture of a basic template engine and two implemented methods:
     ``get_template_path`` and ``from_string``.
 
     Can be specified:

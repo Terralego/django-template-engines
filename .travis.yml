@@ -59,6 +59,8 @@ jobs:
       env:
         - DJANGO_VERSION=none
       install: skip
+      before_script: skip
+      script: skip
       deploy:
         stage: deploy
         provider: pypi

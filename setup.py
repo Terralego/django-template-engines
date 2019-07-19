@@ -1,25 +1,22 @@
 #!/usr/bin/env python
-from os.path import dirname, join, realpath
 
-from setuptools import setup
+import os
+from setuptools import setup, find_packages
 
-HERE = dirname(realpath(__file__))
+HERE = os.path.abspath(os.path.dirname(__file__))
 
-README = open(join(HERE, 'README.md')).read()
-CHANGES = open(join(HERE, 'CHANGES.md')).read()
-PACKAGES = ['template_engines']
-PACKAGE_DIR = {'template_engines': 'template_engines'}
+README = open(os.path.join(HERE, 'README.md')).read()
+CHANGES = open(os.path.join(HERE, 'CHANGES.md')).read()
 
 
 setup(
     name='django-template-engines',
     version='0.0.1',
-    author_email='python@makina-corpus.org',
+    author="Makina Corpus",
+    author_email="terralego-pypi@makina-corpus.com",
     description='Additional template engines for Django.',
     long_description=README + '\n\n' + CHANGES,
-    packages=PACKAGES,
-    package_dir=PACKAGE_DIR,
-    include_package_data=True,
+    packages=find_packages(),
     url='https://github.com/Terralego/django-template-engines',
     classifiers=[
         'Environment :: Web Environment',
@@ -32,6 +29,7 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     install_requires=['Django>=2.2.3', 'Pillow>=6.1.0', 'requests>=2.22.0', 'python-magic>=0.4.15'],
 )

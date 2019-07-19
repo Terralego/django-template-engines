@@ -1,0 +1,3 @@
+include *.md
+recursive-include template_engines *.py
+recursive-exclude test_template_engines *

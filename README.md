@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Terralego/django-template-engines.svg?branch=master)](https://travis-ci.org/Terralego/django-template-engines)
+[![Maintainability](https://api.codeclimate.com/v1/badges/2b6de132c98427007ab4/maintainability)](https://codeclimate.com/github/Terralego/django-template-engines/maintainability)
 [![codecov](https://codecov.io/gh/Terralego/django-template-engines/branch/master/graph/badge.svg)](https://codecov.io/gh/Terralego/django-template-engines)
 ![Python Version](https://img.shields.io/badge/python-%3E%3D%203.6-blue.svg)
 ![Django Version](https://img.shields.io/badge/django-%3E%3D%202.1-blue.svg)

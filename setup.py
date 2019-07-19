@@ -12,7 +12,7 @@ PACKAGE_DIR = {'template_engines': 'template_engines'}
 
 
 setup(
-    name='template_engines',
+    name='django-template-engines',
     version='0.0.1',
     author_email='python@makina-corpus.org',
     description='Additional template engines for Django.',

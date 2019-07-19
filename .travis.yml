@@ -30,8 +30,8 @@ install:
    install -q Django==$DJANGO_VERSION; fi
 script:
   - pip freeze
-  - coverage run --source="./template_engines" runtests.py
-  - coverage report
+  - coverage run runtests.py
+  - codecov
 deploy:
   provider: pypi
   user: $PYPI_USER

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.template import Context
 from django.template.context import make_context
 
-from .abstract import AbstractEngine
+from .abstract import AbstractEngine, AbstractTemplate
 from .utils import modify_zip_file
 
 
@@ -16,34 +16,35 @@ def odt_handler(read_zip_file, write_zip_file, item, rendered):
         write_zip_file.writestr(item, rendered)
 
 
-class OdtTemplate:
+class OdtTemplate(AbstractTemplate):
     """
     Handles odt templates.
     """
 
-    def __init__(self, template, **kwargs):
+    def __init__(self, template, template_path=None):
         """
         :param template: the template to fill.
         :type template: django.template.Template
 
-        :param kwargs: it must contain a `template_path`.
+        :param template_path: path to the template.
+        :type template_path: str
         """
-        self.template = template
-        self.template_path = kwargs.pop('template_path')
+        super().__init__(template)
+        self.template_path = template_path
 
-    def render(self, context=None, request=None):
-        """
-        Fills an odt template with the context obtained by combining the `context` and` request` \
-parameters and returns an odt file as a byte object.
-        """
-        context = make_context(context, request)
-        rendered = self.template.render(Context(context))
-        while len(findall('\n', rendered)) > 1:
-            rendered = sub(
+    def clean_new_lines(self, data):
+        while len(findall('\n', data)) > 1:
+            data = sub(
                 '<text:p([^>]+)>([^<\n]*)\n',
                 '<text:p\\g<1>>\\g<2></text:p><text:p\\g<1>>',
-                rendered,
+                data,
             )
+        return data
+
+    def render(self, context=None, request=None):
+        context = make_context(context, request)
+        rendered = self.template.render(Context(context))
+        rendered = self.clean(rendered)
         odt_content = modify_zip_file(self.template_path, odt_handler, rendered)
         return odt_content
 

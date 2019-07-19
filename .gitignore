@@ -103,8 +103,5 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# linting
-.flake8
-
 # vscode
 .vscode

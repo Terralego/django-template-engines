@@ -4,6 +4,7 @@
 ![Python Version](https://img.shields.io/badge/python-%3E%3D%203.6-blue.svg)
 ![Django Version](https://img.shields.io/badge/django-%3E%3D%202.1-blue.svg)
 [![PyPI version](https://badge.fury.io/py/django-template-engines.svg)](https://badge.fury.io/py/django-template-engines)
+[![Documentation Status](https://readthedocs.org/projects/django-template-engines/badge/?version=latest)](https://django-template-engines.readthedocs.io/en/latest/?badge=latest)
 
 # django-template-engines
 

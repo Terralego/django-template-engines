@@ -43,6 +43,7 @@ class AbstractEngine(BaseEngine):
     ``get_template_path`` and ``from_string``.
 
     Can be specified:
+
     * ``app_dirname``, the folder name which contains the templates in application directories,
     * ``sub_dirname``, the folder name of the subdirectory in the templates directory,
     * ``template_class``, your own template class with a ``render`` method.

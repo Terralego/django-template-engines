@@ -16,8 +16,8 @@ IMAGE_MIME_TYPE = ('image/jpeg', 'image/png', 'image/svg+xml')
 def libreoffice_image_loader(image):
     """
     Replace a tag by an image you specified.
-    You must add an entry to the `context` var that is a dict with at least a `content` key whose
-    value is a byte object. You can also specify `width` and `height`, otherwise it will
+    You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
+    whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
     automatically resize your image.
     """
     if not isinstance(image, dict):

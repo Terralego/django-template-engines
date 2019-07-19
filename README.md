@@ -1,7 +1,8 @@
 [![Build Status](https://travis-ci.org/Terralego/django-template-engines.svg?branch=master)](https://travis-ci.org/Terralego/django-template-engines)
+[![codecov](https://codecov.io/gh/Terralego/django-template-engines/branch/master/graph/badge.svg)](https://codecov.io/gh/Terralego/django-template-engines)
 ![Python Version](https://img.shields.io/badge/python-%3E%3D%203.6-blue.svg)
 ![Django Version](https://img.shields.io/badge/django-%3E%3D%202.1-blue.svg)
-[![codecov](https://codecov.io/gh/Terralego/django-template-engines/branch/master/graph/badge.svg)](https://codecov.io/gh/Terralego/django-template-engines)
+[![PyPI version](https://badge.fury.io/py/django-template-engines.svg)](https://badge.fury.io/py/django-template-engines)
 
 # django-template-engines
 

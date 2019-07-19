@@ -1,40 +1,40 @@
 dist: xenial
 language: python
 python:
-  - "3.6"
-  - "3.7"
+- '3.6'
+- '3.7'
 env:
   matrix:
-    - DJANGO_VERSION=2.1
-    - DJANGO_VERSION=2.2
-    - DJANGO_VERSION=dev
+  - DJANGO_VERSION=2.1
+  - DJANGO_VERSION=2.2
+  - DJANGO_VERSION=dev
 matrix:
   exclude:
-    - python: 3.6
-      env: DJANGO_VERSION=2.1
-    - python: 3.6
-      env: DJANGO_VERSION=2.2
-    - python: 3.6
-      env: DJANGO_VERSION=dev
-    - python: 3.7
-      env: DJANGO_VERSION=2.1
-    - python: 3.7
-      env: DJANGO_VERSION=2.2
-    - python: 3.7
-      env: DJANGO_VERSION=dev
+  - python: 3.6
+    env: DJANGO_VERSION=2.1
+  - python: 3.6
+    env: DJANGO_VERSION=2.2
+  - python: 3.6
+    env: DJANGO_VERSION=dev
+  - python: 3.7
+    env: DJANGO_VERSION=2.1
+  - python: 3.7
+    env: DJANGO_VERSION=2.2
+  - python: 3.7
+    env: DJANGO_VERSION=dev
 install:
-  - pip install -r dev-requirements.txt
-  - python setup.py install
-  - if [[ $DJANGO_VERSION == dev ]]; then pip
-   install -e git+https://github.com/django/django@master#egg=django; else pip
-   install -q Django==$DJANGO_VERSION; fi
+- pip install -r dev-requirements.txt
+- python setup.py install
+- if [[ $DJANGO_VERSION == dev ]]; then pip install -e git+https://github.com/django/django@master#egg=django;
+  else pip install -q Django==$DJANGO_VERSION; fi
 script:
-  - pip freeze
-  - coverage run runtests.py
-  - codecov
+- pip freeze
+- coverage run runtests.py
+- codecov
 deploy:
   provider: pypi
-  user: $PYPI_USER
-  password: $PYPI_PASSWORD
+  user: "$PYPI_USER"
+  password:
+    secure: bAce8SPDSv+iVtOFVPXU6sbOF9L9a8YVL9RwuIiLFGqXurpRjiY6m1YmR0dQaN8mh5l42ZxlkGZaCEKazziRDc2KRTmKD5U7UKIPgoMSOxHTccMq8P5VC7MRNOCYXfO/qgfSlddbK7ztlrQQym8gjg5Qq4XM2f/HNRzx5eOeBIEGH7TiMzABp7BGDeJsHCaIswJ1NQyWsUxPWk43YPv7MDF7BdIozx/AL+Bua/UhgwVWS7HmDjfH8NtbSLWuInFsBZ7n4qdbDic4hJH4qZaf1MWcOOcWAZrRtRuL0sPcOZK9dv6JjvgIzxbM8ANzzd/eA0OBc+K5PUQb1jps6K+lPsODt6yyLR5yujdG039Cfozd2q8HJ44ItkUZNPQc/ORoDx4/WsiRaMLlIdDduybzK2WAlBsxIiXxi133luxdYYI6UVQkPFqjPSjKTjYyQ800wmIAATRLuxd0b4zaiq09v8mS/CozA7bXYnLQRt+ue5SuJvGXyxQV3JOvW5AWdEB3ccb6XWMMtEVRStogxCtJ9JJgh/60nr/u8KxsXQSM31Xvb/7dzS5VFxGddfMioWyEAkWX18L3cHVwhl91wKuGk8tNeDojO3jBHRj1A1gA5enBc2e/RUdDbC22UJsg7LtYCT93bIadq+/7DYqRpXJq0DM1BkSmgjAB2sFcUsMbAz8=
   on:
     tags: true

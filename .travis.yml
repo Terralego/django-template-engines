@@ -52,6 +52,8 @@ jobs:
         - DJANGO_VERSION=none
       install:
         - pip3 install flake8
+      script:
+        - flake8 template_engines
 
     - stage: deploy
       env:

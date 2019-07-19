@@ -16,6 +16,8 @@ setup(
     author_email="terralego-pypi@makina-corpus.com",
     description='Additional template engines for Django.',
     long_description=README + '\n\n' + CHANGES,
+    description_content_type="text/markdown",
+    long_description_content_type="text/markdown",
     packages=find_packages(),
     url='https://github.com/Terralego/django-template-engines',
     classifiers=[

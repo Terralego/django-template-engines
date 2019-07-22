@@ -19,7 +19,7 @@ env:
 
 matrix:
   exclude:
-  - python: 3.5
+  - python: '3.5'
     env: DJANGO_VERSION=dev
 
 install:

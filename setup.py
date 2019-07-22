@@ -12,6 +12,7 @@ CHANGES = open(os.path.join(HERE, 'CHANGES.md')).read()
 setup(
     name='django-template-engines',
     version=open(os.path.join(HERE, 'template_engines', 'VERSION.md')).read().strip(),
+    include_package_data=True,
     author="Makina Corpus",
     author_email="terralego-pypi@makina-corpus.com",
     description='Additional template engines for Django.',

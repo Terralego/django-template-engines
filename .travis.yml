@@ -13,9 +13,8 @@ stages:
   - deploy
 
 env:
-  matrix:
-  - DJANGO_VERSION=2.1
-  - DJANGO_VERSION=2.2
+  - DJANGO_VERSION=2.1.10
+  - DJANGO_VERSION=2.2.3
   - DJANGO_VERSION=dev
 
 matrix:

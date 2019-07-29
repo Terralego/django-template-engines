@@ -6,5 +6,6 @@ TESTS_PATH = join(APP_PATH, 'tests')
 SCREENSHOTS_PATH = join(TESTS_PATH, 'screenshots', 'backends')
 
 ODT_TEMPLATE_PATH = join(ROOT, 'templates', 'odt', 'template.odt')
+DOCX_TEMPLATE_PATH = join(ROOT, 'templates', 'docx', 'template.docx')
 CONTENT_SCREENSHOT_PATH = join(SCREENSHOTS_PATH, 'content_screenshot.txt')
 RENDERED_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'rendered_content_screenshot.txt')

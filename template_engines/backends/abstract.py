@@ -5,6 +5,7 @@ from django.template import Template
 from django.template.backends.base import BaseEngine
 from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
+from magic import from_file
 
 
 class AbstractTemplate:
@@ -53,6 +54,7 @@ class AbstractEngine(BaseEngine):
     app_dirname = None
     sub_dirname = None
     template_class = None
+    mime_type = None
 
     def __init__(self, params):
         params = params.copy()
@@ -71,12 +73,18 @@ class AbstractEngine(BaseEngine):
     def from_string(self, template_code, **kwargs):
         return self.template_class(Template(template_code), **kwargs)
 
+    def check_mime_type(self, path):
+        fmime_type = from_file(path, mime=True)
+        if fmime_type != self.mime_type:
+            raise TemplateDoesNotExist('Bad template.')
+
     def get_template_path(self, template_name):
         """
         Check if a template named ``template_name`` can be found in a list of directories. Returns
         the path if the file exists or raises ``TemplateDoesNotExist`` otherwise.
         """
         if isfile(template_name):
+            self.check_mime_type(template_name)
             return template_name
         template_path = None
         for directory in self.template_dirs:
@@ -87,6 +95,7 @@ class AbstractEngine(BaseEngine):
                 break
         if template_path is None:
             raise TemplateDoesNotExist(f'Unknown: {template_name}')
+        self.check_mime_type(template_path)
         return template_path
 
     def get_template(self, template_name):

@@ -62,6 +62,7 @@ class OdtEngine(AbstractEngine):
     sub_dirname = getattr(settings, 'ODT_ENGINE_SUB_DIRNAME', 'odt')
     app_dirname = getattr(settings, 'ODT_ENGINE_APP_DIRNAME', 'templates')
     template_class = OdtTemplate
+    mime_type = 'application/vnd.oasis.opendocument.text'
 
     def get_template_content(self, template_path):
         """

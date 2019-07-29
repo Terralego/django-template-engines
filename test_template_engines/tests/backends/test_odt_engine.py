@@ -8,8 +8,8 @@ from django.test import TestCase
 
 from template_engines.backends.odt import OdtEngine, OdtTemplate
 from test_template_engines.tests.backends.backend_settings import (
-    CONTENT_SCREENSHOT_PATH, ODT_TEMPLATE_PATH, RENDERED_CONTENT_SCREENSHOT,
-    ROOT)
+    CONTENT_SCREENSHOT_PATH, DOCX_TEMPLATE_PATH, ODT_TEMPLATE_PATH,
+    RENDERED_CONTENT_SCREENSHOT, ROOT)
 
 
 class TestOdtEngine(TestCase):
@@ -24,8 +24,7 @@ class TestOdtEngine(TestCase):
         self.odt_engine = OdtEngine(self.params)
 
     def test_get_template_path_works(self):
-        self.assertTrue(self.odt_engine.get_template_path(ODT_TEMPLATE_PATH) in ODT_TEMPLATE_PATH)
-        self.assertTrue(self.odt_engine.get_template_path('template.odt') in ODT_TEMPLATE_PATH)
+        self.assertEqual(self.odt_engine.get_template_path(ODT_TEMPLATE_PATH), ODT_TEMPLATE_PATH)
 
         params_no_specified_dirs_no_app_dirs = {
             'NAME': 'odt',
@@ -57,10 +56,14 @@ class TestOdtEngine(TestCase):
                              read_file.read())
 
     def test_get_template_works(self):
-        template = self.odt_engine.get_template('template.odt')
+        template = self.odt_engine.get_template(ODT_TEMPLATE_PATH)
         self.assertIsInstance(template, OdtTemplate)
         self.assertIsInstance(template.template, Template)
-        self.assertTrue(template.template_path in ODT_TEMPLATE_PATH)
+        self.assertEqual(template.template_path, ODT_TEMPLATE_PATH)
+
+    def test_bad_template(self):
+        with self.assertRaises(TemplateDoesNotExist):
+            self.odt_engine.get_template(DOCX_TEMPLATE_PATH)
 
     def test_render(self):
         class Obj:

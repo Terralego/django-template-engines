@@ -6,14 +6,7 @@ from django.template import Context
 from django.template.context import make_context
 
 from .abstract import AbstractEngine, AbstractTemplate
-from .utils import modify_zip_file
-
-
-def odt_handler(read_zip_file, write_zip_file, item, rendered):
-    if item.filename != 'content.xml':
-        write_zip_file.writestr(item, read_zip_file.read(item.filename))
-    else:
-        write_zip_file.writestr(item, rendered)
+from .utils import modify_libreoffice_doc
 
 
 class OdtTemplate(AbstractTemplate):
@@ -45,7 +38,7 @@ class OdtTemplate(AbstractTemplate):
         context = make_context(context, request)
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
-        odt_content = modify_zip_file(self.template_path, odt_handler, rendered)
+        odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', rendered)
         return odt_content
 
 

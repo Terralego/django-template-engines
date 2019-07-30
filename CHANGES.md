@@ -1,5 +1,13 @@
 # Versions
 
+## 1.0.0
+
+Add:
+
+* Docx template engine (`template_engines.backends.docx.DocxEngine`).
+* Docx template class (`template_engines.backends.odt.DocxTemplate`).
+
+
 ## 0.0.4
 
 * Abstract template engine for writing custom engines (`template_engines.backends.abstract.AbstractEngine`).

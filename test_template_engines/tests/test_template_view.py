@@ -1,10 +1,10 @@
 from django.test import TestCase, RequestFactory
 
 from test_template_engines.models import Bidon
-from test_template_engines.views import TemplateView
+from test_template_engines.views import OdtTemplateView, DocxTemplateView
 
 
-class TestTemplateView(TestCase):
+class TestOdtTemplateView(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -12,35 +12,77 @@ class TestTemplateView(TestCase):
         self.request = self.factory.get('')
 
     def test_view_works(self):
-        TemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
-        response = TemplateView.as_view()(self.request, **{'pk': 1}).render()
+        OdtTemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
+        response = OdtTemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.content), 27160)
 
     def test_view_works_with_new_line(self):
-        TemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
+        OdtTemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
         Bidon.objects.create(name='Michel\nPierre')
-        response = TemplateView.as_view()(self.request, **{'pk': 2}).render()
+        response = OdtTemplateView.as_view()(self.request, **{'pk': 2}).render()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.content), 27169)
 
     def test_view_empty_image(self):
-        TemplateView.template_name = 'test_template_engines/tests/templates/empty_image.odt'
+        OdtTemplateView.template_name = 'test_template_engines/tests/templates/empty_image.odt'
         with self.assertRaises(IOError):
-            TemplateView.as_view()(self.request, **{'pk': 1}).render()
+            OdtTemplateView.as_view()(self.request, **{'pk': 1}).render()
 
     def test_view_bad_image(self):
-        TemplateView.template_name = 'test_template_engines/tests/templates/bad_image.odt'
+        OdtTemplateView.template_name = 'test_template_engines/tests/templates/bad_image.odt'
         with self.assertRaises(AttributeError):
-            TemplateView.as_view()(self.request, **{'pk': 1}).render()
+            OdtTemplateView.as_view()(self.request, **{'pk': 1}).render()
 
     def test_bad_image_content(self):
-        TemplateView.template_name = 'test_template_engines/tests/templates/bad_content_image.odt'
+        OdtTemplateView.template_name = 'test_template_engines/tests/templates/bad_content_image.odt'
         with self.assertRaises(TypeError):
-            TemplateView.as_view()(self.request, **{'pk': 1}).render()
+            OdtTemplateView.as_view()(self.request, **{'pk': 1}).render()
 
     def test_view_resize(self):
-        TemplateView.template_name = 'test_template_engines/tests/templates/resize.odt'
-        response = TemplateView.as_view()(self.request, **{'pk': 1}).render()
+        OdtTemplateView.template_name = 'test_template_engines/tests/templates/resize.odt'
+        response = OdtTemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.content), 27133)
+
+
+class TestDocxTemplateView(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.object = Bidon.objects.create(name='Michel')
+        self.request = self.factory.get('')
+
+    def test_view_works(self):
+        DocxTemplateView.template_name = 'test_template_engines/tests/templates/works.docx'
+        response = DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.content), 22651)
+
+    def test_view_works_with_new_line(self):
+        DocxTemplateView.template_name = 'test_template_engines/tests/templates/works.docx'
+        Bidon.objects.create(name='Michel\nPierre')
+        response = DocxTemplateView.as_view()(self.request, **{'pk': 2}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.content), 22666)
+
+    def test_view_empty_image(self):
+        DocxTemplateView.template_name = 'test_template_engines/tests/templates/empty_image.docx'
+        with self.assertRaises(IOError):
+            DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+
+    def test_view_bad_image(self):
+        DocxTemplateView.template_name = 'test_template_engines/tests/templates/bad_image.docx'
+        with self.assertRaises(AttributeError):
+            DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+
+    def test_bad_image_content(self):
+        DocxTemplateView.template_name = 'test_template_engines/tests/templates/bad_content_image.docx'
+        with self.assertRaises(TypeError):
+            DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+
+    def test_view_resize(self):
+        DocxTemplateView.template_name = 'test_template_engines/tests/templates/resize.docx'
+        response = DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.content), 22634)

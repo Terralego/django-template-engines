@@ -94,7 +94,7 @@ class AbstractEngine(BaseEngine):
                 template_path = path[0]
                 break
         if template_path is None:
-            raise TemplateDoesNotExist(f'Unknown: {template_name}')
+            raise TemplateDoesNotExist('Unknown: {}'.format(template_name))
         self.check_mime_type(template_path)
         return template_path
 

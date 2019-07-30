@@ -1,0 +1,23 @@
+version: "2"
+plugins:
+  duplication:
+    enabled: true
+    checks:
+      Similar code:
+        enabled: false
+    config:
+      languages:
+        python:
+          python_version: 3
+  bandit:
+    enabled: true
+  fixme:
+    enabled: true
+  markdownlint:
+    enabled: true
+  sonar-python:
+    enabled: true
+  radon:
+    enabled: true
+    config:
+      threshold: "C"

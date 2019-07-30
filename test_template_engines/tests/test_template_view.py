@@ -15,35 +15,32 @@ class TestTemplateView(TestCase):
         TemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
         response = TemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27147)
+        self.assertEqual(len(response.content), 27160)
 
     def test_view_works_with_new_line(self):
         TemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
         Bidon.objects.create(name='Michel\nPierre')
         response = TemplateView.as_view()(self.request, **{'pk': 2}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27155)
+        self.assertEqual(len(response.content), 27169)
 
     def test_view_empty_image(self):
         TemplateView.template_name = 'test_template_engines/tests/templates/empty_image.odt'
-        response = TemplateView.as_view()(self.request, **{'pk': 1}).render()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 8560)
+        with self.assertRaises(IOError):
+            TemplateView.as_view()(self.request, **{'pk': 1}).render()
 
     def test_view_bad_image(self):
         TemplateView.template_name = 'test_template_engines/tests/templates/bad_image.odt'
-        response = TemplateView.as_view()(self.request, **{'pk': 1}).render()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 8609)
+        with self.assertRaises(AttributeError):
+            TemplateView.as_view()(self.request, **{'pk': 1}).render()
 
     def test_bad_image_content(self):
         TemplateView.template_name = 'test_template_engines/tests/templates/bad_content_image.odt'
-        response = TemplateView.as_view()(self.request, **{'pk': 1}).render()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 8626)
+        with self.assertRaises(TypeError):
+            TemplateView.as_view()(self.request, **{'pk': 1}).render()
 
     def test_view_resize(self):
         TemplateView.template_name = 'test_template_engines/tests/templates/resize.odt'
         response = TemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27196)
+        self.assertEqual(len(response.content), 27133)

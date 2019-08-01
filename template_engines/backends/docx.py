@@ -6,7 +6,7 @@ from django.template import Context
 from django.template.context import make_context
 
 from .abstract import AbstractEngine, AbstractTemplate
-from .utils import modify_libreoffice_doc
+from .utils import modify_libreoffice_doc, add_image_in_docx_template
 
 
 class DocxTemplate(AbstractTemplate):
@@ -43,6 +43,8 @@ class DocxTemplate(AbstractTemplate):
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
         docx_content = modify_libreoffice_doc(self.template_path, 'word/document.xml', rendered)
+        for _, image in context.get('images', {}).items():
+            docx_content = add_image_in_docx_template(docx_content, image)
         return docx_content
 
 

@@ -1,5 +1,11 @@
 # Versions
 
+## 1.1.0
+
+Add:
+
+* A template tag to load images into a docx template (`docx_image_loader`).
+
 ## 1.0.0
 
 Add:

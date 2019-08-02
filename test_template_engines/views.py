@@ -16,8 +16,8 @@ class OdtTemplateView(DetailView):
         context['bad_content_image'] = {'content': 'bad'}
         context['resize'] = {
             'content': open('test_template_engines/makina-corpus.png', 'rb').read(),
-            'width': 500,
-            'height': 500
+            'width': '500pt',
+            'height': '500pt'
         }
         return context
 
@@ -41,8 +41,8 @@ class DocxTemplateView(DetailView):
             'resize': {
                 'name': 'michel4',
                 'content': open('test_template_engines/makina-corpus.png', 'rb').read(),
-                'width': 500,
-                'height': 500
+                'width': '500pt',
+                'height': '500pt'
             },
         }
         return context

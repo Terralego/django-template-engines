@@ -1,9 +1,10 @@
+import os
 from io import BytesIO
 from zipfile import ZipFile
 
 from django.test import TestCase
 
-from template_engines.backends.utils import modify_libreoffice_doc
+from template_engines.backends.utils import modify_libreoffice_doc, add_image_in_docx_template
 from test_template_engines.tests.backends.backend_settings import ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH
 
 
@@ -48,3 +49,34 @@ class TestUtils(TestCase):
                         self.assertEqual(buffer_zip_obj.read(filename), odt_zip_obj.read(filename))
                     else:
                         self.assertEqual(buffer_zip_obj.read(filename), b'')
+
+    def test_add_image_in_docx_template_works(self):
+        img_content = open(
+            os.path.join('test_template_engines', 'makina-corpus.png'), 'rb').read()
+        new_file = add_image_in_docx_template(
+            open(DOCX_TEMPLATE_PATH, 'rb').read(),
+            {
+                'name': 'makinacorpus.png',
+                'content': img_content,
+            })
+        self.assertIsInstance(new_file, bytes)
+        buffer = BytesIO(new_file)
+        with ZipFile(buffer, 'r') as buffer_zip_obj:
+            img = buffer_zip_obj.read('word/media/makinacorpus.png')
+            self.assertEqual(img_content, img)
+            self.assertEqual(
+                buffer_zip_obj.read('word/_rels/document.xml.rels'),
+                b''.join([
+                    b'<?xml version="1.0" encoding="UTF-8"?>',
+                    b'\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">',
+                    b'<Relationship Id="rId1" ',
+                    b'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" ',
+                    b'Target="styles.xml"/><Relationship Id="rId2" ',
+                    b'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"',
+                    b' Target="fontTable.xml"/><Relationship Id="rId3" ',
+                    b'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings"',
+                    b' Target="settings.xml"/>\n<Relationship Id="makinacorpus.png" ',
+                    b'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"',
+                    b' Target="media/makinacorpus.png"/></Relationships>'
+                ])
+            )

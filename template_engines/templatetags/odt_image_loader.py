@@ -1,9 +1,7 @@
 from base64 import b64encode
-from io import BytesIO
 
 from django import template
 from django.utils.safestring import mark_safe
-from PIL import Image
 
 from .utils import resize
 
@@ -28,9 +26,6 @@ def odt_image_loader(image):
     height = image.get('height')
     content = image.get('content')
 
-    if not width and not height:
-        buffer = BytesIO(content)
-        with Image.open(buffer) as img_reader:
-            width, height = resize(*img_reader.size)
+    width, height = resize(content, width, height)
 
     return mark_safe(ODT_IMAGE.format(width, height, b64encode(content).decode()))  # nosec

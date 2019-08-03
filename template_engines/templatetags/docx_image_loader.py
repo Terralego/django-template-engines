@@ -49,8 +49,9 @@ DOCX_IMAGE = (
 def docx_image_loader(image):
     """
     Replace a tag by an image you specified.
-    You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
-    whose value is a byte object and a ``name`` key. You can also specify ``width`` and ``height``,
+    You must add an entry to the ``context`` var that is a dict with ``'images'`` as key and other
+    dicts in it with at least a ``content`` key whose value is a byte object and a ``name`` key.
+    You can also specify ``width`` and ``height``,
     otherwise it will automatically resize your image.
     """
     name = image.get('name')

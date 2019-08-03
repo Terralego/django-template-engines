@@ -15,14 +15,14 @@ class TestOdtTemplateView(TestCase):
         OdtTemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
         response = OdtTemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27145)
+        self.assertEqual(len(response.content), 27160)
 
     def test_view_works_with_new_line(self):
         OdtTemplateView.template_name = 'test_template_engines/tests/templates/works.odt'
         Bidon.objects.create(name='Michel\nPierre')
         response = OdtTemplateView.as_view()(self.request, **{'pk': 2}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27154)
+        self.assertEqual(len(response.content), 27169)
 
     def test_view_empty_image(self):
         OdtTemplateView.template_name = 'test_template_engines/tests/templates/empty_image.odt'
@@ -43,7 +43,7 @@ class TestOdtTemplateView(TestCase):
         OdtTemplateView.template_name = 'test_template_engines/tests/templates/resize.odt'
         response = OdtTemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27133)
+        self.assertEqual(len(response.content), 27137)
 
 
 class TestDocxTemplateView(TestCase):
@@ -57,14 +57,14 @@ class TestDocxTemplateView(TestCase):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/works.docx'
         response = DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 41728)
+        self.assertEqual(len(response.content), 41742)
 
     def test_view_works_with_new_line(self):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/works.docx'
         Bidon.objects.create(name='Michel\nPierre')
         response = DocxTemplateView.as_view()(self.request, **{'pk': 2}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 41739)
+        self.assertEqual(len(response.content), 41753)
 
     def test_view_empty_image(self):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/empty_image.docx'
@@ -75,4 +75,4 @@ class TestDocxTemplateView(TestCase):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/resize.docx'
         response = DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 59981)
+        self.assertEqual(len(response.content), 59982)

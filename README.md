@@ -10,7 +10,7 @@
 
 ## Description
 
-Additional template engines for Django (ODT for now).
+Additional template engines for Django.
 
 ## How to use a specific template backend
 
@@ -26,12 +26,6 @@ INSTALLED_APPS = [
 
 TEMPLATES = [
     {
-        'BACKEND': 'template_engines.backends.odt.OdtEngine',
-        'DIRS': [
-        ],
-        'APP_DIRS': True,
-    },
-    {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
         ],
@@ -44,6 +38,10 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
+    },
+    {
+        'BACKEND': 'template_engines.backends.odt.OdtEngine',
+        ...,
     },
 ]
 ```

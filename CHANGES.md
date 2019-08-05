@@ -1,5 +1,9 @@
 # Versions
 
+## 1.2.0
+
+From now on, you can specify bold text.
+
 ## 1.1.3
 
 Image loaders can now take width and height as `dxa`, `px`, `pt`, `in`, `cm`

@@ -1,10 +1,11 @@
-from re import findall, sub
+import re
 from zipfile import ZipFile
 
 from django.conf import settings
 from django.template import Context
 from django.template.context import make_context
 
+from . import NEW_LINE_TAG, BOLD_START_TAG, BOLD_STOP_TAG
 from .abstract import AbstractEngine, AbstractTemplate
 from .utils import modify_libreoffice_doc
 
@@ -25,10 +26,36 @@ class OdtTemplate(AbstractTemplate):
         super().__init__(template)
         self.template_path = template_path
 
+    def clean_bold_tag(self, data):
+        nb_bold_tag = len(re.findall(BOLD_START_TAG, data))
+        if nb_bold_tag > 0:
+            data = re.sub(
+                '</office:automatic-styles>',
+                (
+                    '<style:style style:name="BOLD" style:family="text">'
+                    + '<style:text-properties fo:font-weight="bold" style:font-weight-asian="bold"'
+                    + ' style:font-weight-complex="bold"/></style:style></office:automatic-styles>'
+                ),
+                data,
+            )
+            for _ in range(nb_bold_tag):
+                data = re.sub(
+                    BOLD_START_TAG,
+                    '<text:span text:style-name="BOLD">',
+                    data,
+                )
+                data = re.sub(
+                    BOLD_STOP_TAG,
+                    '</text:span>',
+                    data,
+                )
+        return data
+
     def clean_new_lines(self, data):
-        while len(findall('\n', data)) > 1:
-            data = sub(
-                '<text:p([^>]+)>([^<\n]*)\n',
+        nb_nl = len(re.findall(NEW_LINE_TAG, data))
+        for _ in range(nb_nl):
+            data = re.sub(
+                '<text:p([^>]+)>([^<{0}]*){0}'.format(NEW_LINE_TAG),
                 '<text:p\\g<1>>\\g<2></text:p><text:p\\g<1>>',
                 data,
             )

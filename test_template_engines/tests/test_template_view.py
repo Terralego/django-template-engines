@@ -62,24 +62,31 @@ class TestDocxTemplateView(TestCase):
 
     def test_view_works(self):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/works.docx'
-        response = DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+        response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.content), 41742)
 
     def test_view_works_with_new_line(self):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/works.docx'
-        Bidon.objects.create(name='Michel\nPierre')
-        response = DocxTemplateView.as_view()(self.request, **{'pk': 2}).render()
+        obj = Bidon.objects.create(name='Michel\nPierre')
+        response = DocxTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.content), 41753)
+
+    def test_view_works_with_bold_text(self):
+        DocxTemplateView.template_name = 'test_template_engines/tests/templates/works.docx'
+        obj = Bidon.objects.create(name='Michel <b>Pierre</b>')
+        response = DocxTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.content), 41775)
 
     def test_view_empty_image(self):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/empty_image.docx'
         with self.assertRaises(IOError):
-            DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
 
     def test_view_resize(self):
         DocxTemplateView.template_name = 'test_template_engines/tests/templates/resize.docx'
-        response = DocxTemplateView.as_view()(self.request, **{'pk': 1}).render()
+        response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.content), 59982)

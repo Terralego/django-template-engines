@@ -5,6 +5,7 @@ from django.conf import settings
 from django.template import Context
 from django.template.context import make_context
 
+from . import NEW_LINE_TAG, BOLD_START_TAG, BOLD_STOP_TAG
 from .abstract import AbstractEngine, AbstractTemplate
 from .utils import modify_libreoffice_doc, add_image_in_docx_template
 
@@ -25,10 +26,49 @@ class DocxTemplate(AbstractTemplate):
         super().__init__(template)
         self.template_path = template_path
 
+    def clean_bold_tag(self, data):
+        nb_bold_tag = len(re.findall(BOLD_START_TAG, data))
+        if nb_bold_tag > 0:
+            for _ in range(nb_bold_tag):
+                data = re.sub(
+                    (
+                        '<w:r><w:rPr>((<w:[^>]+>)*)</w:rPr><w:t>([^<]*){0}([^<]*){1}'
+                        .format(BOLD_START_TAG, BOLD_STOP_TAG)),
+                    (
+                        '<w:r>'
+                        + '<w:rPr>'
+                        + '\\g<1>'
+                        + '</w:rPr>'
+                        + '<w:t>'
+                        + '\\g<3>'
+                        + '</w:t>'
+                        + '</w:r>'
+                        + '<w:r>'
+                        + '<w:rPr>'
+                        + '\\g<1>'
+                        + '<w:b w:val="true"/>'
+                        + '</w:rPr>'
+                        + '<w:t>'
+                        + '&#xA0;'
+                        + '\\g<4>'
+                        + '&#xA0;'
+                        + '</w:t>'
+                        + '</w:r>'
+                        + '<w:r>'
+                        + '<w:rPr>'
+                        + '\\g<1>'
+                        + '</w:rPr>'
+                        + '<w:t>'
+                    ),
+                    data,
+                )
+        return data
+
     def clean_new_lines(self, data):
-        while len(re.findall('\n', data)) > 1:
+        nb_nl = len(re.findall(NEW_LINE_TAG, data))
+        for _ in range(nb_nl):
             data = re.sub(
-                '<w:t>([^<\n]*)\n',
+                '<w:t>([^<{0}]*){0}'.format(NEW_LINE_TAG),
                 '<w:t>\\g<1></w:t><w:br/><w:t>',
                 data,
             )

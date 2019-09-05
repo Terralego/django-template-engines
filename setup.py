@@ -34,6 +34,16 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    install_requires=['Django>=2.1.0,<3.0.0', 'Pillow>=6.1.0', 'requests>=2.22.0',
-                      'python-magic>=0.4.15'],
+    install_requires=[
+        'Django>=2.1.0',
+        'Pillow>=6.1.0',
+        'python-magic>=0.4.15',
+    ],
+    extras_require={
+        'dev': [
+            'flake8',
+            'coverage',
+            'codecov',
+        ]
+    },
 )

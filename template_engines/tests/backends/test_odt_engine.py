@@ -1,5 +1,4 @@
 from io import BytesIO
-from os.path import join
 from zipfile import ZipFile
 
 from django.template import Template
@@ -7,9 +6,9 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.test import TestCase
 
 from template_engines.backends.odt import OdtEngine, OdtTemplate
-from test_template_engines.tests.backends.backend_settings import (
+from ..settings import (
     CONTENT_SCREENSHOT_PATH, DOCX_TEMPLATE_PATH, ODT_TEMPLATE_PATH,
-    RENDERED_CONTENT_SCREENSHOT, ROOT)
+    RENDERED_CONTENT_SCREENSHOT, TEMPLATES_PATH)
 
 
 class TestOdtEngine(TestCase):
@@ -17,7 +16,7 @@ class TestOdtEngine(TestCase):
     def setUp(self):
         self.params = {
             'NAME': 'odt',
-            'DIRS': ['templates'],
+            'DIRS': [TEMPLATES_PATH],
             'APP_DIRS': False,
             'OPTIONS': [],
         }
@@ -38,7 +37,7 @@ class TestOdtEngine(TestCase):
 
         params_dirs_specified = {
             'NAME': 'odt',
-            'DIRS': [join(ROOT, 'templates')],
+            'DIRS': [TEMPLATES_PATH],
             'APP_DIRS': False,
             'OPTIONS': [],
         }

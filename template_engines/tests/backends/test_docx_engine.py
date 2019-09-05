@@ -1,5 +1,4 @@
 from io import BytesIO
-from os.path import join
 from zipfile import ZipFile
 
 from django.template import Template
@@ -7,9 +6,9 @@ from django.template.exceptions import TemplateDoesNotExist
 from django.test import TestCase
 
 from template_engines.backends.docx import DocxEngine, DocxTemplate
-from test_template_engines.tests.backends.backend_settings import (
+from ..settings import (
     DOCX_CONTENT_SCREENSHOT, DOCX_TEMPLATE_PATH, ODT_TEMPLATE_PATH,
-    DOCX_RENDERED_CONTENT_SCREENSHOT, ROOT)
+    DOCX_RENDERED_CONTENT_SCREENSHOT, TEMPLATES_PATH)
 
 
 class TestDocxEngine(TestCase):
@@ -17,7 +16,7 @@ class TestDocxEngine(TestCase):
     def setUp(self):
         self.params = {
             'NAME': 'docx',
-            'DIRS': ['templates'],
+            'DIRS': [TEMPLATES_PATH],
             'APP_DIRS': False,
             'OPTIONS': [],
         }
@@ -35,16 +34,6 @@ class TestDocxEngine(TestCase):
         odt_engine_no_specified_dirs_no_app_dirs = DocxEngine(params_no_specified_dirs_no_app_dirs)
         with self.assertRaises(TemplateDoesNotExist):
             odt_engine_no_specified_dirs_no_app_dirs.get_template_path('template.docx')
-
-        params_dirs_specified = {
-            'NAME': 'docx',
-            'DIRS': [join(ROOT, 'templates')],
-            'APP_DIRS': False,
-            'OPTIONS': [],
-        }
-        odt_engine_dirs_specified = DocxEngine(params_dirs_specified)
-        self.assertEqual(odt_engine_dirs_specified.get_template_path('template.docx'),
-                         DOCX_TEMPLATE_PATH)
 
     def test_get_template_path_bad_template_name(self):
         with self.assertRaises(TemplateDoesNotExist):

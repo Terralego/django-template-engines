@@ -1,11 +1,10 @@
-import os
 from io import BytesIO
 from zipfile import ZipFile
 
 from django.test import TestCase
 
 from template_engines.backends.utils import modify_libreoffice_doc, add_image_in_docx_template
-from test_template_engines.tests.backends.backend_settings import ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH
+from ..settings import ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH, IMAGE_PATH
 
 
 class TestUtils(TestCase):
@@ -51,8 +50,7 @@ class TestUtils(TestCase):
                         self.assertEqual(buffer_zip_obj.read(filename), b'')
 
     def test_add_image_in_docx_template_works(self):
-        img_content = open(
-            os.path.join('test_template_engines', 'makina-corpus.png'), 'rb').read()
+        img_content = open(IMAGE_PATH, 'rb').read()
         new_file = add_image_in_docx_template(
             open(DOCX_TEMPLATE_PATH, 'rb').read(),
             {

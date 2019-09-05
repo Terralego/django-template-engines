@@ -18,8 +18,8 @@ env:
   - DJANGO_VERSION=dev
 
 install:
-- pip install -r dev-requirements.txt
 - python setup.py install
+- pip install codecov coverage
 - if [[ $DJANGO_VERSION == dev ]]; then
   pip install -e git+https://github.com/django/django@master#egg=django;
   else
@@ -27,7 +27,7 @@ install:
   fi
 
 script:
-- coverage run runtests.py
+- coverage run --source=template_engines ./manage.py test
 - codecov
 
 jobs:

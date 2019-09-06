@@ -1,5 +1,7 @@
 from django.views.generic.detail import DetailView
 
+from template_engines.tests.settings import IMAGE_PATH
+
 from .models import Bidon
 
 
@@ -10,12 +12,12 @@ class OdtTemplateView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['image'] = {'content': open('test_template_engines/makina-corpus.png', 'rb').read()}
+        context['image'] = {'content': open(IMAGE_PATH, 'rb').read()}
         context['emtpy_image'] = {'content': b''}
         context['bad_image'] = b''
         context['bad_content_image'] = {'content': 'bad'}
         context['resize'] = {
-            'content': open('test_template_engines/makina-corpus.png', 'rb').read(),
+            'content': open(IMAGE_PATH, 'rb').read(),
             'width': '500pt',
             'height': '500pt'
         }
@@ -31,7 +33,7 @@ class DocxTemplateView(DetailView):
         context = super().get_context_data(**kwargs)
         context['images'] = {
             'image': {
-                'content': open('test_template_engines/makina-corpus.png', 'rb').read(),
+                'content': open(IMAGE_PATH, 'rb').read(),
                 'name': 'michel1',
             },
             'emtpy_image': {
@@ -40,7 +42,7 @@ class DocxTemplateView(DetailView):
             },
             'resize': {
                 'name': 'michel4',
-                'content': open('test_template_engines/makina-corpus.png', 'rb').read(),
+                'content': open(IMAGE_PATH, 'rb').read(),
                 'width': '500pt',
                 'height': '500pt'
             },

@@ -1,8 +1,8 @@
-import os
-
 from django.test import TestCase
 
 from template_engines.templatetags.utils import size_parser, resize
+
+from ..settings import IMAGE_PATH
 
 
 class TestUtils(TestCase):
@@ -39,7 +39,7 @@ class TestUtils(TestCase):
         self.assertEqual(height, 1270000.0)
 
     def test_resize_image(self):
-        img = open(os.path.join('test_template_engines', 'makina-corpus.png'), 'rb').read()
+        img = open(IMAGE_PATH, 'rb').read()
         width, height = resize(img, None, None)
         self.assertEqual(width, 16697.0)
         self.assertEqual(height, 5763.431472081218)

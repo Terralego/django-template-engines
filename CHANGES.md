@@ -1,5 +1,9 @@
 # Versions
 
+## 1.2.2
+
+`Pillow>=5.4.1`
+
 ## 1.2.1
 
 `requests` is no longer needed.

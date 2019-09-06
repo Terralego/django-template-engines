@@ -1,5 +1,9 @@
 # Versions
 
+## 1.2.1
+
+`requests` is no longer needed.
+
 ## 1.2.0
 
 From now on, you can specify bold text.

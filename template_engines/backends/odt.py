@@ -1,7 +1,9 @@
+import io
 import re
-from zipfile import ZipFile
+import zipfile
 
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.template import Context
 from django.template.context import make_context
 
@@ -84,11 +86,13 @@ class OdtEngine(AbstractEngine):
     template_class = OdtTemplate
     mime_type = 'application/vnd.oasis.opendocument.text'
 
-    def get_template_content(self, template_path):
+    def get_template_content(self, filename):
         """
         Returns the contents of a template before modification, as a string.
         """
-        with ZipFile(template_path, 'r') as zip_file:
+        template_buffer = io.BytesIO(
+            default_storage.open(filename, 'rb').read())
+        with zipfile.ZipFile(template_buffer, 'r') as zip_file:
             b_content = zip_file.read('content.xml')
         return b_content.decode()
 

@@ -1,11 +1,11 @@
-from glob import glob
-from os.path import isdir, isfile, join
+from os.path import join
 
+from django.core.files.storage import default_storage
 from django.template import Template
 from django.template.backends.base import BaseEngine
 from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
-from magic import from_file
+from magic import from_buffer
 
 
 class AbstractTemplate:
@@ -65,38 +65,32 @@ class AbstractEngine(BaseEngine):
     def template_dirs(self):
         t_dirs = super().template_dirs
         if self.sub_dirname:
-            t_dirs += tuple([join(p, self.sub_dirname)
-                             for p in t_dirs
-                             if isdir(join(p, self.sub_dirname))])
+            t_dirs += tuple([join(p, self.sub_dirname) for p in t_dirs])
         return t_dirs
 
     def from_string(self, template_code, **kwargs):
         return self.template_class(Template(template_code), **kwargs)
 
     def check_mime_type(self, path):
-        fmime_type = from_file(path, mime=True)
+        template = default_storage.open(path, 'rb').read()
+        fmime_type = from_buffer(template, mime=True)
         if fmime_type != self.mime_type:
             raise TemplateDoesNotExist('Bad template.')
 
-    def get_template_path(self, template_name):
+    def get_template_path(self, filename):
         """
         Check if a template named ``template_name`` can be found in a list of directories. Returns
         the path if the file exists or raises ``TemplateDoesNotExist`` otherwise.
         """
-        if isfile(template_name):
-            self.check_mime_type(template_name)
-            return template_name
-        template_path = None
+        if default_storage.exists(filename):
+            self.check_mime_type(filename)
+            return filename
         for directory in self.template_dirs:
-            abstract_path = join(directory, template_name)
-            path = glob(abstract_path)
-            if path:
-                template_path = path[0]
-                break
-        if template_path is None:
-            raise TemplateDoesNotExist(f'Unknown: {template_name}')
-        self.check_mime_type(template_path)
-        return template_path
+            abstract_path = default_storage.generate_filename(join(directory, filename))
+            if default_storage.exists(abstract_path):
+                self.check_mime_type(abstract_path)
+                return abstract_path
+        raise TemplateDoesNotExist(f'Unknown: {filename}')
 
     def get_template(self, template_name):
         raise NotImplementedError()

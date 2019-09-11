@@ -1,5 +1,11 @@
 # Versions
 
+
+## 1.2.2    (2019-09-11)
+
+Fixes:
+ * Compatibility with non FileStorageBackend
+
 ## 1.2.2
 
 `Pillow>=5.4.1`

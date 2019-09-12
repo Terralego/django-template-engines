@@ -1,9 +1,12 @@
 """
 Contains all generic functions that can be used to build test_backends.
 """
+import io
 import re
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
+
+from django.core.files.storage import default_storage
 
 DOCX_RELATIONSHIP = (
     '<Relationship Id="{0}" Type="http://schemas.openxmlformats.org/officeDocument/2006/'
@@ -26,7 +29,9 @@ def modify_libreoffice_doc(file_path, xml_path, rendered):
     :returns: the modified file as a byte object.
     """
     temp_file = NamedTemporaryFile()
-    with ZipFile(file_path, 'r') as read_zip_file:
+
+    template_buffer = io.BytesIO(default_storage.open(file_path, 'rb').read())
+    with ZipFile(template_buffer, 'r') as read_zip_file:
         info_list = read_zip_file.infolist()
         with ZipFile(temp_file.name, 'w') as write_zip_file:
             for item in info_list:

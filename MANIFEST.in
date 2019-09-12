@@ -1,4 +1,4 @@
-include *.md
 recursive-include template_engines *.md
-recursive-include template_engines *.py
-recursive-exclude test_template_engines *
+recursive-exclude template_engines/tests/ *
+global-exclude __pycache__
+global-exclude *.py[co]

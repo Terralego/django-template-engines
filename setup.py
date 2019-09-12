@@ -19,8 +19,8 @@ setup(
     long_description=README + '\n\n' + CHANGES,
     description_content_type="text/markdown",
     long_description_content_type="text/markdown",
-    packages=find_packages(),
-    url='https://github.com/Terralego/django-template-engines',
+    packages=find_packages(exclude=["test_template_engines", "template_engines.tests.*"]),
+    url="https://github.com/Terralego/django-template-engines",
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -35,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     install_requires=[
-        'Django>=2.1.0',
+        'Django>=2.1.0,<3.0.0',
         'Pillow>=5.4.1',
         'python-magic>=0.4.15',
     ],

@@ -71,11 +71,12 @@ class AbstractEngine(BaseEngine):
     def from_string(self, template_code, **kwargs):
         return self.template_class(Template(template_code), **kwargs)
 
-    def check_mime_type(self, path):
+    def get_mimetype(self, path):
         template = default_storage.open(path, 'rb').read()
-        fmime_type = from_buffer(template, mime=True)
-        if fmime_type != self.mime_type:
-            raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type, self.mime_type))
+        return from_buffer(template, mime=True)
+
+    def check_mime_type(self, path):
+        raise NotImplementedError()
 
     def get_template_path(self, filename):
         """

@@ -1,6 +1,8 @@
-1.2.7.dev0  (XXXX-XX-XX)
+1.2.7       (2019-09-12)
 ------------------------
 
+Fixes:
+ * template generation from different django storage
 
 1.2.6       (2019-09-12)
 ------------------------

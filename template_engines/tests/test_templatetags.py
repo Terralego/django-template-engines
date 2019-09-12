@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from template_engines.templatetags.utils import size_parser, resize
 
-from ..settings import IMAGE_PATH
+from template_engines.tests.settings import IMAGE_PATH
 
 
 class TestUtils(TestCase):

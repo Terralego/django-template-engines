@@ -2,14 +2,13 @@ import os
 
 from django.test import TestCase, RequestFactory
 
-from test_template_engines.fake_app.models import Bidon
-from test_template_engines.fake_app.views import OdtTemplateView, DocxTemplateView
+from template_engines.tests.fake_app.models import Bidon
+from template_engines.tests.fake_app.views import OdtTemplateView, DocxTemplateView
 
 from .settings import TEMPLATES_PATH
 
 
 class TestOdtTemplateView(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.object = Bidon.objects.create(name='Michel')
@@ -58,7 +57,6 @@ class TestOdtTemplateView(TestCase):
 
 
 class TestDocxTemplateView(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.object = Bidon.objects.create(name='Michel')

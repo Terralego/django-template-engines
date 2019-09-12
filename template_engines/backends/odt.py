@@ -1,11 +1,13 @@
 import io
 import re
 import zipfile
+from pathlib import Path
 
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.template import Context
 from django.template.context import make_context
+from django.template.exceptions import TemplateDoesNotExist
 
 from . import NEW_LINE_TAG, BOLD_START_TAG, BOLD_STOP_TAG
 from .abstract import AbstractEngine, AbstractTemplate
@@ -100,3 +102,12 @@ class OdtEngine(AbstractEngine):
         template_path = self.get_template_path(template_name)
         content = self.get_template_content(template_path)
         return self.from_string(content, template_path=template_path)
+
+    def check_mime_type(self, path):
+        fmime_type = self.get_mimetype(path)
+        suffix = Path(path).suffix
+
+        if fmime_type != self.mime_type:
+            if suffix not in [".odt", ".ODT"] and fmime_type != "application/zip":
+                raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type,
+                                                                             self.mime_type))

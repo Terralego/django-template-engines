@@ -1,5 +1,8 @@
-1.2.6.dev0  (XXXX-XX-XX)
+1.2.6       (2019-09-12)
 ------------------------
+
+Fixes:
+ * conditions to determine mimetype template
 
 
 1.2.5       (2019-09-12)

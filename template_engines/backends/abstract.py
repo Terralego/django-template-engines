@@ -75,7 +75,7 @@ class AbstractEngine(BaseEngine):
         template = default_storage.open(path, 'rb').read()
         fmime_type = from_buffer(template, mime=True)
         if fmime_type != self.mime_type:
-            raise TemplateDoesNotExist('Bad template.')
+            raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type, self.mime_type))
 
     def get_template_path(self, filename):
         """

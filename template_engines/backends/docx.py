@@ -127,5 +127,5 @@ class DocxEngine(AbstractEngine):
         suffix = Path(path).suffix
 
         if (fmime_type != self.mime_type) and (suffix not in [".docx", ".DOCX"] and fmime_type != "application/zip"):
-                raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type,
-                                                                             self.mime_type))
+            raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type,
+                                                                         self.mime_type))

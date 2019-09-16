@@ -3,8 +3,10 @@ from zipfile import ZipFile
 
 from django.test import TestCase
 
-from template_engines.backends.utils import modify_libreoffice_doc, add_image_in_docx_template
-from ..settings import ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH, IMAGE_PATH
+from template_engines.backends.utils import (modify_libreoffice_doc, add_image_in_docx_template,
+                                             clean_tags)
+from ..settings import (ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH, IMAGE_PATH, BAD_TAGS_XML,
+                        CLEAN_CONTENT)
 
 
 class TestUtils(TestCase):
@@ -78,3 +80,11 @@ class TestUtils(TestCase):
                     b' Target="media/makinacorpus.png"/></Relationships>'
                 ])
             )
+
+    def test_remove_bad_tags(self):
+        with open(BAD_TAGS_XML) as reader:
+            content = reader.read()
+        clean_content = clean_tags(content)
+        self.assertNotEqual(content, clean_content)
+        with open(CLEAN_CONTENT) as reader:
+            self.assertEqual(reader.read(), clean_content)

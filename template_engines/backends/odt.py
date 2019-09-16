@@ -11,7 +11,7 @@ from django.template.exceptions import TemplateDoesNotExist
 
 from . import ODT_PARAGRAPH_RE, TO_CHANGE_RE, ODT_CHANGES
 from .abstract import AbstractEngine, AbstractTemplate
-from .utils import modify_libreoffice_doc
+from .utils import modify_libreoffice_doc, clean_tags
 
 
 class OdtTemplate(AbstractTemplate):
@@ -86,6 +86,7 @@ class OdtEngine(AbstractEngine):
     def get_template(self, template_name):
         template_path = self.get_template_path(template_name)
         content = self.get_template_content(template_path)
+        content = clean_tags(content)
         return self.from_string(content, template_path=template_path)
 
     def check_mime_type(self, path):

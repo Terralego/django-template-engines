@@ -1,15 +1,9 @@
-import io
-import zipfile
-
 from django.conf import settings
-from django.core.files.storage import default_storage
 from django.template import Context
 from django.template.context import make_context
-from django.template.exceptions import TemplateDoesNotExist
-from pathlib import Path
 
 from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES
-from .abstract import AbstractEngine, AbstractTemplate
+from .abstract import AbstractTemplate, ZipAbstractEngine
 from .utils import modify_libreoffice_doc, add_image_in_docx_template
 
 
@@ -52,7 +46,7 @@ class DocxTemplate(AbstractTemplate):
         return docx_content
 
 
-class DocxEngine(AbstractEngine):
+class DocxEngine(ZipAbstractEngine):
     """
     Docx template engine.
 
@@ -65,27 +59,4 @@ class DocxEngine(AbstractEngine):
     sub_dirname = getattr(settings, 'DOCX_ENGINE_SUB_DIRNAME', 'docx')
     app_dirname = getattr(settings, 'DOCX_ENGINE_APP_DIRNAME', 'templates')
     template_class = DocxTemplate
-    mime_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-
-    def get_template_content(self, filename):
-        """
-        Returns the contents of a template before modification, as a string.
-        """
-        template_buffer = io.BytesIO(
-            default_storage.open(filename, 'rb').read())
-        with zipfile.ZipFile(template_buffer, 'r') as zip_file:
-            b_content = zip_file.read('word/document.xml')
-        return b_content.decode()
-
-    def get_template(self, template_name):
-        template_path = self.get_template_path(template_name)
-        content = self.get_template_content(template_path)
-        return self.from_string(content, template_path=template_path)
-
-    def check_mime_type(self, path):
-        fmime_type = self.get_mimetype(path)
-        suffix = Path(path).suffix
-
-        if (fmime_type != self.mime_type) and (suffix not in [".docx", ".DOCX"] or fmime_type != "application/zip"):
-            raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type,
-                                                                         self.mime_type))
+    zip_root_file = 'word/document.xml'

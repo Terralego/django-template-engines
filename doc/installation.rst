@@ -9,7 +9,6 @@ Must be installed, for the package to work:
 * ``Django`` between versions **2.1.0** and **3.0.0**,
 * ``Pillow`` with a version greater than **6.1.0**,
 * ``requests`` with a version greater than **2.22.0**,
-* ``python-magic`` with a version greater than **0.4.15**.
 
 With pip
 --------

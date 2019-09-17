@@ -1,7 +1,7 @@
 import io
+import pathlib
 import re
 import zipfile
-from pathlib import Path
 
 from django.conf import settings
 from django.core.files.storage import default_storage
@@ -9,7 +9,7 @@ from django.template import Context
 from django.template.context import make_context
 from django.template.exceptions import TemplateDoesNotExist
 
-from . import NEW_LINE_TAG, BOLD_START_TAG, BOLD_STOP_TAG
+from . import ODT_PARAGRAPH_RE, TO_CHANGE_RE, ODT_CHANGES
 from .abstract import AbstractEngine, AbstractTemplate
 from .utils import modify_libreoffice_doc
 
@@ -30,40 +30,25 @@ class OdtTemplate(AbstractTemplate):
         super().__init__(template)
         self.template_path = template_path
 
-    def clean_bold_tag(self, data):
-        nb_bold_tag = len(re.findall(BOLD_START_TAG, data))
-        if nb_bold_tag > 0:
-            data = re.sub(
-                '</office:automatic-styles>',
-                (
-                    '<style:style style:name="BOLD" style:family="text">'
-                    + '<style:text-properties fo:font-weight="bold" style:font-weight-asian="bold"'
-                    + ' style:font-weight-complex="bold"/></style:style></office:automatic-styles>'
-                ),
-                data,
-            )
-            for _ in range(nb_bold_tag):
-                data = re.sub(
-                    BOLD_START_TAG,
-                    '<text:span text:style-name="BOLD">',
-                    data,
-                )
-                data = re.sub(
-                    BOLD_STOP_TAG,
-                    '</text:span>',
-                    data,
-                )
-        return data
+    def clean(self, data):
+        # Add bold style
+        enriched_data = re.sub(
+            '</office:automatic-styles>',
+            (
+                '<style:style style:name="BOLD" style:family="text">'
+                + '<style:text-properties fo:font-weight="bold" style:font-weight-asian="bold"'
+                + ' style:font-weight-complex="bold"/></style:style></office:automatic-styles>'
+            ),
+            data,
+        )
 
-    def clean_new_lines(self, data):
-        nb_nl = len(re.findall(NEW_LINE_TAG, data))
-        for _ in range(nb_nl):
-            data = re.sub(
-                '<text:p([^>]+)>([^<{0}]*){0}'.format(NEW_LINE_TAG),
-                '<text:p\\g<1>>\\g<2></text:p><text:p\\g<1>>',
-                data,
-            )
-        return data
+        return ODT_PARAGRAPH_RE.sub(
+            lambda e: TO_CHANGE_RE.sub(
+                lambda x: ODT_CHANGES[x.group(0)].format(e.group(1)),
+                e.group(0),
+            ),
+            enriched_data,
+        )
 
     def render(self, context=None, request=None):
         context = make_context(context, request)
@@ -105,7 +90,7 @@ class OdtEngine(AbstractEngine):
 
     def check_mime_type(self, path):
         fmime_type = self.get_mimetype(path)
-        suffix = Path(path).suffix
+        suffix = pathlib.Path(path).suffix
 
         if (fmime_type != self.mime_type) and (suffix not in [".odt", ".ODT"] or fmime_type != "application/zip"):
             raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type,

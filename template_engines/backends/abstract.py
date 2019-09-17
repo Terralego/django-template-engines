@@ -24,11 +24,7 @@ class AbstractTemplate:
         Method for cleaning rendered data. For this to work, you must implement methods whose names
         start with ``clean_``.
         """
-        unit_clean_method_names = list(filter(lambda e: e.startswith('clean_'), dir(self)))
-        unit_clean_methods = list(map(lambda e: getattr(self, e), unit_clean_method_names))
-        for clean_method in unit_clean_methods:
-            data = clean_method(data)
-        return data
+        raise NotImplementedError()
 
     def render(self, context=None, request=None):
         """

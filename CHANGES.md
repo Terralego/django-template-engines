@@ -1,6 +1,11 @@
 1.2.8.dev0  (XXXX-XX-XX)
 ------------------------
 
+Optimize:
+ * clean methods
+
+Add:
+ * a method that removes incorrect additions in the template tags of the xml file
 
 1.2.7       (2019-09-12)
 ------------------------

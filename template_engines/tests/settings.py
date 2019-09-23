@@ -15,3 +15,7 @@ RENDERED_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'rendered_content_screensho
 DOCX_RENDERED_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'docx_rendered_content_screenshot.txt')
 
 IMAGE_PATH = join(STATIC_PATH, 'makina-corpus.png')
+
+XMLS_PATH = join(STATIC_PATH, 'xml')
+BAD_TAGS_XML = join(XMLS_PATH, 'bad_tags.xml')
+CLEAN_CONTENT = join(XMLS_PATH, 'clean_content.xml')

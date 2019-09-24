@@ -1,17 +1,12 @@
-import io
-import pathlib
 import re
-import zipfile
 
 from django.conf import settings
-from django.core.files.storage import default_storage
 from django.template import Context
 from django.template.context import make_context
-from django.template.exceptions import TemplateDoesNotExist
 
 from . import ODT_PARAGRAPH_RE, TO_CHANGE_RE, ODT_CHANGES
-from .abstract import AbstractEngine, AbstractTemplate
-from .utils import modify_libreoffice_doc, clean_tags
+from .abstract import AbstractTemplate, ZipAbstractEngine
+from .utils import modify_libreoffice_doc
 
 
 class OdtTemplate(AbstractTemplate):
@@ -58,7 +53,7 @@ class OdtTemplate(AbstractTemplate):
         return odt_content
 
 
-class OdtEngine(AbstractEngine):
+class OdtEngine(ZipAbstractEngine):
     """
     Odt template engine.
 
@@ -71,28 +66,4 @@ class OdtEngine(AbstractEngine):
     sub_dirname = getattr(settings, 'ODT_ENGINE_SUB_DIRNAME', 'odt')
     app_dirname = getattr(settings, 'ODT_ENGINE_APP_DIRNAME', 'templates')
     template_class = OdtTemplate
-    mime_type = 'application/vnd.oasis.opendocument.text'
-
-    def get_template_content(self, filename):
-        """
-        Returns the contents of a template before modification, as a string.
-        """
-        template_buffer = io.BytesIO(
-            default_storage.open(filename, 'rb').read())
-        with zipfile.ZipFile(template_buffer, 'r') as zip_file:
-            b_content = zip_file.read('content.xml')
-        return b_content.decode()
-
-    def get_template(self, template_name):
-        template_path = self.get_template_path(template_name)
-        content = self.get_template_content(template_path)
-        content = clean_tags(content)
-        return self.from_string(content, template_path=template_path)
-
-    def check_mime_type(self, path):
-        fmime_type = self.get_mimetype(path)
-        suffix = pathlib.Path(path).suffix
-
-        if (fmime_type != self.mime_type) and (suffix not in [".odt", ".ODT"] or fmime_type != "application/zip"):
-            raise TemplateDoesNotExist('Bad template ({} != {}).'.format(fmime_type,
-                                                                         self.mime_type))
+    zip_root_file = 'content.xml'

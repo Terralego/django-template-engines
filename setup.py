@@ -37,7 +37,6 @@ setup(
     install_requires=[
         'Django>=2.1.0,<3.0.0',
         'Pillow>=5.4.1',
-        'python-magic>=0.4.15',
     ],
     extras_require={
         'dev': [

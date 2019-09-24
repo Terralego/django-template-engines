@@ -1,3 +1,5 @@
+import io
+import zipfile
 from os.path import join
 
 from django.core.files.storage import default_storage
@@ -5,15 +7,13 @@ from django.template import Template
 from django.template.backends.base import BaseEngine
 from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
-from magic import from_buffer
 
 
 class AbstractTemplate:
     """
-    Gives the architecture of a basic template and one implemented method:
-    ``clean``.
+    Gives the architecture of a basic template.
 
-    ``render`` must be implemented.
+    ``clean`` and ``render`` must be implemented.
     """
 
     def __init__(self, template):
@@ -21,8 +21,7 @@ class AbstractTemplate:
 
     def clean(self, data):
         """
-        Method for cleaning rendered data. For this to work, you must implement methods whose names
-        start with ``clean_``.
+        Method for cleaning rendered data.
         """
         raise NotImplementedError()
 
@@ -34,28 +33,38 @@ class AbstractTemplate:
         raise NotImplementedError()
 
 
-class AbstractEngine(BaseEngine):
+class ZipAbstractEngine(BaseEngine):
     """
-    Gives the architecture of a basic template engine and two implemented methods:
-    ``get_template_path`` and ``from_string``.
+    Gives the architecture of a basic zip base template engine.
 
     Can be specified:
 
     * ``app_dirname``, the folder name which contains the templates in application directories,
     * ``sub_dirname``, the folder name of the subdirectory in the templates directory,
-    * ``template_class``, your own template class with a ``render`` method.
-
-    ``get_template`` must be implemented.
+    * ``template_class``, your own template class with a ``render`` method,
+    * ``zip_root_file``, the file to fill.
     """
     app_dirname = None
     sub_dirname = None
     template_class = None
-    mime_type = None
+    zip_root_file = None
 
     def __init__(self, params):
         params = params.copy()
         self.options = params.pop('OPTIONS')
         super().__init__(params)
+
+    def get_template_content(self, filename):
+        """
+        Returns the contents of a template before modification, as a string.
+        """
+        try:
+            template_buffer = io.BytesIO(default_storage.open(filename, 'rb').read())
+            with zipfile.ZipFile(template_buffer, 'r') as zip_file:
+                b_content = zip_file.read(self.zip_root_file)
+                return b_content.decode()
+        except KeyError:
+            raise TemplateDoesNotExist('Bad format.')
 
     @cached_property
     def template_dirs(self):
@@ -67,27 +76,20 @@ class AbstractEngine(BaseEngine):
     def from_string(self, template_code, **kwargs):
         return self.template_class(Template(template_code), **kwargs)
 
-    def get_mimetype(self, path):
-        template = default_storage.open(path, 'rb').read()
-        return from_buffer(template, mime=True)
-
-    def check_mime_type(self, path):
-        raise NotImplementedError()
-
     def get_template_path(self, filename):
         """
         Check if a template named ``template_name`` can be found in a list of directories. Returns
         the path if the file exists or raises ``TemplateDoesNotExist`` otherwise.
         """
         if default_storage.exists(filename):
-            self.check_mime_type(filename)
             return filename
         for directory in self.template_dirs:
             abstract_path = default_storage.generate_filename(join(directory, filename))
             if default_storage.exists(abstract_path):
-                self.check_mime_type(abstract_path)
                 return abstract_path
         raise TemplateDoesNotExist(f'Unknown: {filename}')
 
     def get_template(self, template_name):
-        raise NotImplementedError()
+        template_path = self.get_template_path(template_name)
+        content = self.get_template_content(template_path)
+        return self.from_string(content, template_path=template_path)

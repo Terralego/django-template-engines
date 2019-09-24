@@ -7,6 +7,10 @@ Optimize:
 Add:
  * a method that removes incorrect additions in the template tags of the xml file
 
+Other:
+ * ``AbstractEngine`` becomes ``ZipAbstractEngine`` and allow you to write
+   custom engines for zip base documents
+
 1.2.7       (2019-09-12)
 ------------------------
 

@@ -10,6 +10,9 @@ Add:
 Update:
  * the documentation
 
+Fix:
+ * requirements
+
 Other:
  * ``AbstractEngine`` becomes ``ZipAbstractEngine`` and allow you to write
    custom engines for zip base documents

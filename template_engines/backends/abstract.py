@@ -8,6 +8,8 @@ from django.template.backends.base import BaseEngine
 from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
 
+from .utils import clean_tags
+
 
 class AbstractTemplate:
     """
@@ -91,5 +93,5 @@ class ZipAbstractEngine(BaseEngine):
 
     def get_template(self, template_name):
         template_path = self.get_template_path(template_name)
-        content = self.get_template_content(template_path)
+        content = clean_tags(self.get_template_content(template_path))
         return self.from_string(content, template_path=template_path)

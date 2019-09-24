@@ -15,7 +15,14 @@ env:
   matrix:
   - DJANGO_VERSION=2.1
   - DJANGO_VERSION=2.2
+  - DJANGO_VERSION=3.0a1
   - DJANGO_VERSION=dev
+
+allow_failures:
+  - python: 3.6
+    env: DJANGO_VERSION=dev
+  - python: 3.7
+    env: DJANGO_VERSION=dev
 
 install:
 - python setup.py install

@@ -6,9 +6,8 @@ Requirements
 
 Must be installed, for the package to work:
 
-* ``Django`` between versions **2.1.0** and **3.0.0**,
-* ``Pillow`` with a version greater than **6.1.0**,
-* ``requests`` with a version greater than **2.22.0**,
+* ``Django`` with a version greater than **2.1.0**,
+* ``Pillow`` with a version greater than **5.4.1**,
 
 With pip
 --------

@@ -12,8 +12,6 @@ This ``Django`` package provides you with additional template engines
    installation
    configuration
    use
-   template_engines.backends
-   template_engines.templatetags
 
 .. |Build Status| image:: https://travis-ci.org/Terralego/django-template-engines.svg?branch=master
    :target: https://travis-ci.org/Terralego/django-template-engines

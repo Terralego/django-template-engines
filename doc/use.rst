@@ -1,8 +1,30 @@
-Example of use
-==============
+How it works ?
+===============
 
-In a detail view
+Simple template
 ----------------
+
+These services work like the Django service, so they are subject to the same rules:
+ * ``{{ ... }}`` allows you to include variables, consult dictionaries, attributes and list indexs in your templates
+ * ``{% ... %}`` allows you to use functions
+ * ``{{ ...|... }}`` allows you to use filters
+
+Please consult the Django documentation for more information.
+
+Include images
+--------------
+
+Two template tags are available to dynamically include images, one for ODT and the other for DOCX.
+
+For this to work you need to include the binary content of each image in the context transmitted to your template.
+
+Then at the top of your template, you must add ``{% load docx_image_loader %}`` if it is a DOCX template or
+``{% load odt_image_loader %}`` if it is an ODT template.
+
+Now you can add images by using ``{% docx_image_loader image_name_in_the_context %}`` or ``{% odt_image_loader image_name_in_the_context %}`` in the right place.
+
+Example of easy use of the ODT engine
+-------------------------------------
 
 In the following exemple, this view will allow any user to fill in the odt
 template you specified with a query set object. Will be

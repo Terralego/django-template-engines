@@ -86,7 +86,7 @@ def add_image_in_docx_template(bfile, image):
 
 
 def clean_tags(content):
-    template_tag = re.compile(r'\{\{([^\}]+)\}\}')
+    template_tag = re.compile(r'\{\{([^\}]+)\}\}|\{\%([^\%]+)\%\}')
     bad_content = re.compile(r'\<[^\>]*\>|\«[^\»]\»|\“[^\”]\”')
     return template_tag.sub(
         lambda e: bad_content.sub('', e.group(0)),

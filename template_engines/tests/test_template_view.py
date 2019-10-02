@@ -95,42 +95,6 @@ class TestDocxTemplateView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.content), 59982)
 
-    def test_view_empty_template_tag_name(self):
-        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_no_name.docx')
-        with self.assertRaises(TemplateSyntaxError) as e:
-            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(str(e.exception), 'A name has to be given')
-
-    def test_view_empty_template_tag_url(self):
-        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_no_url.docx')
-        with self.assertRaises(TemplateSyntaxError) as e:
-            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(str(e.exception), 'An url has to be given')
-
-    def test_view_empty_template_tag_value(self):
-        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_no_value.docx')
-        with self.assertRaises(TemplateSyntaxError) as e:
-            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(str(e.exception), "name's value not given")
-
-    def test_view_empty_template_tag_key(self):
-        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_no_key.docx')
-        with self.assertRaises(TemplateSyntaxError) as e:
-            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(str(e.exception), "You have to put the name of the key in the template")
-
-    def test_view_wrong_template_tag_key(self):
-        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_wrong_key.docx')
-        with self.assertRaises(TemplateSyntaxError) as e:
-            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(str(e.exception), "wrong_key : this argument doesn't exist")
-
-    def test_view_wrong_template_tag_request_type_value(self):
-        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_wrong_request_type.docx')
-        with self.assertRaises(TemplateSyntaxError) as e:
-            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(str(e.exception), "Type of request specified not possible")
-
     @mock.patch('requests.get')
     def test_view_template_tag_get_url(self, mocked):
         def mocked_picture():

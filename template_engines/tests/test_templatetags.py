@@ -1,5 +1,7 @@
+from django.template import Context, Template, TemplateSyntaxError
 from django.test import TestCase
 
+from template_engines.templatetags.docx_image_loader import docx_image_url_loader
 from template_engines.templatetags.utils import size_parser, resize
 
 from template_engines.tests.settings import IMAGE_PATH
@@ -43,3 +45,64 @@ class TestUtils(TestCase):
         width, height = resize(img, None, None)
         self.assertEqual(width, 16697.0)
         self.assertEqual(height, 5763.431472081218)
+
+
+class TestsDocxURLImageLoader(TestCase):
+    def render_template(self, string, context=None):
+        context = context or {}
+        context = Context(context)
+        return Template(string).render(context)
+
+    def test_view_empty_template_tag_name(self):
+        self.assertRaisesRegexp(
+            TemplateSyntaxError,
+            'A name has to be given',
+            self.render_template,
+            '{% load docx_image_loader %}'
+            '{% docx_image_url_loader %}'
+        )
+
+    def test_view_empty_template_tag_url(self):
+        self.assertRaisesRegexp(
+            TemplateSyntaxError,
+            'An url has to be given',
+            self.render_template,
+            '{% load docx_image_loader %}'
+            '{% docx_image_url_loader name="test" %}'
+        )
+
+    def test_view_empty_template_tag_value(self):
+        self.assertRaisesRegexp(
+            TemplateSyntaxError,
+            "name's value not given",
+            self.render_template,
+            '{% load docx_image_loader %}'
+            '{% docx_image_url_loader name %}'
+        )
+
+    def test_view_empty_template_tag_key(self):
+        self.assertRaisesRegexp(
+            TemplateSyntaxError,
+            "You have to put the name of the key in the template",
+            self.render_template,
+            '{% load docx_image_loader %}'
+            '{% docx_image_url_loader "no_key" %}'
+        )
+
+    def test_view_wrong_template_tag_key(self):
+        self.assertRaisesRegexp(
+            TemplateSyntaxError,
+            "wrong_key : this argument doesn't exist",
+            self.render_template,
+            '{% load docx_image_loader %}'
+            '{% docx_image_url_loader wrong_key="u" %}'
+        )
+
+    def test_view_wrong_template_tag_request_type_value(self):
+        self.assertRaisesRegexp(
+            TemplateSyntaxError,
+            "Type of request specified not possible",
+            self.render_template,
+            '{% load docx_image_loader %}'
+            '{% docx_image_url_loader name="coucou" url="http://wrong_type" request="wrong_type" %}'
+        )

@@ -1,5 +1,6 @@
 import re
 
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.template import Context
 from django.template.context import make_context
@@ -45,10 +46,23 @@ class OdtTemplate(AbstractTemplate):
             enriched_data,
         )
 
+    def replace_inputs(self, content):
+        """ Replace all text:text-input to text-span """
+
+        soup = BeautifulSoup(content, features='xml')
+        input_list = soup.find_all("text:text-input")
+
+        for tag in input_list:
+            tag.name = 'span'
+            tag.attrs = {}
+
+        return soup.prettify()
+
     def render(self, context=None, request=None):
         context = make_context(context, request)
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
+        rendered = self.replace_inputs(rendered)
         odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', rendered)
         return odt_content
 
@@ -67,3 +81,4 @@ class OdtEngine(ZipAbstractEngine):
     app_dirname = getattr(settings, 'ODT_ENGINE_APP_DIRNAME', 'templates')
     template_class = OdtTemplate
     zip_root_file = 'content.xml'
+    builtins = ['template_engines.templatetags.odt_utils']

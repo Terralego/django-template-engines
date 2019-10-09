@@ -9,8 +9,8 @@ SCREENSHOTS_PATH = join(STATIC_PATH, 'screenshots')
 ODT_TEMPLATE_PATH = join(TEMPLATES_PATH, 'odt', 'template.odt')
 DOCX_TEMPLATE_PATH = join(TEMPLATES_PATH, 'docx', 'template.docx')
 
-CONTENT_SCREENSHOT_PATH = join(SCREENSHOTS_PATH, 'content_screenshot.txt')
-DOCX_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'docx_content_screenshot.txt')
+CONTENT_SCREENSHOT_PATH = join(SCREENSHOTS_PATH, 'content_screenshot.xml')
+DOCX_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'docx_content_screenshot.xml')
 RENDERED_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'rendered_content_screenshot.txt')
 DOCX_RENDERED_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'docx_rendered_content_screenshot.txt')
 

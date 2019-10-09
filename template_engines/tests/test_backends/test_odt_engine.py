@@ -1,14 +1,12 @@
-from io import BytesIO
-from zipfile import ZipFile
-
 from django.template import Template
 from django.template.exceptions import TemplateDoesNotExist
 from django.test import TestCase
 
 from template_engines.backends.odt import OdtEngine, OdtTemplate
 from ..settings import (
-    CONTENT_SCREENSHOT_PATH, DOCX_TEMPLATE_PATH, ODT_TEMPLATE_PATH,
-    RENDERED_CONTENT_SCREENSHOT, TEMPLATES_PATH)
+    DOCX_TEMPLATE_PATH, ODT_TEMPLATE_PATH,
+    TEMPLATES_PATH
+)
 
 
 class TestOdtEngine(TestCase):
@@ -49,11 +47,6 @@ class TestOdtEngine(TestCase):
         with self.assertRaises(TemplateDoesNotExist):
             self.odt_engine.get_template_path('bad_name')
 
-    def test_get_template_content_works(self):
-        with open(CONTENT_SCREENSHOT_PATH, 'r') as read_file:
-            self.assertEqual(self.odt_engine.get_template_content(ODT_TEMPLATE_PATH),
-                             read_file.read())
-
     def test_get_template_works(self):
         template = self.odt_engine.get_template(ODT_TEMPLATE_PATH)
         self.assertIsInstance(template, OdtTemplate)
@@ -63,14 +56,3 @@ class TestOdtEngine(TestCase):
     def test_bad_template(self):
         with self.assertRaises(TemplateDoesNotExist):
             self.odt_engine.get_template(DOCX_TEMPLATE_PATH)
-
-    def test_render(self):
-        class Obj:
-            name = 'Michel'
-        template = self.odt_engine.get_template('template.odt')
-        rendered = template.render(context={'object': Obj()})
-        self.assertIsInstance(rendered, bytes)
-        buffer = BytesIO(rendered)
-        with ZipFile(buffer, 'r') as zip_read_file:
-            with open(RENDERED_CONTENT_SCREENSHOT, 'r') as read_file:
-                self.assertEqual(zip_read_file.read('content.xml').decode(), read_file.read())

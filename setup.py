@@ -38,7 +38,8 @@ setup(
         'Django>=2.1.0',
         'Pillow>=5.4.1',
         'lxml',
-        'beautifulsoup4'
+        'beautifulsoup4',
+        'markdown_map',
     ],
     extras_require={
         'dev': [

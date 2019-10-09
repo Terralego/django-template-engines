@@ -81,10 +81,9 @@ def html_convert(self, html_text):
                     odt_node.setAttribute(k, v)
 
                 # copy original href attribute in <a> tag
-                if tag == 'a':
-                    if html_node.hasAttribute('href'):
-                        odt_node.setAttribute('xlink:href',
-                                              html_node.getAttribute('href'))
+                if tag == 'a' and html_node.hasAttribute('href'):
+                    odt_node.setAttribute('xlink:href',
+                                          html_node.getAttribute('href'))
 
             # Does the node need to create an style?
             if 'style' in transform_map[tag]:

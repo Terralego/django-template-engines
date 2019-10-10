@@ -39,7 +39,6 @@ setup(
         'Pillow>=5.4.1',
         'lxml',
         'beautifulsoup4',
-        'markdown_map',
     ],
     extras_require={
         'dev': [

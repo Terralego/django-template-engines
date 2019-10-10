@@ -148,7 +148,7 @@ def traverse_preformatted(node, xml_object):
 
 
 @register.filter()
-def html_convert(self, html_text):
+def html_convert(html_text):
     """ Convert a html text into a ODT formatted text """
 
     # cache styles searching

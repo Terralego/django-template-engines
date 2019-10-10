@@ -19,8 +19,10 @@ def image_loader(image):
     automatically resize your image.
     """
     if isinstance(image, str):
-        image = {'content': base64.b64decode(image.split(';base64,')[1])}
-
+        if image:
+            image = {'content': base64.b64decode(image.split(';base64,')[1])}
+        else:
+            return
     width = image.get('width')
     height = image.get('height')
     content = image.get('content')

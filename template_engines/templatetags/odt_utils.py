@@ -1,4 +1,5 @@
 import re
+from random import randint
 from xml.dom.minidom import parseString
 
 from django import template

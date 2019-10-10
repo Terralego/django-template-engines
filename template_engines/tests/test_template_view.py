@@ -18,21 +18,21 @@ class TestOdtTemplateView(TestCase):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.odt')
         response = OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27223)
+        self.assertEqual(len(response.content), 27563)
 
     def test_view_works_with_new_line(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.odt')
         obj = Bidon.objects.create(name='Michel\nPierre')
         response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27233)
+        self.assertEqual(len(response.content), 27573)
 
     def test_view_works_with_bold_text(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.odt')
         obj = Bidon.objects.create(name='Michel <b>Pierre</b>')
         response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27247)
+        self.assertEqual(len(response.content), 27587)
 
     def test_view_empty_image(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'empty_image.odt')
@@ -53,7 +53,7 @@ class TestOdtTemplateView(TestCase):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.odt')
         response = OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 27207)
+        self.assertEqual(len(response.content), 27556)
 
 
 class TestDocxTemplateView(TestCase):
@@ -66,21 +66,21 @@ class TestDocxTemplateView(TestCase):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.docx')
         response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 41742)
+        self.assertEqual(len(response.content), 41726)
 
     def test_view_works_with_new_line(self):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.docx')
         obj = Bidon.objects.create(name='Michel\nPierre')
         response = DocxTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 41753)
+        self.assertEqual(len(response.content), 41737)
 
     def test_view_works_with_bold_text(self):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.docx')
         obj = Bidon.objects.create(name='Michel <b>Pierre</b>')
         response = DocxTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 41777)
+        self.assertEqual(len(response.content), 41761)
 
     def test_view_empty_image(self):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'empty_image.docx')
@@ -91,4 +91,4 @@ class TestDocxTemplateView(TestCase):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.docx')
         response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 59982)
+        self.assertEqual(len(response.content), 41722)

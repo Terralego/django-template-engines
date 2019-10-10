@@ -25,4 +25,4 @@ def image_loader(image):
 
     width, height = resize(content, width, height)
 
-    return mark_safe(ODT_IMAGE.format(width, height, b64encode(content).decode()))  # nosec
+    return mark_safe(ODT_IMAGE.format(width, height, b64encode(content).decode()))

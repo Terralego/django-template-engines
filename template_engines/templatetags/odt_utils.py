@@ -2,7 +2,6 @@ import re
 from xml.dom.minidom import parseString
 
 from django import template
-from markdown_map import transform_map
 
 register = template.Library()
 

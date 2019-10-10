@@ -1,4 +1,7 @@
+import base64
+
 from django import template
+from django.core.files.base import ContentFile
 
 from template_engines.odt_helpers import ODT_IMAGE
 
@@ -19,6 +22,9 @@ def image_loader(image):
     whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
     automatically resize your image.
     """
+    if isinstance(image, str):
+        image = ContentFile(base64.b64decode(image.split(';base64,')[1]))
+
     width = image.get('width')
     height = image.get('height')
     content = image.get('content')

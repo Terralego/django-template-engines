@@ -13,10 +13,8 @@ stages:
 
 env:
   matrix:
-  - DJANGO_VERSION=2.1
   - DJANGO_VERSION=2.2
   - DJANGO_VERSION=3.0a1
-  - DJANGO_VERSION=dev
 
 matrix:
   allow_failures:

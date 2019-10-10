@@ -11,7 +11,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def image_loader(image):
+def image_loader(image, *args, **kwargs):
     """
     Replace a tag by an image you specified.
     You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
@@ -23,8 +23,8 @@ def image_loader(image):
             image = {'content': base64.b64decode(image.split(';base64,')[1])}
         else:
             return
-    width = image.get('width')
-    height = image.get('height')
+    width = kwargs.get('width', image.get('width'))
+    height = kwargs.get('height', image.get('height'))
     content = image.get('content')
 
     width, height = resize(content, width, height)

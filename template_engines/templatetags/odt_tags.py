@@ -1,12 +1,8 @@
 import base64
 
 from django import template
-from django.core.files.base import ContentFile
 
 from template_engines.odt_helpers import ODT_IMAGE
-
-from base64 import b64encode
-
 from django.utils.safestring import mark_safe
 
 from .utils import resize
@@ -31,4 +27,4 @@ def image_loader(image):
 
     width, height = resize(content, width, height)
 
-    return mark_safe(ODT_IMAGE.format(width, height, b64encode(content).decode()))
+    return mark_safe(ODT_IMAGE.format(width, height, base64.b64encode(content).decode()))

@@ -1,5 +1,11 @@
-1.2.10      (XXXX-XX-XX)
+1.2.10      (2019-10-09)
 ------------------------
+
+Improve:
+
+* Tags are renamed
+* ODT image inclusion
+
 
 Update:
  * From now on, ``{% ... %}`` are also cleaned.

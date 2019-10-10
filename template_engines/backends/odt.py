@@ -81,4 +81,3 @@ class OdtEngine(ZipAbstractEngine):
     app_dirname = getattr(settings, 'ODT_ENGINE_APP_DIRNAME', 'templates')
     template_class = OdtTemplate
     zip_root_file = 'content.xml'
-    builtins = ['template_engines.templatetags.odt_utils']

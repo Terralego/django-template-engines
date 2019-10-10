@@ -1,147 +1,20 @@
-import re
-from random import randint
 from xml.dom.minidom import parseString
 
 from bs4 import BeautifulSoup
 from django import template
 
+from template_engines.odt_helpers import transform_map, \
+    node_to_string, get_style_by_name, traverse_preformatted, ODT_IMAGE
+
+from base64 import b64encode
+
+from django import template
+from django.utils.safestring import mark_safe
+
+from .utils import resize
+
 register = template.Library()
 
-common_styles = {
-    'italic': {
-        'replace_with': 'text:span',
-        'style_attributes': {
-            'style-name': 'markdown_italic'
-        },
-        'style': {
-            'name': 'markdown_italic',
-            'properties': {
-                'fo:font-style': 'italic',
-                'style:font-style-asian': 'italic',
-                'style:font-style-complex': 'italic'
-            }
-        }
-    },
-    'strong': {
-        'replace_with': 'text:span',
-        'style_attributes': {
-            'style-name': 'markdown_bold'
-        },
-        'style': {
-            'name': 'markdown_bold',
-            'properties': {
-                'fo:font-weight': 'bold',
-                'style:font-weight-asian': 'bold',
-                'style:font-weight-complex': 'bold'
-            }
-        }
-    },
-    'p': {
-        'replace_with': 'text:p',
-        'style_attributes': {
-            'style-name': 'Standard'
-        }
-    }
-}
-
-transform_map = {
-    'a': {
-        'replace_with': 'text:a',
-        'attributes': {
-            'xlink:type': 'simple',
-            'xlink:href': ''
-        }
-    },
-
-    'p': common_styles['p'],
-    'strong': common_styles['strong'],
-    'em': common_styles['italic'],
-    'b': common_styles['strong'],
-    'i': common_styles['italic'],
-
-    # Heading Styles (Use styles defined in the document)
-    'h1': {
-        'replace_with': 'text:p',
-        'style_attributes': {
-            'style-name': 'Heading_20_1'
-        }
-    },
-
-    'h2': {
-        'replace_with': 'text:p',
-        'style_attributes': {
-            'style-name': 'Heading_20_2'
-        }
-    },
-
-    'h3': {
-        'replace_with': 'text:p',
-        'style_attributes': {
-            'style-name': 'Heading_20_3'
-        }
-    },
-
-    'h4': {
-        'replace_with': 'text:p',
-        'style_attributes': {
-            'style-name': 'Heading_20_4'
-        }
-    },
-
-    'pre': {
-        'replace_with': 'text:p',
-        'style_attributes': {
-            'style-name': 'Preformatted_20_Text'
-        }
-    },
-
-    'code': {
-        'replace_with': 'text:span',
-        'style_attributes': {
-            'style-name': 'Preformatted_20_Text'
-        }
-    },
-
-    'ul': {
-        'replace_with': 'text:list',
-        'attributes': {
-            'xml:id': 'list' + str(randint(100000000000000000,900000000000000000))
-        }
-    },
-
-    'ol': {
-        'replace_with': 'text:list',
-        'attributes': {
-            'xml:id': 'list' + str(randint(100000000000000000,900000000000000000))
-        }
-    },
-
-    'li': {
-        'replace_with': 'text:list-item'
-    },
-
-    'br': {
-        'replace_with': 'text:line-break'
-    },
-}
-
-def node_to_string(node):
-    return node.toxml()
-
-
-def traverse_preformatted(node, xml_object):
-    if node.hasChildNodes():
-        for n in node.childNodes:
-            traverse_preformatted(n)
-    else:
-        container = xml_object.createElement('text:span')
-        for text in re.split('(\n)', node.nodeValue.lstrip('\n')):
-            if text == '\n':
-                container.appendChild(xml_object.createElement('text:line-break'))
-            else:
-                container.appendChild(xml_object.createTextNode(text))
-
-        node.parentNode.replaceChild(container, node)
 
 
 @register.filter()
@@ -208,7 +81,7 @@ def html_convert(html_text):
             if 'style' in transform_map[tag]:
                 name = transform_map[tag]['style']['name']
                 if name not in styles_cache:
-                    style_node = self.get_style_by_name(name)
+                    style_node = get_style_by_name(self.content, name)
 
                     if style_node is None:
                         # Create and cache the style node
@@ -223,3 +96,20 @@ def html_convert(html_text):
                                                           xml_object.getElementsByTagName('html')[0].childNodes))
 
     return odt_text
+
+
+@register.simple_tag
+def image_loader(image):
+    """
+    Replace a tag by an image you specified.
+    You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
+    whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
+    automatically resize your image.
+    """
+    width = image.get('width')
+    height = image.get('height')
+    content = image.get('content')
+
+    width, height = resize(content, width, height)
+
+    return mark_safe(ODT_IMAGE.format(width, height, b64encode(content).decode()))  # nosec

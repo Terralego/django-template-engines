@@ -23,8 +23,8 @@ def image_loader(image, i_width=None, i_height=None):
             image = {'content': base64.b64decode(image.split(';base64,')[1])}
         else:
             return
-    width = i_width or image.get('width'))
-    height = i_height or image.get('height'))
+    width = i_width or image.get('width')
+    height = i_height or image.get('height')
     content = image.get('content')
 
     width, height = resize(content, width, height)

@@ -2,6 +2,7 @@ import re
 from random import randint
 from xml.dom.minidom import parseString
 
+from bs4 import BeautifulSoup
 from django import template
 
 register = template.Library()
@@ -12,7 +13,6 @@ common_styles = {
         'style_attributes': {
             'style-name': 'markdown_italic'
         },
-
         'style': {
             'name': 'markdown_italic',
             'properties': {
@@ -22,13 +22,11 @@ common_styles = {
             }
         }
     },
-
     'strong': {
         'replace_with': 'text:span',
         'style_attributes': {
             'style-name': 'markdown_bold'
         },
-
         'style': {
             'name': 'markdown_bold',
             'properties': {
@@ -38,7 +36,6 @@ common_styles = {
             }
         }
     },
-
     'p': {
         'replace_with': 'text:p',
         'style_attributes': {
@@ -158,7 +155,8 @@ def html_convert(html_text):
     if isinstance(encoded, bytes):
         # In PY3 bytes-like object needs convert to str
         encoded = encoded.decode('ascii')
-    xml_object = parseString('<html>%s</html>' % encoded)
+    soup = BeautifulSoup(encoded)
+    xml_object = parseString('<html>%s</html>' % soup.body.next)
 
     # Transform HTML tags as specified in transform_map
     # Some tags may require extra attributes in ODT.

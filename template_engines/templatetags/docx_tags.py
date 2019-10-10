@@ -4,6 +4,7 @@ from django.utils.safestring import mark_safe
 from .utils import resize
 
 register = template.Library()
+
 DOCX_IMAGE = (
     '</w:t>'
     + '</w:r>'
@@ -46,7 +47,7 @@ DOCX_IMAGE = (
 
 
 @register.simple_tag
-def docx_image_loader(image):
+def image_loader(image):
     """
     Replace a tag by an image you specified.
     You must add an entry to the ``context`` var that is a dict with ``'images'`` as key and other

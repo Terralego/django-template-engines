@@ -55,11 +55,10 @@ class TestDocxEngine(TestCase):
             self.odt_engine.get_template(ODT_TEMPLATE_PATH)
 
     def test_render(self):
-        class Obj:
-            name = 'Michel'
         template = self.odt_engine.get_template('template.docx')
-        rendered = template.render(context={'object': Obj()})
+        rendered = template.render(context={'object': {"name": "Michel"}})
         self.assertIsInstance(rendered, bytes)
+
         buffer = BytesIO(rendered)
         with ZipFile(buffer, 'r') as zip_read_file:
             with open(DOCX_RENDERED_CONTENT_SCREENSHOT, 'r') as read_file:

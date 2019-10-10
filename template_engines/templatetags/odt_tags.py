@@ -1,31 +1,32 @@
-from base64 import b64encode
+import base64
 
 from django import template
+
+from template_engines.odt_helpers import ODT_IMAGE
 from django.utils.safestring import mark_safe
 
 from .utils import resize
 
 register = template.Library()
-ODT_IMAGE = (
-    '<draw:frame draw:name="img1" svg:width="{0}" svg:height="{1}">'
-    + '<draw:image xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad">'
-    + '<office:binary-data>{2}</office:binary-data>'
-    + '</draw:image></draw:frame>'
-)
 
 
 @register.simple_tag
-def odt_image_loader(image):
+def image_loader(image, i_width=None, i_height=None):
     """
     Replace a tag by an image you specified.
     You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
     whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
     automatically resize your image.
     """
-    width = image.get('width')
-    height = image.get('height')
+    if isinstance(image, str):
+        if image:
+            image = {'content': base64.b64decode(image.split(';base64,')[1])}
+        else:
+            return
+    width = i_width or image.get('width')
+    height = i_height or image.get('height')
     content = image.get('content')
 
     width, height = resize(content, width, height)
 
-    return mark_safe(ODT_IMAGE.format(width, height, b64encode(content).decode()))  # nosec
+    return mark_safe(ODT_IMAGE.format(width, height, base64.b64encode(content).decode()))

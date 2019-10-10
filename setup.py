@@ -37,6 +37,8 @@ setup(
     install_requires=[
         'Django>=2.1.0',
         'Pillow>=5.4.1',
+        'lxml',
+        'beautifulsoup4',
     ],
     extras_require={
         'dev': [

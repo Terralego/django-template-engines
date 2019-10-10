@@ -91,7 +91,11 @@ class ZipAbstractEngine(BaseEngine):
                 return abstract_path
         raise TemplateDoesNotExist(f'Unknown: {filename}')
 
+    def clean_content(self, content):
+        return clean_tags(content)
+
     def get_template(self, template_name):
         template_path = self.get_template_path(template_name)
-        content = clean_tags(self.get_template_content(template_path))
+        content = self.get_template_content(template_path)
+        content = self.clean_content(content)
         return self.from_string(content, template_path=template_path)

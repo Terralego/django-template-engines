@@ -1,3 +1,13 @@
+## CHANGELOG
+
+1.2.11      (2019-10-23)
+------------------------
+
+Improve:
+
+* automatic escape break line in odt template
+
+
 1.2.10      (2019-10-09)
 ------------------------
 

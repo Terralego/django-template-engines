@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.template import Context
 from django.template.context import make_context
+from django.utils.safestring import mark_safe
 
 from . import ODT_PARAGRAPH_RE, TO_CHANGE_RE, ODT_CHANGES
 from .abstract import AbstractTemplate, ZipAbstractEngine
@@ -64,10 +65,10 @@ class OdtTemplate(AbstractTemplate):
         Encodes XML reserved chars in value (eg. &, <, >) and also replaces
         the control chars \n and \t control chars to their ODF counterparts.
         """
-        return value.replace('\n', '<text:line-break/>')\
-                    .replace('\t', '<text:tab/>')\
-                    .replace('\x0b', '<text:space/>')\
-                    .replace('\x0c', '<text:space/>')
+        return mark_safe(value.replace('\n', '<text:line-break/>')
+                         .replace('\t', '<text:tab/>')
+                         .replace('\x0b', '<text:space/>')
+                         .replace('\x0c', '<text:space/>'))
 
     def render(self, context=None, request=None):
         context = make_context(context, request)

@@ -53,7 +53,7 @@ class OdtTemplate(AbstractTemplate):
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
-            tag.text = self.get_escaped_var_value(tag.text)
+            tag.string = self.get_escaped_var_value(tag.text)
             tag.name = 'span'
             tag.attrs = {}
 

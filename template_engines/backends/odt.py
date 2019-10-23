@@ -57,13 +57,13 @@ class OdtTemplate(AbstractTemplate):
             tag.name = 'span'
             tag.attrs = {}
             # replace \n by <br/>
-            # lines = tag.text.split('\n')
-            # tag.string = lines[0]
+            lines = tag.text.split('\n')
+            tag.string = lines[0]
 
-            # for l in lines[1:]:
-            #    tag_line = soup.new_tag('text:line-break')
-            #    tag.append(tag_line)
-            #    tag.append(l)
+            for l in lines[1:]:
+                tag_line = soup.new_tag('text:line-break')
+                tag.append(tag_line)
+                tag.append(l)
 
         return str(soup)
 

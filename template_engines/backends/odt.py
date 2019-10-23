@@ -58,11 +58,22 @@ class OdtTemplate(AbstractTemplate):
 
         return soup.prettify()
 
+    def get_escaped_var_value(value):
+        """
+        Encodes XML reserved chars in value (eg. &, <, >) and also replaces
+        the control chars \n and \t control chars to their ODF counterparts.
+        """
+        return value.replace('\n', '<text:line-break/>')\
+                    .replace('\t', '<text:tab/>')\
+                    .replace('\x0b', '<text:space/>')\
+                    .replace('\x0c', '<text:space/>')
+
     def render(self, context=None, request=None):
         context = make_context(context, request)
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
         rendered = self.replace_inputs(rendered)
+        rendered = self.get_escaped_var_value(rendered)
         odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', rendered)
         return odt_content
 

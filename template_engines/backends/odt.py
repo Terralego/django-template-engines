@@ -53,6 +53,7 @@ class OdtTemplate(AbstractTemplate):
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
+            tag.text = self.get_escaped_var_value(tag.text)
             tag.name = 'span'
             tag.attrs = {}
 
@@ -73,7 +74,6 @@ class OdtTemplate(AbstractTemplate):
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
         rendered = self.replace_inputs(rendered)
-        rendered = self.get_escaped_var_value(rendered)
         odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', rendered)
         return odt_content
 

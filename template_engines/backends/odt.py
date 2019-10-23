@@ -58,7 +58,7 @@ class OdtTemplate(AbstractTemplate):
 
         return soup.prettify()
 
-    def get_escaped_var_value(value):
+    def get_escaped_var_value(self, value):
         """
         Encodes XML reserved chars in value (eg. &, <, >) and also replaces
         the control chars \n and \t control chars to their ODF counterparts.

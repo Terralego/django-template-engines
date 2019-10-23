@@ -54,7 +54,7 @@ class OdtTemplate(AbstractTemplate):
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
-            tag.string = self.get_escaped_var_value(tag.text)
+            #tag.string = self.get_escaped_var_value(tag.text)
             tag.name = 'span'
             tag.attrs = {}
 
@@ -65,17 +65,17 @@ class OdtTemplate(AbstractTemplate):
         Encodes XML reserved chars in value (eg. &, <, >) and also replaces
         the control chars \n and \t control chars to their ODF counterparts.
         """
-        return mark_safe(value.replace('\n', '<text:line-break/>')
-                         .replace('\t', '<text:tab/>')
-                         .replace('\x0b', '<text:space/>')
-                         .replace('\x0c', '<text:space/>'))
+        return value.replace('\n', '<text:line-break/>')\
+                         .replace('\t', '<text:tab/>')\
+                         .replace('\x0b', '<text:space/>')\
+                         .replace('\x0c', '<text:space/>')
 
     def render(self, context=None, request=None):
         context = make_context(context, request)
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
         rendered = self.replace_inputs(rendered)
-        odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', rendered)
+        odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', self.get_escaped_var_value(rendered))
         return odt_content
 
 

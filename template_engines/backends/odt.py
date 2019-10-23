@@ -54,14 +54,16 @@ class OdtTemplate(AbstractTemplate):
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
-            lines = tag.text.split('\n')
-            tag.string = lines[0]
-            for l in lines[1:]:
-                tag_line = soup.new_tag('text:line-break')
-                tag.append(tag_line)
-                tag.append(l)
             tag.name = 'span'
             tag.attrs = {}
+            # replace \n by <br/>
+            # lines = tag.text.split('\n')
+            # tag.string = lines[0]
+
+            # for l in lines[1:]:
+            #    tag_line = soup.new_tag('text:line-break')
+            #    tag.append(tag_line)
+            #    tag.append(l)
 
         return str(soup)
 

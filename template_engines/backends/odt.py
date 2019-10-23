@@ -58,7 +58,7 @@ class OdtTemplate(AbstractTemplate):
             tag.name = 'span'
             tag.attrs = {}
 
-        return soup.prettify()
+        return str(soup.text)
 
     def get_escaped_var_value(self, value):
         """

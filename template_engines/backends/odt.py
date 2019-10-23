@@ -54,7 +54,12 @@ class OdtTemplate(AbstractTemplate):
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
-            #tag.string = self.get_escaped_var_value(tag.text)
+            lines = tag.text.split('\n')
+            tag.string = lines[0]
+            for l in lines[1:]:
+                tag_line = soup.new_tag('text:line-break')
+                tag.append(tag_line)
+                tag.append(l)
             tag.name = 'span'
             tag.attrs = {}
 

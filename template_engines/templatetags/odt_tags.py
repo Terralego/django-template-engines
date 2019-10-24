@@ -1,11 +1,11 @@
 import base64
+from random import randint
 
 from bs4 import BeautifulSoup
 from django import template
-
-from template_engines.odt_helpers import ODT_IMAGE
 from django.utils.safestring import mark_safe
 
+from template_engines.odt_helpers import ODT_IMAGE
 from .utils import resize
 
 register = template.Library()
@@ -33,15 +33,75 @@ def image_loader(image, i_width=None, i_height=None):
     return mark_safe(ODT_IMAGE.format(width, height, base64.b64encode(content).decode()))
 
 
-@register.filter()
-def from_html(value):
-    """ Convert HTML from rte fields to odt compatible format """
-    soup = BeautifulSoup(value, "html.parser")
-
+def parse_p(soup):
     # replace paragraphs
     paragraphs = soup.find_all("p")
-
     for p_tag in paragraphs:
-        p_tag.name = 'text:p'
+        p_tag.name = 'text:span'
+        line_break = soup.new_tag('text:line-break')
+        p_tag.insert_after(line_break)
+    return soup
+
+
+def parse_strong(soup):
+    # replace strong
+    strong_tags = soup.find_all("strong")
+    for s_tag in strong_tags:
+        s_tag.name = 'text:span'
+        s_tag.attrs['text:style-name'] = "BOLD"
+    return soup
+
+
+def parse_ul(soup):
+    # replace ul
+    ul_tags = soup.find_all("ul")
+    for ul_tag in ul_tags:
+        ul_tag.name = 'text:list'
+        ul_tag.attrs['xml:id'] = f'list{str(randint(100000000000000000, 900000000000000000))}'
+        ul_tag.attrs['text:style-name'] = "L1"
+        li_tags = ul_tag.findChildren(recursive=False)
+
+        for li in li_tags:
+            li.name = 'text:list-item'
+            # need to wrap li content with text:p tag
+            value = li.text
+            li.string = ""
+            content = soup.new_tag('text:p')
+            content.attrs['text:style-name'] = "Standard"
+            content.string = value
+            li.append(content)
+    return soup
+
+
+def parse_a(soup):
+    # replace a
+    a_tags = soup.find_all("a")
+    for a_tag in a_tags:
+        a_tag.name = 'text:a'
+        new_attrs = {
+            'xlink:type': 'simple',
+            'xlink:href': a_tag.attrs['href']
+        }
+        a_tag.attrs = new_attrs
+
+    return soup
+
+
+def parse_br(soup):
+    # replace br
+    br_tags = soup.find_all("br")
+    for br_tag in br_tags:
+        br_tag.name = 'text:line-break'
+    return soup
+
+
+@register.filter()
+def from_html(value, is_safe=True):
+    """ Convert HTML from rte fields to odt compatible format """
+    soup = BeautifulSoup(value, "html.parser")
+    soup = parse_p(soup)
+    soup = parse_strong(soup)
+    soup = parse_ul(soup)
+    soup = parse_a(soup)
 
     return mark_safe(str(soup))

@@ -44,4 +44,4 @@ def from_html(value):
     for p_tag in paragraphs:
         p_tag.name = 'text:p'
 
-    return mark_safe(soup.prettify())
+    return mark_safe(str(soup))

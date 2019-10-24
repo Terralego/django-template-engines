@@ -33,7 +33,7 @@ def image_loader(image, i_width=None, i_height=None):
     return mark_safe(ODT_IMAGE.format(width, height, base64.b64encode(content).decode()))
 
 
-@register.filter(is_safe=True)
+@register.filter()
 def from_html(value):
     """ Convert HTML from rte fields to odt compatible format """
     soup = BeautifulSoup(value, "html.parser")

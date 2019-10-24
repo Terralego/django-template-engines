@@ -1,5 +1,6 @@
 import base64
 
+from bs4 import BeautifulSoup
 from django import template
 
 from template_engines.odt_helpers import ODT_IMAGE
@@ -30,3 +31,17 @@ def image_loader(image, i_width=None, i_height=None):
     width, height = resize(content, width, height)
 
     return mark_safe(ODT_IMAGE.format(width, height, base64.b64encode(content).decode()))
+
+
+@register.filter(is_safe=True)
+def from_html(value):
+    """ Convert HTML from rte fields to odt compatible format """
+    soup = BeautifulSoup(value, "html.parser")
+
+    # replace paragraphs
+    paragraphs = soup.find_all("p")
+
+    for p_tag in paragraphs:
+        p_tag.name = 'text:p'
+
+    return soup.prettify()

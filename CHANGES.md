@@ -1,7 +1,10 @@
 ## CHANGELOG
 
-1.2.14.dev0     (XXXX-XX-XX)
+1.2.14          (2019-10-25)
 ----------------------------
+
+* Fix text-input replacement for odt
+* Add custom style for italic and underline text for html filter
 
 
 1.2.13      (2019-10-25)

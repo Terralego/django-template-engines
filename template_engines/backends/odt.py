@@ -1,5 +1,3 @@
-import re
-
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.template import Context
@@ -25,41 +23,102 @@ class OdtTemplate(AbstractTemplate):
         super().__init__(template)
         self.template_path = template_path
 
-    def clean(self, data):
-        # Add bold style
-        enriched_data = re.sub(
-            '</office:automatic-styles>',
-            (
-                '<style:style style:name="BOLD" style:family="text">'
-                + '<style:text-properties fo:font-weight="bold" style:font-weight-asian="bold"'
-                + ' style:font-weight-complex="bold"/></style:style></office:automatic-styles>'
-            ),
-            data,
+    def _get_automatic_style(self, soup, style_attrs=None, properties_attrs=None):
+        # set params immutables
+        if properties_attrs is None:
+            properties_attrs = {}
+        if style_attrs is None:
+            style_attrs = {}
+
+        # add bold style
+        style = soup.new_tag('style:style')
+        style.attrs = style_attrs
+
+        style_properties = soup.new_tag('style:text-properties')
+        style_properties.attrs = properties_attrs
+        style.append(style_properties)
+        return style
+
+    def get_automatic_style_bold(self, soup):
+        """ get style for italic """
+        style_attrs = {
+            "style:name": "BOLD",
+            "style:family": "text"
+        }
+        text_prop_attrs = {
+            "fo:font-weight": "bold",
+            "style:font-weight-asian": "bold",
+            "style:font-weight-complex": "bold",
+        }
+        return self._get_automatic_style(
+            soup, style_attrs, text_prop_attrs
         )
 
-        return enriched_data
+    def get_automatic_style_italic(self, soup):
+        """ get style for italic """
+        style_attrs = {
+            "style:name": "ITALIC",
+            "style:family": "text"
+        }
+        text_prop_attrs = {"fo:font-style": "italic", }
+        return self._get_automatic_style(
+            soup, style_attrs, text_prop_attrs
+        )
 
-    def replace_inputs(self, content):
+    def get_automatic_style_underline(self, soup):
+        """ get style for underline """
+        style_attrs = {
+            "style:name": "UNDERLINE",
+            "style:family": "text"
+        }
+        text_prop_attrs = {
+            "style:text-underline-style": "solid",
+            "style:text-underline-width": "auto",
+            "style:text-underline-color": "font-color"
+        }
+        return self._get_automatic_style(
+            soup, style_attrs, text_prop_attrs
+        )
+
+    def clean(self, soup):
+        """ Add styles for html filters """
+
+        # find automatic-styles tag
+        automatic_styles = soup.find('office:automatic-styles')
+
+        # add bold style
+        style_bold = self.get_automatic_style_bold(soup)
+        automatic_styles.append(style_bold)
+        # add italic style
+        style_bold = self.get_automatic_style_italic(soup)
+        automatic_styles.append(style_bold)
+        # add underline style
+        style_underline = self.get_automatic_style_underline(soup)
+        automatic_styles.append(style_underline)
+
+        return soup
+
+    def replace_inputs(self, soup):
         """ Replace all text:text-input to text-span """
 
-        soup = BeautifulSoup(content, features='xml')
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
             tag.name = 'span'
             tag.attrs = {}
             for child in tag.findChildren(recursive=False):
-                tag.insert_before(child)
-            tag.extract()
+                tag.parent.insert_before(child)
+            tag.parent.extract()
 
-        return str(soup)
+        return soup
 
     def render(self, context=None, request=None):
         context = make_context(context, request)
         rendered = self.template.render(Context(context))
-        rendered = self.clean(rendered)
-        rendered = self.replace_inputs(rendered)
-        odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', rendered)
+        soup = BeautifulSoup(rendered, features='xml')
+        soup = self.clean(soup)
+        soup = self.replace_inputs(soup)
+        odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', str(soup))
         return odt_content
 
 

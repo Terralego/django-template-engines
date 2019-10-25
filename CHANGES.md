@@ -1,7 +1,11 @@
 ## CHANGELOG
 
-1.2.13.dev0 (XXXX-XX-XX)
+1.2.13      (2019-10-25)
 ------------------------
+
+Features:
+
+* from_html tag filter for odt templates
 
 
 1.2.12      (2019-10-23)

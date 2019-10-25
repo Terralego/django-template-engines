@@ -111,10 +111,15 @@ class OdtTemplate(AbstractTemplate):
                 contents = f'{contents}{e}'
 
             # list should never be wrapped in p tag, it's not display in office apps, and will be loss after a saved
-            if tag.parent.name != 'p':
-                tag.parent.append(BeautifulSoup(contents, 'html.parser'))
+            lists = tag.find_all('text:list')
+            if lists:
+                if tag.parent.name != 'p':
+                    tag.parent.append(BeautifulSoup(contents, 'html.parser'))
+                else:
+                    tag.parent.insert_after(BeautifulSoup(contents, 'html.parser'))
             else:
-                tag.parent.insert_after(BeautifulSoup(contents, 'html.parser'))
+                tag.parent.append(BeautifulSoup(contents, 'html.parser'))
+
             tag.extract()
 
         return soup

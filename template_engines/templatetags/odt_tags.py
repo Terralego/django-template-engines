@@ -72,6 +72,7 @@ def parse_underline(soup):
 def parse_ul(soup):
     # replace ul
     ul_tags = soup.find_all("ul")
+
     for ul_tag in ul_tags:
         ul_tag.name = 'text:list'
         ul_tag.attrs['xml:id'] = f'list{str(randint(100000000000000000, 900000000000000000))}'
@@ -85,12 +86,16 @@ def parse_ul(soup):
             for e in li.contents:
                 # get tag content formatted (keep nested tags)
                 contents = f'{contents}{e}'
-
-            li.string = ""
+            li.string = ''
             content = soup.new_tag('text:p')
             content.attrs['text:style-name'] = "Standard"
             content.append(BeautifulSoup(contents, 'html.parser'))
             li.append(content)
+
+        ul_tag.extract()
+
+        soup.append(ul_tag)
+
     return soup
 
 

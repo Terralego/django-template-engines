@@ -104,11 +104,18 @@ class OdtTemplate(AbstractTemplate):
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
-            tag.name = 'span'
-            tag.attrs = {}
-            for child in tag.findChildren(recursive=False):
-                tag.parent.insert_before(child)
-            tag.parent.extract()
+            contents = ''
+
+            for e in tag.contents:
+                # get tag content formatted (keep nested tags)
+                contents = f'{contents}{e}'
+
+            # list should never be wrapped in p tag, it's not display in office apps, and will be loss after a saved
+            if tag.parent.name != 'p':
+                tag.parent.append(BeautifulSoup(contents, 'html.parser'))
+            else:
+                tag.parent.parent.append(BeautifulSoup(contents, 'html.parser'))
+            tag.extract()
 
         return soup
 

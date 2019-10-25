@@ -114,7 +114,7 @@ class OdtTemplate(AbstractTemplate):
             if tag.parent.name != 'p':
                 tag.parent.append(BeautifulSoup(contents, 'html.parser'))
             else:
-                tag.parent.parent.append(BeautifulSoup(contents, 'html.parser'))
+                tag.parent.insert_after(BeautifulSoup(contents, 'html.parser'))
             tag.extract()
 
         return soup

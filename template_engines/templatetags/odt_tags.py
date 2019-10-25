@@ -36,19 +36,36 @@ def image_loader(image, i_width=None, i_height=None):
 def parse_p(soup):
     # replace paragraphs
     paragraphs = soup.find_all("p")
+
     for p_tag in paragraphs:
-        p_tag.name = 'text:span'
-        line_break = soup.new_tag('text:line-break')
-        p_tag.insert_after(line_break)
+        p_tag.name = 'text:p'
+    return soup
+
+
+def parse_italic(soup):
+    """ Replace i tags with text:span with autmotatic style"""
+    italic_tags = soup.find_all("i")
+    for i_tag in italic_tags:
+        i_tag.name = 'text:span'
+        i_tag.attrs['text:style-name'] = "ITALIC"
     return soup
 
 
 def parse_strong(soup):
-    # replace strong
+    """ Replace strong tags with text:span with autmotatic style"""
     strong_tags = soup.find_all("strong")
     for s_tag in strong_tags:
         s_tag.name = 'text:span'
         s_tag.attrs['text:style-name'] = "BOLD"
+    return soup
+
+
+def parse_underline(soup):
+    """ Replace u tags with text:span with autmotatic style"""
+    u_tags = soup.find_all("u")
+    for u_tag in u_tags:
+        u_tag.name = 'text:span'
+        u_tag.attrs['text:style-name'] = "UNDERLINE"
     return soup
 
 
@@ -66,7 +83,7 @@ def parse_ul(soup):
             # need to wrap li content with text:p tag
             value = li.text
             li.string = ""
-            content = soup.new_tag('text:span')
+            content = soup.new_tag('text:p')
             content.attrs['text:style-name'] = "Standard"
             content.string = value
             li.append(content)
@@ -101,7 +118,9 @@ def from_html(value, is_safe=True):
     soup = BeautifulSoup(value, "html.parser")
     soup = parse_p(soup)
     soup = parse_strong(soup)
+    soup = parse_italic(soup)
+    soup = parse_underline(soup)
     soup = parse_ul(soup)
     soup = parse_a(soup)
-
+    soup = parse_br(soup)
     return mark_safe(str(soup))

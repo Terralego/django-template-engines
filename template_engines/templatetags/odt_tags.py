@@ -37,9 +37,9 @@ def parse_p(soup):
     # replace paragraphs
     paragraphs = soup.find_all("p")
     for p_tag in paragraphs:
-        p_tag.name = 'text:span'
-        line_break = soup.new_tag('text:line-break')
-        p_tag.insert_after(line_break)
+        p_tag.name = 'text:p'
+        #line_break = soup.new_tag('text:line-break')
+        #p_tag.insert_after(line_break)
     return soup
 
 
@@ -66,7 +66,7 @@ def parse_ul(soup):
             # need to wrap li content with text:p tag
             value = li.text
             li.string = ""
-            content = soup.new_tag('text:span')
+            content = soup.new_tag('text:p')
             content.attrs['text:style-name'] = "Standard"
             content.string = value
             li.append(content)
@@ -103,5 +103,5 @@ def from_html(value, is_safe=True):
     soup = parse_strong(soup)
     soup = parse_ul(soup)
     soup = parse_a(soup)
-
+    soup = parse_br(soup)
     return mark_safe(str(soup))

@@ -66,7 +66,7 @@ def parse_ul(soup):
             # need to wrap li content with text:p tag
             value = li.text
             li.string = ""
-            content = soup.new_tag('text:p')
+            content = soup.new_tag('text:span')
             content.attrs['text:style-name'] = "Standard"
             content.string = value
             li.append(content)

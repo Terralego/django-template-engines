@@ -5,7 +5,6 @@ from django.conf import settings
 from django.template import Context
 from django.template.context import make_context
 
-from . import ODT_PARAGRAPH_RE, TO_CHANGE_RE, ODT_CHANGES
 from .abstract import AbstractTemplate, ZipAbstractEngine
 from .utils import modify_libreoffice_doc
 
@@ -38,13 +37,7 @@ class OdtTemplate(AbstractTemplate):
             data,
         )
 
-        return ODT_PARAGRAPH_RE.sub(
-            lambda e: TO_CHANGE_RE.sub(
-                lambda x: ODT_CHANGES[x.group(0)].format(e.group(1)),
-                e.group(0),
-            ),
-            enriched_data,
-        )
+        return enriched_data
 
     def replace_inputs(self, content):
         """ Replace all text:text-input to text-span """
@@ -53,21 +46,13 @@ class OdtTemplate(AbstractTemplate):
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
-            tag.string = self.get_escaped_var_value(tag.text)
             tag.name = 'span'
             tag.attrs = {}
+            for child in tag.findChildren(recursive=False):
+                tag.insert_before(child)
+            tag.extract()
 
-        return soup.prettify()
-
-    def get_escaped_var_value(self, value):
-        """
-        Encodes XML reserved chars in value (eg. &, <, >) and also replaces
-        the control chars \n and \t control chars to their ODF counterparts.
-        """
-        return value.replace('\n', '<text:line-break/>')\
-                    .replace('\t', '<text:tab/>')\
-                    .replace('\x0b', '<text:space/>')\
-                    .replace('\x0c', '<text:space/>')
+        return str(soup)
 
     def render(self, context=None, request=None):
         context = make_context(context, request)

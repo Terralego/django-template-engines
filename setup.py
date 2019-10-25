@@ -35,7 +35,7 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     install_requires=[
-        'Django>=2.1.0',
+        'Django>=2.2.0',
         'Pillow>=5.4.1',
         'lxml',
         'beautifulsoup4',

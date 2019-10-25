@@ -81,11 +81,15 @@ def parse_ul(soup):
         for li in li_tags:
             li.name = 'text:list-item'
             # need to wrap li content with text:p tag
-            value = li.text
+            contents = ''
+            for e in li.contents:
+                # get tag content formatted (keep nested tags)
+                contents = f'{contents}{e}'
+
             li.string = ""
             content = soup.new_tag('text:p')
             content.attrs['text:style-name'] = "Standard"
-            content.string = value
+            content.append(BeautifulSoup(contents, 'html.parser'))
             li.append(content)
     return soup
 

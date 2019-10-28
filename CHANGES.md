@@ -1,8 +1,9 @@
-## CHANGELOG
+# CHANGELOG
 
-1.2.15.dev0     (XXXX-XX-XX)
+1.2.15          (2019-10-28)
 ----------------------------
 
+* Fix text-input replacement for list inside paragraphs
 
 
 1.2.14          (2019-10-25)

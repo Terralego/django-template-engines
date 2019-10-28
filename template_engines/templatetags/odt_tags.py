@@ -34,7 +34,7 @@ def image_loader(image, i_width=None, i_height=None):
 
 
 def parse_p(soup):
-    # replace paragraphs
+    """ Replace p tags with text:p """
     paragraphs = soup.find_all("p")
 
     for p_tag in paragraphs:
@@ -43,7 +43,7 @@ def parse_p(soup):
 
 
 def parse_italic(soup):
-    """ Replace i tags with text:span with autmotatic style"""
+    """ Replace i tags with text:span with autmotatic style """
     italic_tags = soup.find_all("i")
     for i_tag in italic_tags:
         i_tag.name = 'text:span'
@@ -52,7 +52,7 @@ def parse_italic(soup):
 
 
 def parse_strong(soup):
-    """ Replace strong tags with text:span with autmotatic style"""
+    """ Replace strong tags with text:span with autmotatic style """
     strong_tags = soup.find_all("strong")
     for s_tag in strong_tags:
         s_tag.name = 'text:span'
@@ -61,7 +61,7 @@ def parse_strong(soup):
 
 
 def parse_underline(soup):
-    """ Replace u tags with text:span with autmotatic style"""
+    """ Replace u tags with text:span with automatic style """
     u_tags = soup.find_all("u")
     for u_tag in u_tags:
         u_tag.name = 'text:span'
@@ -70,7 +70,7 @@ def parse_underline(soup):
 
 
 def parse_ul(soup):
-    # replace ul
+    """ Replace ul / li tags text:list and text:list-item """
     ul_tags = soup.find_all("ul")
 
     for ul_tag in ul_tags:
@@ -91,10 +91,6 @@ def parse_ul(soup):
             content.attrs['text:style-name'] = "Standard"
             content.append(BeautifulSoup(contents, 'html.parser'))
             li.append(content)
-
-        ul_tag.extract()
-
-        soup.append(ul_tag)
 
     return soup
 

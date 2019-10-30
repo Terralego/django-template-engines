@@ -1,5 +1,5 @@
 import base64
-from random import randint
+import random
 import re
 
 from bs4 import BeautifulSoup
@@ -89,7 +89,7 @@ def parse_ul(soup):
 
     for ul_tag in ul_tags:
         ul_tag.name = 'text:list'
-        ul_tag.attrs['xml:id'] = f'list{str(randint(100000000000000000, 900000000000000000))}'
+        ul_tag.attrs['xml:id'] = f'list{str(random.randint(100000000000000000, 900000000000000000))}'
         ul_tag.attrs['text:style-name'] = "L1"
         li_tags = ul_tag.findChildren(recursive=False)
 
@@ -104,7 +104,7 @@ def parse_ol(soup):
     ol_tags = soup.find_all("ol")
     for ol_tag in ol_tags:
         ol_tag.name = 'text:list'
-        ol_tag.attrs['xml:id'] = f'list{str(randint(100000000000000000, 900000000000000000))}'
+        ol_tag.attrs['xml:id'] = f'list{str(random.randint(100000000000000000, 900000000000000000))}'
         ol_tag.attrs['text:style-name'] = "L2"
         ol_tag.attrs['text:level'] = "1"
         li_tags = ol_tag.findChildren(recursive=False)

@@ -45,7 +45,7 @@ def parse_p(soup):
 
 def parse_italic(soup):
     """ Replace i tags with text:span with autmotatic style """
-    italic_tags = soup.find_all("i")
+    italic_tags = soup.find_all("em")
     for i_tag in italic_tags:
         i_tag.name = 'text:span'
         i_tag.attrs['text:style-name'] = "ITALIC"

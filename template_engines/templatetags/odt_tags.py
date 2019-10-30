@@ -70,6 +70,19 @@ def parse_underline(soup):
     return soup
 
 
+def fix_li(soup, tag):
+    tag.name = 'text:list-item'
+    contents = ''
+    for e in tag.contents:
+        # get tag content formatted (keep nested tags)
+        contents = f'{contents}{e}'
+    tag.string = ''
+    content = soup.new_tag('text:p')
+    content.attrs['text:style-name'] = "Standard"
+    content.append(BeautifulSoup(contents, 'html.parser'))
+    tag.append(content)
+
+
 def parse_ul(soup):
     """ Replace ul / li tags text:list and text:list-item """
     ul_tags = soup.find_all("ul")
@@ -81,17 +94,7 @@ def parse_ul(soup):
         li_tags = ul_tag.findChildren(recursive=False)
 
         for li in li_tags:
-            li.name = 'text:list-item'
-            # need to wrap li content with text:p tag
-            contents = ''
-            for e in li.contents:
-                # get tag content formatted (keep nested tags)
-                contents = f'{contents}{e}'
-            li.string = ''
-            content = soup.new_tag('text:p')
-            content.attrs['text:style-name'] = "Standard"
-            content.append(BeautifulSoup(contents, 'html.parser'))
-            li.append(content)
+            fix_li(soup, li)
 
     return soup
 
@@ -107,17 +110,7 @@ def parse_ol(soup):
         li_tags = ol_tag.findChildren(recursive=False)
 
         for li in li_tags:
-            li.name = 'text:list-item'
-            # need to wrap li content with text:p tag
-            contents = ''
-            for e in li.contents:
-                # get tag content formatted (keep nested tags)
-                contents = f'{contents}{e}'
-            li.string = ''
-            content = soup.new_tag('text:p')
-            content.attrs['text:style-name'] = "Standard"
-            content.append(BeautifulSoup(contents, 'html.parser'))
-            li.append(content)
+            fix_li(soup, li)
     return soup
 
 

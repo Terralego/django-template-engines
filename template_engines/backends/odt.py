@@ -10,6 +10,7 @@ from .utils import modify_libreoffice_doc
 class OdtTemplate(AbstractTemplate):
     """
     Handles odt templates.
+    Check http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1418974_253892949 for hints
     """
 
     def __init__(self, template, template_path=None):

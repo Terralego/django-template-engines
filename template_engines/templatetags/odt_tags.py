@@ -1,5 +1,6 @@
 import base64
 from random import randint
+import re
 
 from bs4 import BeautifulSoup
 from django import template
@@ -95,6 +96,31 @@ def parse_ul(soup):
     return soup
 
 
+def parse_ol(soup):
+    """ Replace ol / li tags text:list and text:list-item """
+    ol_tags = soup.find_all("ol")
+    for ol_tag in ol_tags:
+        ol_tag.name = 'text:list'
+        ol_tag.attrs['xml:id'] = f'list{str(randint(100000000000000000, 900000000000000000))}'
+        ol_tag.attrs['text:style-name'] = "L2"
+        ol_tag.attrs['text:level'] = "1"
+        li_tags = ol_tag.findChildren(recursive=False)
+
+        for li in li_tags:
+            li.name = 'text:list-item'
+            # need to wrap li content with text:p tag
+            contents = ''
+            for e in li.contents:
+                # get tag content formatted (keep nested tags)
+                contents = f'{contents}{e}'
+            li.string = ''
+            content = soup.new_tag('text:p')
+            content.attrs['text:style-name'] = "Standard"
+            content.append(BeautifulSoup(contents, 'html.parser'))
+            li.append(content)
+    return soup
+
+
 def parse_a(soup):
     # replace a
     a_tags = soup.find_all("a")
@@ -106,6 +132,19 @@ def parse_a(soup):
         }
         a_tag.attrs = new_attrs
 
+    return soup
+
+
+def parse_h(soup):
+    # replace h*
+    h_tags = soup.find_all(re.compile("^h[0-3]"))
+    for h_tag in h_tags:
+        num = h_tag.name[1]
+        h_tag.name = 'text:h'
+        new_attrs = {
+            'text:outline-level': num
+        }
+        h_tag.attrs = new_attrs
     return soup
 
 
@@ -126,6 +165,8 @@ def from_html(value, is_safe=True):
     soup = parse_italic(soup)
     soup = parse_underline(soup)
     soup = parse_ul(soup)
+    soup = parse_ol(soup)
     soup = parse_a(soup)
+    soup = parse_h(soup)
     soup = parse_br(soup)
     return mark_safe(str(soup))

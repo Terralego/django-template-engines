@@ -5,6 +5,7 @@ from django.template.context import make_context
 
 from .abstract import AbstractTemplate, ZipAbstractEngine
 from .utils import modify_libreoffice_doc
+from .utils_odt import add_image_in_odt_template
 
 
 class OdtTemplate(AbstractTemplate):
@@ -171,6 +172,8 @@ class OdtTemplate(AbstractTemplate):
         soup = self.clean(soup)
         soup = self.replace_inputs(soup)
         odt_content = modify_libreoffice_doc(self.template_path, 'content.xml', str(soup))
+        for _, image in context.get('images', {}).items():
+            odt_content = add_image_in_odt_template(odt_content, image)
         return odt_content
 
 

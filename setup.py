@@ -39,6 +39,7 @@ setup(
         'Pillow>=5.4.1',
         'lxml',
         'beautifulsoup4',
+        'requests'
     ],
     extras_require={
         'dev': [

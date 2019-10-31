@@ -6,7 +6,7 @@ from django.test import TestCase
 from template_engines.templatetags import odt_tags
 
 
-class TestTemplateTagFromHTML(TestCase):
+class FilterFromHTMLTestCase(TestCase):
     def test_br(self):
         soup = BeautifulSoup('<br>', "html.parser")
         odt_tags.parse_br(soup)

@@ -4,7 +4,8 @@ from django.template.context import make_context
 
 from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES
 from .abstract import AbstractTemplate, ZipAbstractEngine
-from .utils import modify_libreoffice_doc, add_image_in_docx_template
+from .utils import modify_libreoffice_doc
+from .utils_docx import add_image_in_docx_template
 
 
 class DocxTemplate(AbstractTemplate):

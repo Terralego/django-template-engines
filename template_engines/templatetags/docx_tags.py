@@ -98,6 +98,32 @@ class ImageLoaderNode(template.Node):
         return mark_safe(DOCX_IMAGE.format(self.name, width, height))
 
 
+def check_keys_docx_image_url_loader(key, value):
+    if not key:
+        raise template.TemplateSyntaxError(
+            "You have to put the name of the key in the template"
+        )
+    if key not in ['name', 'url', 'width', 'height', 'request', 'data']:
+        raise template.TemplateSyntaxError(
+            "%s : this argument doesn't exist" % key
+        )
+    if not value:
+        raise template.TemplateSyntaxError(
+            "%s's value not given" % key
+        )
+
+
+def check_name_url_docx_image_url_loader(tokens):
+    if not tokens.get('name'):
+        raise template.TemplateSyntaxError(
+            "A name has to be given"
+        )
+    if not tokens.get('url'):
+        raise template.TemplateSyntaxError(
+            "An url has to be given"
+        )
+
+
 @register.tag
 def docx_image_url_loader(parser, token):
     """
@@ -113,7 +139,7 @@ def docx_image_url_loader(parser, token):
     - request : Type of request, post or get. Get by default.
     """
 
-    #  token.split_contents()[0] is docx_image_loader_2
+    #  token.split_contents()[0] is docx_image_loader
     contents = token.split_contents()[1:]
     tokens = {}
     for var in contents:
@@ -121,25 +147,7 @@ def docx_image_url_loader(parser, token):
         match = c1.match(var)
         key = match.group(1)
         value = match.group(3)
-        if not key:
-            raise template.TemplateSyntaxError(
-                "You have to put the name of the key in the template"
-            )
-        if key not in ['name', 'url', 'width', 'height', 'request', 'data']:
-            raise template.TemplateSyntaxError(
-                "%s : this argument doesn't exist" % key
-            )
-        if not value:
-            raise template.TemplateSyntaxError(
-                "%s's value not given" % key
-            )
+        check_keys_docx_image_url_loader(key, value)
         tokens.update({key: value})
-    if not tokens.get('name'):
-        raise template.TemplateSyntaxError(
-            "A name has to be given"
-        )
-    if not tokens.get('url'):
-        raise template.TemplateSyntaxError(
-            "An url has to be given"
-        )
+    check_name_url_docx_image_url_loader(tokens)
     return ImageLoaderNode(**tokens)

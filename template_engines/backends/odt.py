@@ -10,6 +10,7 @@ from .utils import modify_libreoffice_doc
 class OdtTemplate(AbstractTemplate):
     """
     Handles odt templates.
+    Check http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1418974_253892949 for hints
     """
 
     def __init__(self, template, template_path=None):
@@ -80,6 +81,48 @@ class OdtTemplate(AbstractTemplate):
             soup, style_attrs, text_prop_attrs
         )
 
+    def get_automatic_style_orderedlist(self, soup):
+        """ get style for orderedlist """
+        style = soup.new_tag('text:list-style')
+        style_ol_attrs = {
+            "style:name": "L2",
+        }
+        style.attrs = style_ol_attrs
+        # Style of the number : 1.
+        style_number = soup.new_tag('text:list-level-style-number')
+        style_number.attrs = {"text:level": "1", "style:num-suffix": ".", "style:num-format": "1"}
+        style.append(style_number)
+        # Style of the alignment between each text
+        style_list_properties = soup.new_tag('style:list-level-properties')
+        style_list_properties.attrs = {"text:list-level-position-and-space-mode": "label-alignment"}
+        style_number.append(style_list_properties)
+        # Space between text and number : "listtab nothin or space possible
+        style_alignment = soup.new_tag('style:list-level-label-alignment')
+        style_alignment.attrs = {"text:label-followed-by": "space", "fo:text-indent": "0.435cm"}
+        style_list_properties.append(style_alignment)
+        return style
+
+    def get_automatic_style_unorderedlist(self, soup):
+        """ get style for unorderedlist """
+        style = soup.new_tag('text:list-style')
+        style_ul_attrs = {
+            "style:name": "L1",
+        }
+        style.attrs = style_ul_attrs
+        # Style of the number : 1.
+        style_number = soup.new_tag('text:list-level-style-bullet')
+        style_number.attrs = {"text:level": "1", "text:bullet-char": "•"}
+        style.append(style_number)
+        # Style of the alignment between each text
+        style_list_properties = soup.new_tag('style:list-level-properties')
+        style_list_properties.attrs = {"text:list-level-position-and-space-mode": "label-alignment"}
+        style_number.append(style_list_properties)
+        # Space between text and number : "listtab nothin or space possible
+        style_alignment = soup.new_tag('style:list-level-label-alignment')
+        style_alignment.attrs = {"text:label-followed-by": "space", "fo:text-indent": "0.635cm"}
+        style_list_properties.append(style_alignment)
+        return style
+
     def clean(self, soup):
         """ Add styles for html filters """
 
@@ -95,12 +138,17 @@ class OdtTemplate(AbstractTemplate):
         # add underline style
         style_underline = self.get_automatic_style_underline(soup)
         automatic_styles.append(style_underline)
+        # add orderedline style
+        style_orderedlist = self.get_automatic_style_orderedlist(soup)
+        automatic_styles.append(style_orderedlist)
+        # add unorderedline style
+        style_unorderedlist = self.get_automatic_style_unorderedlist(soup)
+        automatic_styles.append(style_unorderedlist)
 
         return soup
 
     def replace_inputs(self, soup):
         """ Replace all text:text-input to text-span """
-
         input_list = soup.find_all("text:text-input")
 
         for tag in input_list:
@@ -109,19 +157,8 @@ class OdtTemplate(AbstractTemplate):
             for e in tag.contents:
                 # get tag content formatted (keep nested tags)
                 contents = f'{contents}{e}'
-
-            # list should never be wrapped in p tag, it's not display in office apps, and will be loss after a saved
-            lists = tag.find_all('text:list')
-            if lists:
-                if tag.parent.name != 'p':
-                    tag.parent.append(BeautifulSoup(contents, 'html.parser'))
-                else:
-                    tag.parent.insert_after(BeautifulSoup(contents, 'html.parser'))
-            else:
-                tag.parent.append(BeautifulSoup(contents, 'html.parser'))
-
+            tag.find_parent('p').insert_after(BeautifulSoup(contents, 'html.parser'))
             tag.extract()
-
         return soup
 
     def render(self, context=None, request=None):

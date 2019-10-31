@@ -1,5 +1,6 @@
 import base64
-from random import randint
+import random
+import re
 
 from bs4 import BeautifulSoup
 from django import template
@@ -44,7 +45,7 @@ def parse_p(soup):
 
 def parse_italic(soup):
     """ Replace i tags with text:span with autmotatic style """
-    italic_tags = soup.find_all("i")
+    italic_tags = soup.find_all("em")
     for i_tag in italic_tags:
         i_tag.name = 'text:span'
         i_tag.attrs['text:style-name'] = "ITALIC"
@@ -69,29 +70,47 @@ def parse_underline(soup):
     return soup
 
 
+def fix_li(soup, tag):
+    tag.name = 'text:list-item'
+    contents = ''
+    for e in tag.contents:
+        # get tag content formatted (keep nested tags)
+        contents = f'{contents}{e}'
+    tag.string = ''
+    content = soup.new_tag('text:p')
+    content.attrs['text:style-name'] = "Standard"
+    content.append(BeautifulSoup(contents, 'html.parser'))
+    tag.append(content)
+
+
 def parse_ul(soup):
     """ Replace ul / li tags text:list and text:list-item """
     ul_tags = soup.find_all("ul")
 
     for ul_tag in ul_tags:
         ul_tag.name = 'text:list'
-        ul_tag.attrs['xml:id'] = f'list{str(randint(100000000000000000, 900000000000000000))}'
+        ul_tag.attrs['xml:id'] = f'list{str(random.randint(100000000000000000, 900000000000000000))}'
         ul_tag.attrs['text:style-name'] = "L1"
         li_tags = ul_tag.findChildren(recursive=False)
 
         for li in li_tags:
-            li.name = 'text:list-item'
-            # need to wrap li content with text:p tag
-            contents = ''
-            for e in li.contents:
-                # get tag content formatted (keep nested tags)
-                contents = f'{contents}{e}'
-            li.string = ''
-            content = soup.new_tag('text:p')
-            content.attrs['text:style-name'] = "Standard"
-            content.append(BeautifulSoup(contents, 'html.parser'))
-            li.append(content)
+            fix_li(soup, li)
 
+    return soup
+
+
+def parse_ol(soup):
+    """ Replace ol / li tags text:list and text:list-item """
+    ol_tags = soup.find_all("ol")
+    for ol_tag in ol_tags:
+        ol_tag.name = 'text:list'
+        ol_tag.attrs['xml:id'] = f'list{str(random.randint(100000000000000000, 900000000000000000))}'
+        ol_tag.attrs['text:style-name'] = "L2"
+        ol_tag.attrs['text:level'] = "1"
+        li_tags = ol_tag.findChildren(recursive=False)
+
+        for li in li_tags:
+            fix_li(soup, li)
     return soup
 
 
@@ -106,6 +125,19 @@ def parse_a(soup):
         }
         a_tag.attrs = new_attrs
 
+    return soup
+
+
+def parse_h(soup):
+    # replace h*
+    h_tags = soup.find_all(re.compile("^h[0-3]"))
+    for h_tag in h_tags:
+        num = h_tag.name[1]
+        h_tag.name = 'text:h'
+        new_attrs = {
+            'text:outline-level': num
+        }
+        h_tag.attrs = new_attrs
     return soup
 
 
@@ -126,6 +158,8 @@ def from_html(value, is_safe=True):
     soup = parse_italic(soup)
     soup = parse_underline(soup)
     soup = parse_ul(soup)
+    soup = parse_ol(soup)
     soup = parse_a(soup)
+    soup = parse_h(soup)
     soup = parse_br(soup)
     return mark_safe(str(soup))

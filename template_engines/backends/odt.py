@@ -153,11 +153,14 @@ class OdtTemplate(AbstractTemplate):
 
         for tag in input_list:
             contents = ''
-
             for e in tag.contents:
                 # get tag content formatted (keep nested tags)
                 contents = f'{contents}{e}'
-            tag.find_parent('p').insert_after(BeautifulSoup(contents, 'html.parser'))
+
+            if BeautifulSoup(contents, 'html.parser').findChildren("text:p", recursive=False):
+                tag.find_parent('text:p').insert_after(BeautifulSoup(contents, 'html.parser'))
+            else:
+                tag.find_parent('text:p').append(contents)
             tag.extract()
         return soup
 

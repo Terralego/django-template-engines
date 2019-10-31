@@ -93,7 +93,7 @@ class TestDocxTemplateView(TestCase):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.docx')
         response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 59982)
+        self.assertEqual(len(response.content), 41722)
 
     @mock.patch('requests.get')
     def test_view_template_tag_get_url(self, mocked):
@@ -105,7 +105,7 @@ class TestDocxTemplateView(TestCase):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_get_url.docx')
         response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 23002)
+        self.assertEqual(len(response.content), 23081)
 
     @mock.patch('requests.post')
     def test_view_template_tag_post_url(self, mocked):
@@ -117,7 +117,7 @@ class TestDocxTemplateView(TestCase):
         DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'docx', 'template_loader_post_url.docx')
         response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 23099)
+        self.assertEqual(len(response.content), 23167)
 
     @mock.patch('requests.post')
     def test_view_template_tag_post_url_not_accessible(self, mocked):
@@ -144,4 +144,4 @@ class TestDocxTemplateView(TestCase):
         with open('tt.docx', 'wb') as f:
             f.write(response.content)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.content), 22989)
+        self.assertEqual(len(response.content), 23086)

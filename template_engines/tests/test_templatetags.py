@@ -1,7 +1,6 @@
 from django.template import Context, Template, TemplateSyntaxError
 from django.test import TestCase
 
-from template_engines.templatetags.docx_image_loader import docx_image_url_loader
 from template_engines.templatetags.utils import size_parser, resize
 
 from template_engines.tests.settings import IMAGE_PATH
@@ -58,7 +57,7 @@ class TestsDocxURLImageLoader(TestCase):
             TemplateSyntaxError,
             'A name has to be given',
             self.render_template,
-            '{% load docx_image_loader %}'
+            '{% load docx_tags %}'
             '{% docx_image_url_loader %}'
         )
 
@@ -67,7 +66,7 @@ class TestsDocxURLImageLoader(TestCase):
             TemplateSyntaxError,
             'An url has to be given',
             self.render_template,
-            '{% load docx_image_loader %}'
+            '{% load docx_tags %}'
             '{% docx_image_url_loader name="test" %}'
         )
 
@@ -76,7 +75,7 @@ class TestsDocxURLImageLoader(TestCase):
             TemplateSyntaxError,
             "name's value not given",
             self.render_template,
-            '{% load docx_image_loader %}'
+            '{% load docx_tags %}'
             '{% docx_image_url_loader name %}'
         )
 
@@ -85,7 +84,7 @@ class TestsDocxURLImageLoader(TestCase):
             TemplateSyntaxError,
             "You have to put the name of the key in the template",
             self.render_template,
-            '{% load docx_image_loader %}'
+            '{% load docx_tags %}'
             '{% docx_image_url_loader "no_key" %}'
         )
 
@@ -94,7 +93,7 @@ class TestsDocxURLImageLoader(TestCase):
             TemplateSyntaxError,
             "wrong_key : this argument doesn't exist",
             self.render_template,
-            '{% load docx_image_loader %}'
+            '{% load docx_tags %}'
             '{% docx_image_url_loader wrong_key="u" %}'
         )
 
@@ -103,6 +102,6 @@ class TestsDocxURLImageLoader(TestCase):
             TemplateSyntaxError,
             "Type of request specified not possible",
             self.render_template,
-            '{% load docx_image_loader %}'
+            '{% load docx_tags %}'
             '{% docx_image_url_loader name="coucou" url="http://wrong_type" request="wrong_type" %}'
         )

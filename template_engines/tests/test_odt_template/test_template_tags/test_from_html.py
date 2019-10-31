@@ -1,65 +1,12 @@
-import os
 from bs4 import BeautifulSoup
 from unittest import mock
 
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 
-from template_engines.tests.fake_app.models import Bidon
-from template_engines.tests.fake_app.views import OdtTemplateView
 from template_engines.templatetags import odt_tags
 
-from .settings import TEMPLATES_PATH
 
-
-class TestOdtTemplateView(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
-        self.object = Bidon.objects.create(name='Michel')
-        self.request = self.factory.get('')
-
-    def test_view_works(self):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.odt')
-        response = OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.content)
-
-    def test_view_works_with_new_line(self):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.odt')
-        obj = Bidon.objects.create(name='Michel\nPierre')
-        response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.content)
-
-    def test_view_works_with_bold_text(self):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.odt')
-        obj = Bidon.objects.create(name='Michel <b>Pierre</b>')
-        response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.content)
-
-    def test_view_empty_image(self):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'empty_image.odt')
-        with self.assertRaises(IOError):
-            OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-
-    def test_view_bad_image(self):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_image.odt')
-        with self.assertRaises(AttributeError):
-            OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-
-    def test_bad_image_content(self):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_content_image.odt')
-        with self.assertRaises(TypeError):
-            OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-
-    def test_view_resize(self):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.odt')
-        response = OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.content)
-
-
-class TestOdtTemplateViewWithHTML(TestCase):
+class TestTemplateTagFromHTML(TestCase):
     def test_br(self):
         soup = BeautifulSoup('<br>', "html.parser")
         odt_tags.parse_br(soup)

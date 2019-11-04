@@ -190,5 +190,6 @@ class OdtEngine(ZipAbstractEngine):
     zip_root_file = 'content.xml'
 
     def __init__(self, params):
-        params['OPTIONS'] = {'builtins': ['template_engines.templatetags.odt_tags']}
+        params['OPTIONS'].setdefault('builtins', [])
+        params['OPTIONS']['builtins'].extend(['template_engines.templatetags.odt_tags'])
         super().__init__(params)

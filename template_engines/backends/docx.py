@@ -62,5 +62,6 @@ class DocxEngine(ZipAbstractEngine):
     zip_root_file = 'word/document.xml'
 
     def __init__(self, params):
-        params['OPTIONS'] = {'builtins': ['template_engines.templatetags.docx_tags']}
+        params['OPTIONS'].setdefault('builtins', [])
+        params['OPTIONS']['builtins'].extend(['template_engines.templatetags.docx_tags'])
         super().__init__(params)

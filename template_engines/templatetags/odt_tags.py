@@ -1,4 +1,4 @@
-import base64
+import secrets
 import random
 import re
 import requests
@@ -145,11 +145,10 @@ def from_html(value, is_safe=True):
 
 
 class ImageLoaderNodeURL(template.Node):
-    def __init__(self, name, url, data=None, width=None, height=None, request="GET"):
+    def __init__(self, url, data=None, width=None, height=None, request="GET"):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
-        self.name = name
         self.url = url
         self.data = data
         self.width = width
@@ -157,6 +156,7 @@ class ImageLoaderNodeURL(template.Node):
         self.request = request
 
     def render(self, context):
+        name = secrets.token_hex(15)
         if self.request.lower() == 'get':
             response = requests.get(self.url, data=self.data)
         elif self.request.lower() == 'post':
@@ -170,8 +170,11 @@ class ImageLoaderNodeURL(template.Node):
                 "The picture is not accessible (Error: %s)" % response.status_code
             )
         width, height = resize(response.content, self.width, self.height, odt=True)
-        context['images'] = {self.name: {'name': self.name, 'content': response.content}}
-        return mark_safe(ODT_IMAGE.format(self.name, width, height))
+        if context.get('images'):
+            context['images'].update({name: {'name': name, 'content': response.content}})
+        else:
+            context['images'] = {name: {'name': name, 'content': response.content}}
+        return mark_safe(ODT_IMAGE.format(name, width, height))
 
 
 def check_keys_odt_image_url_loader(key, value):
@@ -179,7 +182,7 @@ def check_keys_odt_image_url_loader(key, value):
         raise template.TemplateSyntaxError(
             "You have to put the name of the key in the template"
         )
-    if key not in ['name', 'url', 'width', 'height', 'request', 'data']:
+    if key not in ['url', 'width', 'height', 'request', 'data']:
         raise template.TemplateSyntaxError(
             "%s : this argument doesn't exist" % key
         )
@@ -190,10 +193,6 @@ def check_keys_odt_image_url_loader(key, value):
 
 
 def check_name_url_odt_image_url_loader(tokens):
-    if not tokens.get('name'):
-        raise template.TemplateSyntaxError(
-            "A name has to be given"
-        )
     if not tokens.get('url'):
         raise template.TemplateSyntaxError(
             "An url has to be given"
@@ -241,13 +240,14 @@ class ImageLoaderNode(template.Node):
 
     def render(self, context):
         self.image = context[self.image_name]
-        self.image['name'] = self.image_name
+        name = secrets.token_hex(15)
+        self.image['name'] = name
         width, height = resize(self.image.get('content'), self.width, self.height, odt=True)
         if context.get('images'):
-            context['images'].update({self.image_name: self.image})
+            context['images'].update({name: self.image})
         else:
-            context['images'] = {self.image_name: self.image}
-        return mark_safe(ODT_IMAGE.format(self.image_name, width, height))
+            context['images'] = {name: self.image}
+        return mark_safe(ODT_IMAGE.format(name, width, height))
 
 
 def check_keys_odt_image_loader(key, value):

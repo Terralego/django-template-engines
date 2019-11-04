@@ -1,7 +1,9 @@
 # CHANGELOG
 
-1.2.16.dev0     (XXXX-XX-XX)
+1.2.16          (2019-11-04)
 ----------------------------
+
+* Allow heading, and text-numbered list in from_html odt tag
 
 
 1.2.15          (2019-10-28)

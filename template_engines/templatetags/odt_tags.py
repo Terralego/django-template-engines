@@ -13,28 +13,6 @@ from .utils import resize
 register = template.Library()
 
 
-@register.simple_tag
-def image_loader(image, i_width=None, i_height=None):
-    """
-    Replace a tag by an image you specified.
-    You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
-    whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
-    automatically resize your image.
-    """
-    if isinstance(image, str):
-        if image:
-            image = {'content': base64.b64decode(image.split(';base64,')[1])}
-        else:
-            return
-    width = i_width or image.get('width')
-    height = i_height or image.get('height')
-    content = image.get('content')
-
-    width, height = resize(content, width, height)
-
-    return mark_safe(ODT_IMAGE.format(width, height, base64.b64encode(content).decode()))
-
-
 def parse_p(soup):
     """ Replace p tags with text:p """
     paragraphs = soup.find_all("p")
@@ -166,7 +144,7 @@ def from_html(value, is_safe=True):
     return mark_safe(str(soup))
 
 
-class ImageLoaderNode(template.Node):
+class ImageLoaderNodeURL(template.Node):
     def __init__(self, name, url, data=None, width=None, height=None, request="GET"):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
@@ -191,7 +169,7 @@ class ImageLoaderNode(template.Node):
             raise template.TemplateSyntaxError(
                 "The picture is not accessible (Error: %s)" % response.status_code
             )
-        width, height = resize(response.content, self.width, self.height, odt=False)
+        width, height = resize(response.content, self.width, self.height, odt=True)
         context['images'] = {self.name: {'name': self.name, 'content': response.content}}
         return mark_safe(ODT_IMAGE.format(self.name, width, height))
 
@@ -249,4 +227,69 @@ def odt_image_url_loader(parser, token):
         check_keys_odt_image_url_loader(key, value)
         tokens.update({key: value})
     check_name_url_odt_image_url_loader(tokens)
+    return ImageLoaderNodeURL(**tokens)
+
+
+class ImageLoaderNode(template.Node):
+    def __init__(self, object, width=None, height=None):
+        # saves the passed obj parameter for later use
+        # this is a template.Variable, because that way it can be resolved
+        # against the current context in the render method
+        self.image_name = object
+        self.width = width
+        self.height = height
+
+    def render(self, context):
+        self.image = context[self.image_name]
+        self.image['name'] = self.image_name
+        width, height = resize(self.image.get('content'), self.width, self.height, odt=True)
+        if context.get('images'):
+            context['images'].update({self.image_name: self.image})
+        else:
+            context['images'] = {self.image_name: self.image}
+        return mark_safe(ODT_IMAGE.format(self.image_name, width, height))
+
+
+def check_keys_odt_image_loader(key, value):
+    if not key:
+        raise template.TemplateSyntaxError(
+            "You have to put the name of the key in the template"
+        )
+    if key not in ['object', 'width', 'height']:
+        raise template.TemplateSyntaxError(
+            "%s : this argument doesn't exist" % key
+        )
+    if not value:
+        raise template.TemplateSyntaxError(
+            "%s's value not given" % key
+        )
+
+
+def check_object_odt_image_loader(tokens):
+    if not tokens.get('object'):
+        raise template.TemplateSyntaxError(
+            "An object has to be given"
+        )
+
+
+@register.tag
+def image_loader(parser, token):
+    """
+    Replace a tag by an image you specified.
+    You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
+    whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
+    automatically resize your image.
+    """
+    #  token.split_contents()[0] is odt_image_loader
+    contents = token.split_contents()[1:]
+    tokens = {}
+    for var in contents:
+        var = var.replace('&quot;', '"')
+        c1 = re.compile(r'([^"=]+)?([=]?"([^"]+)"|$)')
+        match = c1.match(var)
+        key = match.group(1)
+        value = match.group(3)
+        check_keys_odt_image_loader(key, value)
+        tokens.update({key: value})
+    check_object_odt_image_loader(tokens)
     return ImageLoaderNode(**tokens)

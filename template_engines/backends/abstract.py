@@ -3,8 +3,8 @@ import zipfile
 from os.path import join
 
 from django.core.files.storage import default_storage
-from django.template import Template
 from django.template.backends.base import BaseEngine
+from django.template.engine import Engine
 from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
 
@@ -53,8 +53,9 @@ class ZipAbstractEngine(BaseEngine):
 
     def __init__(self, params):
         params = params.copy()
-        self.options = params.pop('OPTIONS')
+        options = params.pop('OPTIONS')
         super().__init__(params)
+        self.engine = Engine(**options)
 
     def get_template_content(self, filename):
         """
@@ -76,7 +77,7 @@ class ZipAbstractEngine(BaseEngine):
         return t_dirs
 
     def from_string(self, template_code, **kwargs):
-        return self.template_class(Template(template_code), **kwargs)
+        return self.template_class(self.engine.from_string(template_code), **kwargs)
 
     def get_template_path(self, filename):
         """

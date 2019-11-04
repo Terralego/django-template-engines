@@ -200,7 +200,7 @@ def check_name_url_odt_image_url_loader(tokens):
 
 
 @register.tag
-def odt_image_url_loader(parser, token):
+def image_url_loader(parser, token):
     """
     Replace a tag by an image from the url you specified.
     The necessary keys are : name and url

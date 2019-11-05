@@ -3,6 +3,8 @@
 1.2.17.dev0     (XXXX-XX-XX)
 ----------------------------
 
+* Load odt_tags and docx_tags automatically, remove loads to make it works
+
 
 1.2.16          (2019-11-04)
 ----------------------------

@@ -60,3 +60,8 @@ class DocxEngine(ZipAbstractEngine):
     app_dirname = getattr(settings, 'DOCX_ENGINE_APP_DIRNAME', 'templates')
     template_class = DocxTemplate
     zip_root_file = 'word/document.xml'
+
+    def __init__(self, params):
+        params['OPTIONS'].setdefault('builtins', [])
+        params['OPTIONS']['builtins'].extend(['template_engines.templatetags.docx_tags'])
+        super().__init__(params)

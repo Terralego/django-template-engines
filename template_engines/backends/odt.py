@@ -188,3 +188,8 @@ class OdtEngine(ZipAbstractEngine):
     app_dirname = getattr(settings, 'ODT_ENGINE_APP_DIRNAME', 'templates')
     template_class = OdtTemplate
     zip_root_file = 'content.xml'
+
+    def __init__(self, params):
+        params['OPTIONS'].setdefault('builtins', [])
+        params['OPTIONS']['builtins'].extend(['template_engines.templatetags.odt_tags'])
+        super().__init__(params)

@@ -1,9 +1,13 @@
 from bs4 import BeautifulSoup
 from unittest import mock
 
+from django.template import Context, Template
+from django.template.exceptions import TemplateSyntaxError
 from django.test import TestCase
 
+from template_engines.backends.odt import OdtTemplate
 from template_engines.templatetags import odt_tags
+from template_engines.tests.settings import IMAGE_PATH
 
 
 class FilterFromHTMLTestCase(TestCase):
@@ -64,3 +68,73 @@ class FilterFromHTMLTestCase(TestCase):
         html = '<p><br></p>'
         soup = odt_tags.from_html(html)
         self.assertEqual('<text:p><text:line-break/></text:p>', str(soup))
+
+
+@mock.patch('secrets.token_hex', return_value='test')
+class ImageUrlLoaderTestCase(TestCase):
+    @mock.patch('requests.get')
+    def test_image_url_loader_object(self, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({'url': "https://test.com"})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader url %}')
+
+        rendered_template = template_to_render.render(context)
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
+
+    @mock.patch('requests.get')
+    def test_image_url_loader_url(self, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
+
+        rendered_template = template_to_render.render(context)
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
+
+    @mock.patch('requests.get')
+    def test_image_url_loader_fail(self, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with self.assertRaises(TemplateSyntaxError) as cm:
+            Template('{% load odt_tags %}{% image_url_loader url="https://test.com" %}')
+        self.assertEqual('Usage: {% image_url_loader [url] width="5000" '
+                         'height="5000" request="GET" data="{"data": "example"}"%}', str(cm.exception))
+
+    @mock.patch('requests.get')
+    def test_image_url_loader_picture_not_accessible(self, mocked_get, token):
+        mocked_get.return_value.status_code = 404
+        mocked_get.return_value.content = b''
+        context = Context({})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
+        with self.assertRaises(TemplateSyntaxError) as cm:
+            template_to_render.render(context)
+        self.assertEqual('The picture is not accessible (Error: 404)', str(cm.exception))
+
+    @mock.patch('requests.get')
+    def test_image_url_loader_picture_wrong_request(self, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="WRONG" %}')
+        with self.assertRaises(TemplateSyntaxError) as cm:
+            template_to_render.render(context)
+        self.assertEqual('Type of request specified not allowed', str(cm.exception))
+
+    @mock.patch('requests.post')
+    def test_image_url_loader_picture_post_request(self, mocked_post, token):
+        mocked_post.return_value.status_code = 200
+        mocked_post.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="POST" %}')
+        rendered_template = template_to_render.render(context)
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)

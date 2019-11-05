@@ -5,10 +5,11 @@ import requests
 
 from bs4 import BeautifulSoup
 from django import template
+from django.template.base import FilterExpression, kwarg_re
 from django.utils.safestring import mark_safe
 
 from template_engines.backends.utils_odt import ODT_IMAGE
-from .utils import resize
+from .utils import parse_tag, resize
 
 register = template.Library()
 
@@ -156,6 +157,7 @@ class ImageLoaderNodeURL(template.Node):
         self.request = request
 
     def render(self, context):
+        self.url = self.url.resolve(context)
         name = secrets.token_hex(15)
         if self.request.lower() == 'get':
             response = requests.get(self.url, data=self.data)
@@ -169,6 +171,10 @@ class ImageLoaderNodeURL(template.Node):
             raise template.TemplateSyntaxError(
                 "The picture is not accessible (Error: %s)" % response.status_code
             )
+        if self.width:
+            self.width = self.width.resolve(context)
+        if self.height:
+            self.height = self.height.resolve(context)
         width, height = resize(response.content, self.width, self.height, odt=True)
         if context.get('images'):
             context['images'].update({name: {'name': name, 'content': response.content}})
@@ -213,20 +219,12 @@ def image_url_loader(parser, token):
     - heigth : Heigth of the picture rendered
     - request : Type of request, post or get. Get by default.
     """
-
-    #  token.split_contents()[0] is odt_image_loader
-    contents = token.split_contents()[1:]
-    tokens = {}
-    for var in contents:
-        var = var.replace('&quot;', '"')
-        c1 = re.compile(r'([^"=]+)?([=]?"([^"]+)"|$)')
-        match = c1.match(var)
-        key = match.group(1)
-        value = match.group(3)
-        check_keys_odt_image_url_loader(key, value)
-        tokens.update({key: value})
-    check_name_url_odt_image_url_loader(tokens)
-    return ImageLoaderNodeURL(**tokens)
+    tag_name, args, kwargs = parse_tag(token, parser)
+    usage = '{{% {tag_name} [url] width="5000" height="5000" ' \
+            'request="GET" data="{{"data": "example"}}"%}}'.format(tag_name=tag_name)
+    if len(args) > 1 or not all(key in ['width', 'height', 'request', 'data'] for key in kwargs.keys()):
+        raise template.TemplateSyntaxError("Usage: %s" % usage)
+    return ImageLoaderNodeURL(*args, **kwargs)
 
 
 class ImageLoaderNode(template.Node):
@@ -234,42 +232,34 @@ class ImageLoaderNode(template.Node):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
-        self.image_name = object
+        self.object = object
         self.width = width
         self.height = height
 
     def render(self, context):
-        self.image = context[self.image_name]
+        # Evaluate the arguments in the current context
+        image = self.object.resolve(context)
+        if image is None:
+            raise template.TemplateSyntaxError(
+                "{object} does not exist".format(object=self.object)
+            )
+        elif not image or not image.get('content') or not isinstance(image.get('content'), bytes):
+            raise template.TemplateSyntaxError(
+                "{object} is not a valid picture".format(object=self.object)
+            )
         name = secrets.token_hex(15)
-        self.image['name'] = name
-        width, height = resize(self.image.get('content'), self.width, self.height, odt=True)
+        image['name'] = name
+        if self.width:
+            self.width = self.width.resolve(context)
+        if self.height:
+            self.height = self.height.resolve(context)
+        width, height = resize(image.get('content'), self.width, self.height, odt=True)
         if context.get('images'):
-            context['images'].update({name: self.image})
+            context['images'].update({name: image})
         else:
-            context['images'] = {name: self.image}
+            context['images'] = {name: image}
+
         return mark_safe(ODT_IMAGE.format(name, width, height))
-
-
-def check_keys_odt_image_loader(key, value):
-    if not key:
-        raise template.TemplateSyntaxError(
-            "You have to put the name of the key in the template"
-        )
-    if key not in ['object', 'width', 'height']:
-        raise template.TemplateSyntaxError(
-            "%s : this argument doesn't exist" % key
-        )
-    if not value:
-        raise template.TemplateSyntaxError(
-            "%s's value not given" % key
-        )
-
-
-def check_object_odt_image_loader(tokens):
-    if not tokens.get('object'):
-        raise template.TemplateSyntaxError(
-            "An object has to be given"
-        )
 
 
 @register.tag
@@ -280,16 +270,8 @@ def image_loader(parser, token):
     whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
     automatically resize your image.
     """
-    #  token.split_contents()[0] is odt_image_loader
-    contents = token.split_contents()[1:]
-    tokens = {}
-    for var in contents:
-        var = var.replace('&quot;', '"')
-        c1 = re.compile(r'([^"=]+)?([=]?"([^"]+)"|$)')
-        match = c1.match(var)
-        key = match.group(1)
-        value = match.group(3)
-        check_keys_odt_image_loader(key, value)
-        tokens.update({key: value})
-    check_object_odt_image_loader(tokens)
-    return ImageLoaderNode(**tokens)
+    tag_name, args, kwargs = parse_tag(token, parser)
+    usage = '{{% {tag_name} [image] width="5000" height="5000" %}}'.format(tag_name=tag_name)
+    if len(args) > 1 or set(kwargs.keys()) != {'width', 'height'} and len(kwargs.keys()) != 0:
+        raise template.TemplateSyntaxError("Usage: %s" % usage)
+    return ImageLoaderNode(*args, **kwargs)

@@ -1,5 +1,6 @@
 import os
 
+from django.template.exceptions import TemplateSyntaxError
 from django.test import TestCase, RequestFactory
 
 from template_engines.tests.fake_app.models import Bidon
@@ -36,17 +37,17 @@ class TestOdtTemplateView(TestCase):
 
     def test_view_empty_image(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'empty_image.odt')
-        with self.assertRaises(IOError):
+        with self.assertRaises(TemplateSyntaxError):
             OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
 
     def test_view_bad_image(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_image.odt')
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(TemplateSyntaxError):
             OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
 
     def test_bad_image_content(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_content_image.odt')
-        with self.assertRaises(TypeError):
+        with self.assertRaises(TemplateSyntaxError):
             OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
 
     def test_view_resize(self):

@@ -158,6 +158,8 @@ class ImageLoaderNodeURL(template.Node):
 
     def render(self, context):
         self.url = self.url.resolve(context)
+        if self.request != "GET":
+            self.request = self.request.resolve(context)
         name = secrets.token_hex(15)
         if self.request.lower() == 'get':
             response = requests.get(self.url, data=self.data)
@@ -181,28 +183,6 @@ class ImageLoaderNodeURL(template.Node):
         else:
             context['images'] = {name: {'name': name, 'content': response.content}}
         return mark_safe(ODT_IMAGE.format(name, width, height))
-
-
-def check_keys_odt_image_url_loader(key, value):
-    if not key:
-        raise template.TemplateSyntaxError(
-            "You have to put the name of the key in the template"
-        )
-    if key not in ['url', 'width', 'height', 'request', 'data']:
-        raise template.TemplateSyntaxError(
-            "%s : this argument doesn't exist" % key
-        )
-    if not value:
-        raise template.TemplateSyntaxError(
-            "%s's value not given" % key
-        )
-
-
-def check_name_url_odt_image_url_loader(tokens):
-    if not tokens.get('url'):
-        raise template.TemplateSyntaxError(
-            "An url has to be given"
-        )
 
 
 @register.tag

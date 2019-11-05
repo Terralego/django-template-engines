@@ -163,7 +163,7 @@ class ImageLoaderNodeURL(template.Node):
             response = requests.post(self.url, data=self.data)
         else:
             raise template.TemplateSyntaxError(
-                "Type of request specified not possible"
+                "Type of request specified not allowed"
             )
         if response.status_code != 200:
             raise template.TemplateSyntaxError(

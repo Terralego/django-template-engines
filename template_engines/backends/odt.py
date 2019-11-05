@@ -97,7 +97,7 @@ class OdtTemplate(AbstractTemplate):
         style_list_properties = soup.new_tag('style:list-level-properties')
         style_list_properties.attrs = {"text:list-level-position-and-space-mode": "label-alignment"}
         style_number.append(style_list_properties)
-        # Space between text and number : "listtab nothin or space possible
+        # Space between text and number : "listtab, nothing or space allowed
         style_alignment = soup.new_tag('style:list-level-label-alignment')
         style_alignment.attrs = {"text:label-followed-by": "space", "fo:text-indent": "0.435cm"}
         style_list_properties.append(style_alignment)
@@ -118,7 +118,7 @@ class OdtTemplate(AbstractTemplate):
         style_list_properties = soup.new_tag('style:list-level-properties')
         style_list_properties.attrs = {"text:list-level-position-and-space-mode": "label-alignment"}
         style_number.append(style_list_properties)
-        # Space between text and number : "listtab nothin or space possible
+        # Space between text and number : "listtab, nothing or space allowed
         style_alignment = soup.new_tag('style:list-level-label-alignment')
         style_alignment.attrs = {"text:label-followed-by": "space", "fo:text-indent": "0.635cm"}
         style_list_properties.append(style_alignment)

@@ -9,7 +9,7 @@ from zipfile import ZipFile
 from django.core.files.storage import default_storage
 
 
-def modify_libreoffice_doc(file_path, xml_path, rendered):
+def modify_content_document(file_path, xml_path, rendered):
     """
     Modify a libreoffice document (docx and odt only for the moment).
 

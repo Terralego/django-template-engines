@@ -16,7 +16,7 @@ class TestOdtEngine(TestCase):
             'NAME': 'odt',
             'DIRS': [TEMPLATES_PATH],
             'APP_DIRS': False,
-            'OPTIONS': [],
+            'OPTIONS': {},
         }
         self.odt_engine = OdtEngine(self.params)
 
@@ -27,7 +27,7 @@ class TestOdtEngine(TestCase):
             'NAME': 'odt',
             'DIRS': [],
             'APP_DIRS': False,
-            'OPTIONS': [],
+            'OPTIONS': {},
         }
         odt_engine_no_specified_dirs_no_app_dirs = OdtEngine(params_no_specified_dirs_no_app_dirs)
         with self.assertRaises(TemplateDoesNotExist):
@@ -37,7 +37,7 @@ class TestOdtEngine(TestCase):
             'NAME': 'odt',
             'DIRS': [TEMPLATES_PATH],
             'APP_DIRS': False,
-            'OPTIONS': [],
+            'OPTIONS': {},
         }
         odt_engine_dirs_specified = OdtEngine(params_dirs_specified)
         self.assertEqual(odt_engine_dirs_specified.get_template_path('template.odt'),

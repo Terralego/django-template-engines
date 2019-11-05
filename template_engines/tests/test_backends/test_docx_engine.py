@@ -18,7 +18,7 @@ class TestDocxEngine(TestCase):
             'NAME': 'docx',
             'DIRS': [TEMPLATES_PATH],
             'APP_DIRS': False,
-            'OPTIONS': [],
+            'OPTIONS': {},
         }
         self.odt_engine = DocxEngine(self.params)
 
@@ -29,7 +29,7 @@ class TestDocxEngine(TestCase):
             'NAME': 'docx',
             'DIRS': [],
             'APP_DIRS': False,
-            'OPTIONS': [],
+            'OPTIONS': {},
         }
         odt_engine_no_specified_dirs_no_app_dirs = DocxEngine(params_no_specified_dirs_no_app_dirs)
         with self.assertRaises(TemplateDoesNotExist):

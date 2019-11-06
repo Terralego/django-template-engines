@@ -77,6 +77,18 @@ class ImageLoaderTestCase(TestCase):
         rendered_template = template_to_render.render(context)
         self.assertEqual(rendered_template.count('<draw:frame draw:name="{name}"'.format(name=token.return_value)), 2)
 
+    def test_image_loader_resize(self, token):
+        context = Context({'image': {'content': open(IMAGE_PATH, 'rb').read()}})
+        template_to_render = Template('{% load odt_tags %}{% image_loader image width="32" height="42" %}')
+        rendered_template = template_to_render.render(context)
+        self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
+        self.assertIn('svg:width="32.0" svg:height="42.0"', rendered_template)
+
+    def test_image_url_loader_fail(self, token):
+        with self.assertRaises(TemplateSyntaxError) as cm:
+            Template('{% load odt_tags %}{% image_loader image=image %}')
+        self.assertEqual('Usage: {% image_loader [image] width="5000" height="5000" %}', str(cm.exception))
+
 
 @mock.patch('secrets.token_hex', return_value='test')
 class ImageUrlLoaderTestCase(TestCase):

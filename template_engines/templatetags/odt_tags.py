@@ -1,3 +1,4 @@
+import logging
 import secrets
 import random
 import re
@@ -5,12 +6,15 @@ import requests
 
 from bs4 import BeautifulSoup
 from django import template
+from django.template.base import FilterExpression
 from django.utils.safestring import mark_safe
 
 from template_engines.backends.utils_odt import ODT_IMAGE
 from .utils import parse_tag, resize
 
 register = template.Library()
+
+logger = logging.getLogger(__name__)
 
 
 def parse_p(soup):
@@ -159,6 +163,8 @@ class ImageLoaderNodeURL(template.Node):
         self.get_value_context(context)
         name = secrets.token_hex(15)
         response = self.get_content_url()
+        if not response:
+            return ""
         width, height = resize(response.content, self.width, self.height, odt=True)
         context.setdefault('images', {})
         context['images'].update({name: {'content': response.content}})
@@ -174,18 +180,17 @@ class ImageLoaderNodeURL(template.Node):
             self.height = self.height.resolve(context)
 
     def get_content_url(self):
-        if self.request.lower() == 'get':
-            response = requests.get(self.url, data=self.data)
-        elif self.request.lower() == 'post':
-            response = requests.post(self.url, data=self.data)
-        else:
-            raise template.TemplateSyntaxError(
-                "Type of request specified not allowed"
-            )
+        try:
+            response = getattr(requests, self.request.lower())(self.url, data=self.data)
+        except requests.exceptions.ConnectionError:
+            logger.warning("Connection Error, check the url given")
+            return
+        except AttributeError:
+            logger.warning("Type of request specified not allowed")
+            return
         if response.status_code != 200:
-            raise template.TemplateSyntaxError(
-                "The picture is not accessible (Error: %s)" % response.status_code
-            )
+            logger.warning("The picture is not accessible (Error: %s)" % response.status_code)
+            return
         return response
 
 
@@ -224,11 +229,11 @@ class ImageLoaderNode(template.Node):
         # Evaluate the arguments in the current context
         # TODO: Move content with the binary of the picture directly in self.object : context[image] = Binary
         self.get_value_context(context)
-
-        if not self.object or not self.object.get('content') or not isinstance(self.object.get('content'), bytes):
-            raise template.TemplateSyntaxError(
-                "{object} is not a valid picture".format(object=self.object)
-            )
+        if isinstance(self.object, FilterExpression) or not self.object.get('content') \
+                or not isinstance(self.object.get('content'), bytes):
+            # if the object is still a FilterExpression, it means that resolve didn't work
+            logger.warning("{object} is not a valid picture".format(object=self.object))
+            return ""
         name = secrets.token_hex(15)
         width, height = resize(self.object.get('content'), self.width, self.height, odt=True)
         context.setdefault('images', {})
@@ -236,7 +241,9 @@ class ImageLoaderNode(template.Node):
         return mark_safe(ODT_IMAGE.format(name, width, height))
 
     def get_value_context(self, context):
-        self.object = self.object.resolve(context)
+        object = self.object.resolve(context)
+        if object:
+           self.object = object
         if self.width:
             self.width = self.width.resolve(context)
         if self.height:

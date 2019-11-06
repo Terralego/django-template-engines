@@ -224,25 +224,19 @@ class ImageLoaderNode(template.Node):
 
     def render(self, context):
         # Evaluate the arguments in the current context
+        # TODO: Move content with the binary of the picture directly in self.object : context[image] = Binary
         self.get_value_context(context)
 
-        if self.object is None:
-            raise template.TemplateSyntaxError(
-                "{object} does not exist".format(object=self.object)
-            )
-        elif not self.object or not self.object.get('content') or not isinstance(self.object.get('content'), bytes):
+        if not self.object or not self.object.get('content') or not isinstance(self.object.get('content'), bytes):
             raise template.TemplateSyntaxError(
                 "{object} is not a valid picture".format(object=self.object)
             )
         name = secrets.token_hex(15)
-        self.object['name'] = name
-
         width, height = resize(self.object.get('content'), self.width, self.height, odt=True)
         if context.get('images'):
             context['images'].update({name: self.object})
         else:
             context['images'] = {name: self.object}
-
         return mark_safe(ODT_IMAGE.format(name, width, height))
 
     def get_value_context(self, context):

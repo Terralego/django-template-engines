@@ -11,7 +11,7 @@ ODT_IMAGE = (
 )
 
 
-def add_image_in_odt_template(bfile, image):
+def add_image_in_odt_template(bfile, image, name):
     """
     Makes an image available for a odt document.
 
@@ -35,9 +35,9 @@ def add_image_in_odt_template(bfile, image):
                     soup = BeautifulSoup(doc_relationships, features='xml')
                     manifest = soup.find('manifest:manifest')
                     file_entry = soup.new_tag('manifest:file-entry')
-                    _, ext = os.path.splitext(image.get('name'))
+                    _, ext = os.path.splitext(name)
                     attributes_file_entry = {
-                        'manifest:full-path': 'Pictures/{}'.format(image.get('name')),
+                        'manifest:full-path': 'Pictures/{}'.format(name),
                         'manifest:media-type': 'image/{}'.format(ext)
                     }
                     file_entry.attrs = attributes_file_entry
@@ -52,7 +52,7 @@ def add_image_in_odt_template(bfile, image):
                 writer.write(image.get('content'))
             write_zip_file.write(
                 temp_image.name,
-                arcname='Pictures/{}'.format(image.get('name')))
+                arcname='Pictures/{}'.format(name))
 
     with open(temp_doc.name, 'rb') as read_file:
         return read_file.read()

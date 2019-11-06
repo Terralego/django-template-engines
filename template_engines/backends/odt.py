@@ -173,7 +173,7 @@ class OdtTemplate(AbstractTemplate):
         soup = self.replace_inputs(soup)
         odt_content = modify_content_document(self.template_path, 'content.xml', str(soup))
         for key, image in context.get('images', {}).items():
-            odt_content = add_image_in_odt_template(odt_content, image)
+            odt_content = add_image_in_odt_template(odt_content, image, key)
         return odt_content
 
 

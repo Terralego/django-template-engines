@@ -18,10 +18,30 @@ Two template tags are available to dynamically include images, one for ODT and t
 
 For this to work you need to include the binary content of each image in the context transmitted to your template.
 
-Then at the top of your template, you must add ``{% load docx_tags %}`` if it is a DOCX template or
-``{% load odt_tags %}`` if it is an ODT template.
+Tags are automatically available by type of template (docx_tags and odt_tags).
 
-Now you can add images by using ``{% image_loader image_name_in_the_context %}`` in the right place.
+Now you can add images in the right place:
+ * From binary : add your image in the context  ``context[ name of your image ] = {'content': binary of your image}``
+
+     ``{% image_loader image_in_the_context %}`` ,
+
+ Additional arguments are width, height, request, data
+
+   ``{% image_loader image_in_the_context width="50" height="50" %}``
+
+ * From url :
+    * From an url directly :
+
+     ``{% image_url_loader "http://image.png" %}``
+
+    * From the context : add your url in the context like that :
+      ``context[ name of your image ] = {'content': binary of your image}``
+
+     ``{% image_url_loader url_in_the_context %}``
+
+    Additional arguments are width, height, request, data
+
+     ``{% image_url_loader url_in_the_context width="50" height="50" request="POST" data="" %}``
 
 Example of easy use of the ODT engine
 -------------------------------------

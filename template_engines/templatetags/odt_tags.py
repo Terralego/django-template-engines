@@ -156,10 +156,26 @@ class ImageLoaderNodeURL(template.Node):
         self.request = request
 
     def render(self, context):
+        self.get_value_context(context)
+        name = secrets.token_hex(15)
+        response = self.get_content_url()
+        width, height = resize(response.content, self.width, self.height, odt=True)
+        if context.get('images'):
+            context['images'].update({name: {'name': name, 'content': response.content}})
+        else:
+            context['images'] = {name: {'name': name, 'content': response.content}}
+        return mark_safe(ODT_IMAGE.format(name, width, height))
+
+    def get_value_context(self, context):
         self.url = self.url.resolve(context)
         if self.request != "GET":
             self.request = self.request.resolve(context)
-        name = secrets.token_hex(15)
+        if self.width:
+            self.width = self.width.resolve(context)
+        if self.height:
+            self.height = self.height.resolve(context)
+
+    def get_content_url(self):
         if self.request.lower() == 'get':
             response = requests.get(self.url, data=self.data)
         elif self.request.lower() == 'post':
@@ -172,16 +188,7 @@ class ImageLoaderNodeURL(template.Node):
             raise template.TemplateSyntaxError(
                 "The picture is not accessible (Error: %s)" % response.status_code
             )
-        if self.width:
-            self.width = self.width.resolve(context)
-        if self.height:
-            self.height = self.height.resolve(context)
-        width, height = resize(response.content, self.width, self.height, odt=True)
-        if context.get('images'):
-            context['images'].update({name: {'name': name, 'content': response.content}})
-        else:
-            context['images'] = {name: {'name': name, 'content': response.content}}
-        return mark_safe(ODT_IMAGE.format(name, width, height))
+        return response
 
 
 @register.tag
@@ -217,28 +224,33 @@ class ImageLoaderNode(template.Node):
 
     def render(self, context):
         # Evaluate the arguments in the current context
-        image = self.object.resolve(context)
-        if image is None:
+        self.get_value_context(context)
+
+        if self.object is None:
             raise template.TemplateSyntaxError(
                 "{object} does not exist".format(object=self.object)
             )
-        elif not image or not image.get('content') or not isinstance(image.get('content'), bytes):
+        elif not self.object or not self.object.get('content') or not isinstance(self.object.get('content'), bytes):
             raise template.TemplateSyntaxError(
                 "{object} is not a valid picture".format(object=self.object)
             )
         name = secrets.token_hex(15)
-        image['name'] = name
+        self.object['name'] = name
+
+        width, height = resize(self.object.get('content'), self.width, self.height, odt=True)
+        if context.get('images'):
+            context['images'].update({name: self.object})
+        else:
+            context['images'] = {name: self.object}
+
+        return mark_safe(ODT_IMAGE.format(name, width, height))
+
+    def get_value_context(self, context):
+        self.object = self.object.resolve(context)
         if self.width:
             self.width = self.width.resolve(context)
         if self.height:
             self.height = self.height.resolve(context)
-        width, height = resize(image.get('content'), self.width, self.height, odt=True)
-        if context.get('images'):
-            context['images'].update({name: image})
-        else:
-            context['images'] = {name: image}
-
-        return mark_safe(ODT_IMAGE.format(name, width, height))
 
 
 @register.tag

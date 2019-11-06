@@ -5,7 +5,6 @@ from django.template import Context, Template
 from django.template.exceptions import TemplateSyntaxError
 from django.test import TestCase
 
-from template_engines.backends.odt import OdtTemplate
 from template_engines.templatetags import odt_tags
 from template_engines.tests.settings import IMAGE_PATH
 

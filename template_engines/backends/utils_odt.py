@@ -27,9 +27,10 @@ def add_image_in_odt_template(bfile, image, name):
 
     temp_doc = NamedTemporaryFile()
     with ZipFile(temp_file.name, 'r') as read_zip_file:
+        info_list = read_zip_file.infolist()
         with ZipFile(temp_doc.name, 'w') as write_zip_file:
             # Add a relationship tag to word/_rels/document.xml.rels
-            for item in read_zip_file.infolist():
+            for item in info_list:
                 if item.filename == 'META-INF/manifest.xml':
                     doc_relationships = read_zip_file.read(item.filename)
                     soup = BeautifulSoup(doc_relationships, features='xml')

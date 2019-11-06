@@ -28,8 +28,9 @@ def modify_content_document(file_path, xml_path, rendered):
 
     template_buffer = io.BytesIO(default_storage.open(file_path, 'rb').read())
     with ZipFile(template_buffer, 'r') as read_zip_file:
+        info_list = read_zip_file.infolist()
         with ZipFile(temp_file.name, 'w') as write_zip_file:
-            for item in read_zip_file.infolist():
+            for item in info_list:
                 if item.filename == xml_path:
                     write_zip_file.writestr(item, rendered)
                 else:

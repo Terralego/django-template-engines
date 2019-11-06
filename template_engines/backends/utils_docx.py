@@ -24,9 +24,10 @@ def add_image_in_docx_template(bfile, image):
 
     temp_doc = NamedTemporaryFile()
     with ZipFile(temp_file.name, 'r') as read_zip_file:
+        info_list = read_zip_file.infolist()
         with ZipFile(temp_doc.name, 'w') as write_zip_file:
             # Add a relationship tag to word/_rels/document.xml.rels
-            for item in read_zip_file.infolist():
+            for item in info_list:
                 if item.filename == 'word/_rels/document.xml.rels':
                     doc_relationships = read_zip_file.read(item.filename).decode()
                     doc_relationships = re.sub(

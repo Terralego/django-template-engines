@@ -1,4 +1,6 @@
+import io
 from bs4 import BeautifulSoup
+from requests.exceptions import ConnectionError
 from unittest import mock
 
 from django.template import Context, Template
@@ -119,6 +121,16 @@ class ImageUrlLoaderTestCase(TestCase):
                          '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')
+    def test_image_url_loader_resize(self, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({'url': "https://test.com"})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader url width="32" height="42" %}')
+        rendered_template = template_to_render.render(context)
+        self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
+        self.assertIn('svg:width="32.0" svg:height="42.0"', rendered_template)
+
+    @mock.patch('requests.get')
     def test_image_url_loader_fail(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
         mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
@@ -128,24 +140,33 @@ class ImageUrlLoaderTestCase(TestCase):
                          'height="5000" request="GET" data="{"data": "example"}"%}', str(cm.exception))
 
     @mock.patch('requests.get')
-    def test_image_url_loader_picture_not_accessible(self, mocked_get, token):
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_image_url_loader_picture_not_accessible(self, mock_out, mocked_get, token):
         mocked_get.return_value.status_code = 404
         mocked_get.return_value.content = b''
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
-        with self.assertRaises(TemplateSyntaxError) as cm:
-            template_to_render.render(context)
-        self.assertEqual('The picture is not accessible (Error: 404)', str(cm.exception))
+        template_to_render.render(context)
+        self.assertEqual(mock_out.getvalue(), 'The picture is not accessible (Error: 404)\n')
 
     @mock.patch('requests.get')
-    def test_image_url_loader_picture_wrong_request(self, mocked_get, token):
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_image_url_loader_picture_connection_error(self, mock_out, mocked_get, token):
+        mocked_get.side_effect = ConnectionError
+        context = Context({})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
+        template_to_render.render(context)
+        self.assertEqual(mock_out.getvalue(), 'Connection Error, check the url given\n')
+
+    @mock.patch('requests.get')
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_image_url_loader_picture_wrong_request(self, mock_out, mocked_get, token):
         mocked_get.return_value.status_code = 200
         mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="WRONG" %}')
-        with self.assertRaises(TemplateSyntaxError) as cm:
-            template_to_render.render(context)
-        self.assertEqual('Type of request specified not allowed', str(cm.exception))
+        template_to_render.render(context)
+        self.assertEqual(mock_out.getvalue(), 'Type of request specified not allowed\n')
 
     @mock.patch('requests.post')
     def test_image_url_loader_picture_post_request(self, mocked_post, token):

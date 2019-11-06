@@ -2,7 +2,6 @@ import io
 import os
 from unittest import mock
 
-from django.template.exceptions import TemplateSyntaxError
 from django.test import TestCase, RequestFactory
 
 from template_engines.tests.fake_app.models import Bidon

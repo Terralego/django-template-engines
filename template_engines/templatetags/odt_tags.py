@@ -243,7 +243,7 @@ class ImageLoaderNode(template.Node):
     def get_value_context(self, context):
         object = self.object.resolve(context)
         if object:
-           self.object = object
+            self.object = object
         if self.width:
             self.width = self.width.resolve(context)
         if self.height:

@@ -70,6 +70,15 @@ class FilterFromHTMLTestCase(TestCase):
 
 
 @mock.patch('secrets.token_hex', return_value='test')
+class ImageLoaderTestCase(TestCase):
+    def test_image_loader_object(self, token):
+        context = Context({'image': {'content': open(IMAGE_PATH, 'rb').read()}})
+        template_to_render = Template('{% load odt_tags %}{% image_loader image %}{% image_loader image %}')
+        rendered_template = template_to_render.render(context)
+        self.assertEqual(rendered_template.count('<draw:frame draw:name="{name}"'.format(name=token.return_value)), 2)
+
+
+@mock.patch('secrets.token_hex', return_value='test')
 class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.get')
     def test_image_url_loader_object(self, mocked_get, token):

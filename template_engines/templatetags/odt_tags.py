@@ -160,10 +160,8 @@ class ImageLoaderNodeURL(template.Node):
         name = secrets.token_hex(15)
         response = self.get_content_url()
         width, height = resize(response.content, self.width, self.height, odt=True)
-        if context.get('images'):
-            context['images'].update({name: {'name': name, 'content': response.content}})
-        else:
-            context['images'] = {name: {'name': name, 'content': response.content}}
+        context.setdefault('images', {})
+        context['images'].update({name: {'content': response.content}})
         return mark_safe(ODT_IMAGE.format(name, width, height))
 
     def get_value_context(self, context):
@@ -233,10 +231,8 @@ class ImageLoaderNode(template.Node):
             )
         name = secrets.token_hex(15)
         width, height = resize(self.object.get('content'), self.width, self.height, odt=True)
-        if context.get('images'):
-            context['images'].update({name: self.object})
-        else:
-            context['images'] = {name: self.object}
+        context.setdefault('images', {})
+        context['images'].update({name: self.object})
         return mark_safe(ODT_IMAGE.format(name, width, height))
 
     def get_value_context(self, context):

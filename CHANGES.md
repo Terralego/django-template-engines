@@ -1,6 +1,6 @@
 # CHANGELOG
 
-1.2.17.dev0     (XXXX-XX-XX)
+1.2.17          (2019-11-07)
 ----------------------------
 
 * Load odt_tags and docx_tags automatically, remove loads to make it works

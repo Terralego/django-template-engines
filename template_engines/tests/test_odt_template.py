@@ -1,4 +1,6 @@
+import io
 import os
+from unittest import mock
 
 from django.test import TestCase, RequestFactory
 
@@ -34,20 +36,24 @@ class TestOdtTemplateView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.content)
 
-    def test_view_empty_image(self):
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_view_empty_image(self, mock_out):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'empty_image.odt')
-        with self.assertRaises(IOError):
-            OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+        OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+        self.assertEqual(mock_out.getvalue(), "{'content': b''} is not a valid picture\n")
 
-    def test_view_bad_image(self):
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_view_bad_image(self, mock_out):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_image.odt')
-        with self.assertRaises(AttributeError):
-            OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
 
-    def test_bad_image_content(self):
+        OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+        self.assertEqual(mock_out.getvalue(), 'bad_image is not a valid picture\n')
+
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_bad_image_content(self, mock_out):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_content_image.odt')
-        with self.assertRaises(TypeError):
-            OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+        OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+        self.assertEqual(mock_out.getvalue(), "{'content': 'bad'} is not a valid picture\n")
 
     def test_view_resize(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.odt')

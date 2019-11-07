@@ -4,7 +4,8 @@ from django.template.context import make_context
 
 from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES
 from .abstract import AbstractTemplate, ZipAbstractEngine
-from .utils import modify_libreoffice_doc, add_image_in_docx_template
+from .utils import modify_content_document
+from .utils_docx import add_image_in_docx_template
 
 
 class DocxTemplate(AbstractTemplate):
@@ -40,8 +41,8 @@ class DocxTemplate(AbstractTemplate):
         context = make_context(context, request)
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
-        docx_content = modify_libreoffice_doc(self.template_path, 'word/document.xml', rendered)
-        for _, image in context.get('images', {}).items():
+        docx_content = modify_content_document(self.template_path, 'word/document.xml', rendered)
+        for key, image in context.get('images', {}).items():
             docx_content = add_image_in_docx_template(docx_content, image)
         return docx_content
 

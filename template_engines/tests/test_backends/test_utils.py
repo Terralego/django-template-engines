@@ -3,16 +3,16 @@ from zipfile import ZipFile
 
 from django.test import TestCase
 
-from template_engines.backends.utils import (modify_libreoffice_doc, add_image_in_docx_template,
-                                             clean_tags)
+from template_engines.backends.utils import clean_tags, modify_content_document
+from template_engines.backends.utils_docx import add_image_in_docx_template
 from ..settings import (ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH, IMAGE_PATH, BAD_TAGS_XML,
                         CLEAN_CONTENT)
 
 
 class TestUtils(TestCase):
 
-    def test_modify_libreoffice_doc_with_odt_works(self):
-        new_file = modify_libreoffice_doc(ODT_TEMPLATE_PATH, 'content.xml', '')
+    def test_modify_content_document_with_odt_works(self):
+        new_file = modify_content_document(ODT_TEMPLATE_PATH, 'content.xml', '')
         # Checks the return type
         self.assertIsInstance(new_file, bytes)
 
@@ -31,8 +31,8 @@ class TestUtils(TestCase):
                     else:
                         self.assertEqual(buffer_zip_obj.read(filename), b'')
 
-    def test_modify_libreoffice_doc_with_docx_works(self):
-        new_file = modify_libreoffice_doc(DOCX_TEMPLATE_PATH, 'word/document.xml', '')
+    def test_modify_content_document_with_docx_works(self):
+        new_file = modify_content_document(DOCX_TEMPLATE_PATH, 'word/document.xml', '')
         # Checks the return type
         self.assertIsInstance(new_file, bytes)
 

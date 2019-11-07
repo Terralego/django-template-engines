@@ -1,37 +1,20 @@
-import base64
+import logging
+import secrets
 import random
 import re
+import requests
 
 from bs4 import BeautifulSoup
 from django import template
+from django.template.base import FilterExpression
 from django.utils.safestring import mark_safe
 
-from template_engines.odt_helpers import ODT_IMAGE
-from .utils import resize
+from template_engines.backends.utils_odt import ODT_IMAGE
+from .utils import parse_tag, resize
 
 register = template.Library()
 
-
-@register.simple_tag
-def image_loader(image, i_width=None, i_height=None):
-    """
-    Replace a tag by an image you specified.
-    You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
-    whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
-    automatically resize your image.
-    """
-    if isinstance(image, str):
-        if image:
-            image = {'content': base64.b64decode(image.split(';base64,')[1])}
-        else:
-            return
-    width = i_width or image.get('width')
-    height = i_height or image.get('height')
-    content = image.get('content')
-
-    width, height = resize(content, width, height)
-
-    return mark_safe(ODT_IMAGE.format(width, height, base64.b64encode(content).decode()))
+logger = logging.getLogger(__name__)
 
 
 def parse_p(soup):
@@ -163,3 +146,120 @@ def from_html(value, is_safe=True):
     soup = parse_h(soup)
     soup = parse_br(soup)
     return mark_safe(str(soup))
+
+
+class ImageLoaderNodeURL(template.Node):
+    def __init__(self, url, data=None, width=None, height=None, request="GET"):
+        # saves the passed obj parameter for later use
+        # this is a template.Variable, because that way it can be resolved
+        # against the current context in the render method
+        self.url = url
+        self.data = data
+        self.width = width
+        self.height = height
+        self.request = request
+
+    def render(self, context):
+        self.get_value_context(context)
+        name = secrets.token_hex(15)
+        response = self.get_content_url()
+        if not response:
+            return ""
+        width, height = resize(response.content, self.width, self.height, odt=True)
+        context.setdefault('images', {})
+        context['images'].update({name: {'content': response.content}})
+        return mark_safe(ODT_IMAGE.format(name, width, height))
+
+    def get_value_context(self, context):
+        self.url = self.url.resolve(context)
+        if self.request != "GET":
+            self.request = self.request.resolve(context)
+        if self.width:
+            self.width = self.width.resolve(context)
+        if self.height:
+            self.height = self.height.resolve(context)
+
+    def get_content_url(self):
+        try:
+            response = getattr(requests, self.request.lower())(self.url, data=self.data)
+        except requests.exceptions.ConnectionError:
+            logger.warning("Connection Error, check the url given")
+            return
+        except AttributeError:
+            logger.warning("Type of request specified not allowed")
+            return
+        if response.status_code != 200:
+            logger.warning("The picture is not accessible (Error: %s)" % response.status_code)
+            return
+        return response
+
+
+@register.tag
+def image_url_loader(parser, token):
+    """
+    Replace a tag by an image from the url you specified.
+    The necessary keys are : name and url
+    - name : Name of your picture, you should not use the same name for 2 differents pictures
+           from 2 urls because the second one will overwrite the first one
+    - url : Url where you want to get your picture
+    Other keys : data, width, height, request
+    - data : Use it only with post request
+    - width : Width of the picture rendered
+    - heigth : Heigth of the picture rendered
+    - request : Type of request, post or get. Get by default.
+    """
+    tag_name, args, kwargs = parse_tag(token, parser)
+    usage = '{{% {tag_name} [url] width="5000" height="5000" ' \
+            'request="GET" data="{{"data": "example"}}"%}}'.format(tag_name=tag_name)
+    if len(args) > 1 or not all(key in ['width', 'height', 'request', 'data'] for key in kwargs.keys()):
+        raise template.TemplateSyntaxError("Usage: %s" % usage)
+    return ImageLoaderNodeURL(*args, **kwargs)
+
+
+class ImageLoaderNode(template.Node):
+    def __init__(self, object, width=None, height=None):
+        # saves the passed obj parameter for later use
+        # this is a template.Variable, because that way it can be resolved
+        # against the current context in the render method
+        self.object = object
+        self.width = width
+        self.height = height
+
+    def render(self, context):
+        # Evaluate the arguments in the current context
+        # TODO: Move content with the binary of the picture directly in self.object : context[image] = Binary
+        self.get_value_context(context)
+        if isinstance(self.object, FilterExpression) or not self.object.get('content') \
+                or not isinstance(self.object.get('content'), bytes):
+            # if the object is still a FilterExpression, it means that resolve didn't work
+            logger.warning("{object} is not a valid picture".format(object=self.object))
+            return ""
+        name = secrets.token_hex(15)
+        width, height = resize(self.object.get('content'), self.width, self.height, odt=True)
+        context.setdefault('images', {})
+        context['images'].update({name: self.object})
+        return mark_safe(ODT_IMAGE.format(name, width, height))
+
+    def get_value_context(self, context):
+        object = self.object.resolve(context)
+        if object:
+            self.object = object
+        if self.width:
+            self.width = self.width.resolve(context)
+        if self.height:
+            self.height = self.height.resolve(context)
+
+
+@register.tag
+def image_loader(parser, token):
+    """
+    Replace a tag by an image you specified.
+    You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
+    whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
+    automatically resize your image.
+    """
+    tag_name, args, kwargs = parse_tag(token, parser)
+    usage = '{{% {tag_name} [image] width="5000" height="5000" %}}'.format(tag_name=tag_name)
+    if len(args) > 1 or set(kwargs.keys()) != {'width', 'height'} and len(kwargs.keys()) != 0:
+        raise template.TemplateSyntaxError("Usage: %s" % usage)
+    return ImageLoaderNode(*args, **kwargs)

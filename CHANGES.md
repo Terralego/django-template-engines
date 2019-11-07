@@ -4,6 +4,8 @@
 ----------------------------
 
 * Load odt_tags and docx_tags automatically, remove loads to make it works
+* Add tag image_url_load
+* Fix odt pictures inside zip
 
 
 1.2.16          (2019-11-04)

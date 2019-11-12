@@ -1,4 +1,5 @@
 import io
+import base64
 from bs4 import BeautifulSoup
 from requests.exceptions import ConnectionError
 from unittest import mock
@@ -91,6 +92,12 @@ class ImageLoaderTestCase(TestCase):
             Template('{% load odt_tags %}{% image_loader image=image %}')
         self.assertEqual('Usage: {% image_loader [image] width="5000" height="5000" %}', str(cm.exception))
 
+    def test_image_loader_object_base64(self, token):
+        context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
+        template_to_render = Template('{% load odt_tags %}{% image_loader image %}')
+        rendered_template = template_to_render.render(context)
+        self.assertEqual(rendered_template.count('<draw:frame draw:name="{name}"'.format(name=token.return_value)), 1)
+
 
 @mock.patch('secrets.token_hex', return_value='test')
 class ImageUrlLoaderTestCase(TestCase):
@@ -167,6 +174,19 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="WRONG" %}')
         template_to_render.render(context)
         self.assertEqual(mock_out.getvalue(), 'Type of request specified not allowed\n')
+
+    @mock.patch('requests.get')
+    @mock.patch('sys.stderr', new_callable=io.StringIO)
+    def test_image_url_loader_picture_with_datas(self, mock_out, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({'data': {'data_to_send': 'bob'}})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" data=data %}')
+        rendered_template = template_to_render.render(context)
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.post')
     def test_image_url_loader_picture_post_request(self, mocked_post, token):

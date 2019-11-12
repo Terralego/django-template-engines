@@ -40,20 +40,13 @@ class TestOdtTemplateView(TestCase):
     def test_view_empty_image(self, mock_out):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'empty_image.odt')
         OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(mock_out.getvalue(), "{'content': b''} is not a valid picture\n")
-
-    @mock.patch('sys.stderr', new_callable=io.StringIO)
-    def test_view_bad_image(self, mock_out):
-        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_image.odt')
-
-        OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(mock_out.getvalue(), 'bad_image is not a valid picture\n')
+        self.assertEqual(mock_out.getvalue(), "emtpy_image is not a valid picture\n")
 
     @mock.patch('sys.stderr', new_callable=io.StringIO)
     def test_bad_image_content(self, mock_out):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_content_image.odt')
         OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(mock_out.getvalue(), "{'content': 'bad'} is not a valid picture\n")
+        self.assertEqual(mock_out.getvalue(), "bad is not a valid picture\n")
 
     def test_view_resize(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.odt')

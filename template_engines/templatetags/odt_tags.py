@@ -167,7 +167,7 @@ class ImageLoaderNodeURL(template.Node):
             return ""
         width, height = resize(response.content, self.width, self.height, odt=True)
         context.setdefault('images', {})
-        context['images'].update({name: {'content': response.content}})
+        context['images'].update({name: response.content})
         return mark_safe(ODT_IMAGE.format(name, width, height))
 
     def get_value_context(self, context):
@@ -229,13 +229,13 @@ class ImageLoaderNode(template.Node):
         # Evaluate the arguments in the current context
         # TODO: Move content with the binary of the picture directly in self.object : context[image] = Binary
         self.get_value_context(context)
-        if isinstance(self.object, FilterExpression) or not self.object.get('content') \
-                or not isinstance(self.object.get('content'), bytes):
+        if isinstance(self.object, FilterExpression) or not self.object \
+                or not isinstance(self.object, bytes):
             # if the object is still a FilterExpression, it means that resolve didn't work
             logger.warning("{object} is not a valid picture".format(object=self.object))
             return ""
         name = secrets.token_hex(15)
-        width, height = resize(self.object.get('content'), self.width, self.height, odt=True)
+        width, height = resize(self.object, self.width, self.height, odt=True)
         context.setdefault('images', {})
         context['images'].update({name: self.object})
         return mark_safe(ODT_IMAGE.format(name, width, height))

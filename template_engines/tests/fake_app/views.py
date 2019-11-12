@@ -12,15 +12,9 @@ class OdtTemplateView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['image'] = {'content': open(IMAGE_PATH, 'rb').read()}
-        context['emtpy_image'] = {'content': b''}
-        context['bad_image'] = b''
-        context['bad_content_image'] = {'content': 'bad'}
-        context['resize'] = {
-            'content': open(IMAGE_PATH, 'rb').read(),
-            'width': '500pt',
-            'height': '500pt'
-        }
+        context['image'] = open(IMAGE_PATH, 'rb').read()
+        context['emtpy_image'] = b''
+        context['bad_content_image'] = 'bad'
         return context
 
 

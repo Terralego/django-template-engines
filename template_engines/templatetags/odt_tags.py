@@ -234,10 +234,11 @@ class ImageLoaderNode(template.Node):
 
     def render(self, context):
         # Evaluate the arguments in the current context
+        name = self.object
         self.get_value_context(context)
         self.base64_to_binary()
         if isinstance(self.object, FilterExpression) or not self.object or not isinstance(self.object, bytes):
-            logger.warning("{object} is not a valid picture".format(object=self.object))
+            logger.warning("{object} is not a valid picture".format(object=name))
             return ""
 
         name = secrets.token_hex(15)

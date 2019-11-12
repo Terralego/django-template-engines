@@ -46,7 +46,7 @@ class TestOdtTemplateView(TestCase):
     def test_bad_image_content(self, mock_out):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'bad_content_image.odt')
         OdtTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
-        self.assertEqual(mock_out.getvalue(), "bad is not a valid picture\n")
+        self.assertEqual(mock_out.getvalue(), "bad_content_image is not a valid picture\n")
 
     def test_view_resize(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.odt')

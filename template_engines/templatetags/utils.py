@@ -65,29 +65,37 @@ def automatically_resize(bimage, odt=True):
         return (width * ratio), (height * ratio)
 
 
-def resize_keep_ratio(bimage, max_width, max_height, odt=True):
-    buffer = BytesIO(bimage)
-    with Image.open(buffer) as img_reader:
-        width, height = img_reader.size
-
-    ratio_before = width / height
+def get_final_width_height(max_width, max_height, width, height):
+    ratio = width / height
 
     max_width = min(val for val in [max_width, width] if val is not None)
     max_height = min(val for val in [max_height, height] if val is not None)
 
     if max_width != width or max_height != height:
-        tmp_height = max_width / ratio_before
-        tmp_width = max_height * ratio_before
+        tmp_height = max_width / ratio
+        tmp_width = max_height * ratio
         if tmp_height < max_height:
             height = tmp_height
             width = max_width
         elif tmp_width < max_width:
             width = tmp_width
             height = max_height
-    if odt:
-        width = width * 35.4 * 0.75
-        height = height * 35.4 * 0.75
+
     return width, height
+
+
+def resize_keep_ratio(bimage, max_width, max_height, odt=True):
+    buffer = BytesIO(bimage)
+    with Image.open(buffer) as img_reader:
+        width, height = img_reader.size
+
+    final_width, final_height = get_final_width_height(max_width, max_height, width, height)
+
+    if odt:
+        final_width = final_width * 35.4 * 0.75
+        final_height = final_height * 35.4 * 0.75
+
+    return final_width, final_height
 
 
 def resize(bimage, max_width, max_height, odt=True):

@@ -30,13 +30,27 @@ class TestUtils(TestCase):
     def test_size_parser_emu_to_dxa(self):
         self.assertEqual(size_parser('635emu'), 1.0)
 
-    def test_resize_width_height(self):
-        width, height = resize(b'', '100pt', '100pt')
-        self.assertEqual(width, 2000.0)
-        self.assertEqual(height, 2000.0)
-        width, height = resize(b'', '100pt', '100pt', odt=False)
-        self.assertEqual(width, 1270000.0)
-        self.assertEqual(height, 1270000.0)
+    def test_resize_max_width(self):
+        width, height = resize(open(IMAGE_PATH, 'rb').read(), '50', None)
+        self.assertEqual(width, 1327.5)
+        self.assertEqual(round(height), 458)
+
+    def test_resize_max_height(self):
+        width, height = resize(open(IMAGE_PATH, 'rb').read(), None, '50')
+        self.assertEqual(round(width), 3846)
+        self.assertEqual(height, 1327.5)
+
+    def test_resize_max_height_width(self):
+        # Original picture is rectangular, we keep the ratio. max_width is smaller than original width
+        width, height = resize(open(IMAGE_PATH, 'rb').read(), '50', '50')
+        self.assertEqual(width, 1327.5)
+        self.assertEqual(round(height), 458)
+
+    def test_resize_max_height_width_2(self):
+        # Original picture is rectangular, we keep the ratio. max_height is smaller than original height
+        width, height = resize(open(IMAGE_PATH, 'rb').read(), '150', '50')
+        self.assertEqual(round(width), 3846)
+        self.assertEqual(height, 1327.5)
 
     def test_resize_image(self):
         img = open(IMAGE_PATH, 'rb').read()

@@ -82,21 +82,29 @@ class ImageLoaderTestCase(TestCase):
 
     def test_image_loader_resize(self, token):
         context = Context({'image': open(IMAGE_PATH, 'rb').read()})
-        template_to_render = Template('{% load odt_tags %}{% image_loader image width="32" height="42" %}')
+        template_to_render = Template('{% load odt_tags %}{% image_loader image max_width="100" max_height="100" %}')
         rendered_template = template_to_render.render(context)
         self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
-        self.assertIn('svg:width="32.0" svg:height="42.0"', rendered_template)
+        self.assertIn('svg:width="2655.0" svg:height="916.4467005076142"', rendered_template)
 
-    def test_image_url_loader_fail(self, token):
+    def test_image_loader_fail(self, token):
         with self.assertRaises(TemplateSyntaxError) as cm:
             Template('{% load odt_tags %}{% image_loader image=image %}')
-        self.assertEqual('Usage: {% image_loader [image] width="5000" height="5000" %}', str(cm.exception))
+        self.assertEqual('Usage: {% image_loader [image] max_width="5000" max_height="5000" '
+                         'anchor="as-char" %}', str(cm.exception))
 
     def test_image_loader_object_base64(self, token):
         context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
         template_to_render = Template('{% load odt_tags %}{% image_loader image %}')
         rendered_template = template_to_render.render(context)
-        self.assertEqual(rendered_template.count('<draw:frame draw:name="{name}"'.format(name=token.return_value)), 1)
+        self.assertIn('<draw:frame draw:name="{name}"'.format(name=token.return_value), rendered_template)
+
+    def test_image_loader_anchor(self, token):
+        context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
+        template_to_render = Template('{% load odt_tags %}{% image_loader image anchor="as-char" %}')
+        rendered_template = template_to_render.render(context)
+        self.assertIn('text:anchor-type="as-char"', rendered_template)
+        self.assertNotIn('text:anchor-type="paragraph"', rendered_template)
 
 
 @mock.patch('secrets.token_hex', return_value='test')
@@ -110,9 +118,9 @@ class ImageUrlLoaderTestCase(TestCase):
 
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
-                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
-                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
+                         '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')
     def test_image_url_loader_url(self, mocked_get, token):
@@ -123,19 +131,19 @@ class ImageUrlLoaderTestCase(TestCase):
 
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
-                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
-                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
+                         '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')
     def test_image_url_loader_resize(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
         mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
         context = Context({'url': "https://test.com"})
-        template_to_render = Template('{% load odt_tags %}{% image_url_loader url width="32" height="42" %}')
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader url max_width="100" max_height="100" %}')
         rendered_template = template_to_render.render(context)
         self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
-        self.assertIn('svg:width="32.0" svg:height="42.0"', rendered_template)
+        self.assertIn('svg:width="2655.0" svg:height="916.4467005076142"', rendered_template)
 
     @mock.patch('requests.get')
     def test_image_url_loader_fail(self, mocked_get, token):
@@ -143,8 +151,9 @@ class ImageUrlLoaderTestCase(TestCase):
         mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
         with self.assertRaises(TemplateSyntaxError) as cm:
             Template('{% load odt_tags %}{% image_url_loader url="https://test.com" %}')
-        self.assertEqual('Usage: {% image_url_loader [url] width="5000" '
-                         'height="5000" request="GET" data="{"data": "example"}"%}', str(cm.exception))
+        self.assertEqual('Usage: {% image_url_loader [url] max_width="5000" '
+                         'max_height="5000" request="GET" data="{"data": "example"}" '
+                         'anchor="as-char" %}', str(cm.exception))
 
     @mock.patch('requests.get')
     @mock.patch('sys.stderr', new_callable=io.StringIO)
@@ -184,9 +193,9 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" data=data %}')
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
-                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
-                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
+                         '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.post')
     def test_image_url_loader_picture_post_request(self, mocked_post, token):
@@ -196,6 +205,17 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="POST" %}')
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
-                         'text:anchor-type="paragraph" draw:z-index="0" text:anchor-type="paragraph">'
+                         'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
-                         '</draw:image></draw:frame>'.format(name=token.return_value), rendered_template)
+                         '</draw:frame>'.format(name=token.return_value), rendered_template)
+
+    @mock.patch('requests.get')
+    def test_image_loader_anchor(self, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" data=data '
+                                      'anchor="as-char" %}')
+        rendered_template = template_to_render.render(context)
+        self.assertIn('text:anchor-type="as-char"', rendered_template)
+        self.assertNotIn('text:anchor-type="paragraph"', rendered_template)

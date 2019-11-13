@@ -150,15 +150,17 @@ def from_html(value, is_safe=True):
 
 
 class ImageLoaderNodeURL(template.Node):
-    def __init__(self, url, data=None, width=None, height=None, request="GET"):
+    def __init__(self, url, data=None, request="GET", max_width=None,
+                 max_height=None, anchor="paragraph"):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
         self.url = url
         self.data = data
-        self.width = width
-        self.height = height
         self.request = request
+        self.max_width = max_width
+        self.max_height = max_height
+        self.anchor = anchor
 
     def render(self, context):
         self.get_value_context(context)
@@ -166,19 +168,21 @@ class ImageLoaderNodeURL(template.Node):
         response = self.get_content_url()
         if not response:
             return ""
-        width, height = resize(response.content, self.width, self.height, odt=True)
+        width, height = resize(response.content, self.max_width, self.max_height, odt=True)
         context.setdefault('images', {})
         context['images'].update({name: response.content})
-        return mark_safe(ODT_IMAGE.format(name, width, height))
+        return mark_safe(ODT_IMAGE.format(name, width, height, self.anchor))
 
     def get_value_context(self, context):
         self.url = self.url.resolve(context)
         if self.request != "GET":
             self.request = self.request.resolve(context)
-        if self.width:
-            self.width = self.width.resolve(context)
-        if self.height:
-            self.height = self.height.resolve(context)
+        if self.max_width:
+            self.max_width = self.max_width.resolve(context)
+        if self.max_height:
+            self.max_height = self.max_height.resolve(context)
+        if self.anchor != "paragraph":
+            self.anchor = self.anchor.resolve(context)
         if self.data:
             self.data = self.data.resolve(context)
 
@@ -201,32 +205,32 @@ class ImageLoaderNodeURL(template.Node):
 def image_url_loader(parser, token):
     """
     Replace a tag by an image from the url you specified.
-    The necessary keys are : name and url
-    - name : Name of your picture, you should not use the same name for 2 differents pictures
-           from 2 urls because the second one will overwrite the first one
+    The necessary key is url
     - url : Url where you want to get your picture
-    Other keys : data, width, height, request
+    Other keys : data, max_width, max_height, request
     - data : Use it only with post request
-    - width : Width of the picture rendered
-    - heigth : Heigth of the picture rendered
+    - max_width : Width of the picture rendered
+    - max_heigth : Height of the picture rendered
     - request : Type of request, post or get. Get by default.
+    - anchor : Type of anchor, paragraph, as-char, char, frame, page
     """
     tag_name, args, kwargs = parse_tag(token, parser)
-    usage = '{{% {tag_name} [url] width="5000" height="5000" ' \
-            'request="GET" data="{{"data": "example"}}"%}}'.format(tag_name=tag_name)
-    if len(args) > 1 or not all(key in ['width', 'height', 'request', 'data'] for key in kwargs.keys()):
+    usage = '{{% {tag_name} [url] max_width="5000" max_height="5000" ' \
+            'request="GET" data="{{"data": "example"}}" anchor="as-char" %}}'.format(tag_name=tag_name)
+    if len(args) > 1 or not all(key in ['max_width', 'max_height', 'request', 'data', 'anchor'] for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)
     return ImageLoaderNodeURL(*args, **kwargs)
 
 
 class ImageLoaderNode(template.Node):
-    def __init__(self, object, width=None, height=None):
+    def __init__(self, object, width=None, height=None, max_width=None, max_height=None, anchor="paragraph"):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
         self.object = object
-        self.width = width
-        self.height = height
+        self.max_width = max_width
+        self.max_height = max_height
+        self.anchor = anchor
 
     def base64_to_binary(self):
         if isinstance(self.object, str) and 'base64' in self.object:
@@ -242,19 +246,21 @@ class ImageLoaderNode(template.Node):
             return ""
 
         name = secrets.token_hex(15)
-        width, height = resize(self.object, self.width, self.height, odt=True)
+        width, height = resize(self.object, self.max_width, self.max_height, odt=True)
         context.setdefault('images', {})
         context['images'].update({name: self.object})
-        return mark_safe(ODT_IMAGE.format(name, width, height))
+        return mark_safe(ODT_IMAGE.format(name, width, height, self.anchor))
 
     def get_value_context(self, context):
         object = self.object.resolve(context)
         if object:
             self.object = object
-        if self.width:
-            self.width = self.width.resolve(context)
-        if self.height:
-            self.height = self.height.resolve(context)
+        if self.max_width:
+            self.max_width = self.max_width.resolve(context)
+        if self.max_height:
+            self.max_height = self.max_height.resolve(context)
+        if self.anchor != "paragraph":
+            self.anchor = self.anchor.resolve(context)
 
 
 @register.tag
@@ -264,9 +270,16 @@ def image_loader(parser, token):
     You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
     whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
     automatically resize your image.
+    The necessary key is image
+    - image : content of your picture in binary or base64
+    Other keys : max_width, max_height, anchor
+    - max_width : Width of the picture rendered
+    - max_heigth : Height of the picture rendered
+    - anchor : Type of anchor, paragraph, as-char, char, frame, page
     """
     tag_name, args, kwargs = parse_tag(token, parser)
-    usage = '{{% {tag_name} [image] width="5000" height="5000" %}}'.format(tag_name=tag_name)
-    if len(args) > 1 or set(kwargs.keys()) != {'width', 'height'} and len(kwargs.keys()) != 0:
+    usage = '{{% {tag_name} [image] max_width="5000" max_height="5000" anchor="as-char" %}}'.format(tag_name=tag_name)
+    if len(args) > 1 or not all(key in ['max_width', 'max_height', 'anchor']
+                                for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)
     return ImageLoaderNode(*args, **kwargs)

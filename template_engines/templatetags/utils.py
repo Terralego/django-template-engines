@@ -65,7 +65,36 @@ def automatically_resize(bimage, odt=True):
         return (width * ratio), (height * ratio)
 
 
-def resize(bimage, width, height, odt=True):
+def resize_keep_ratio(bimage, max_width, max_height, odt=True):
+    buffer = BytesIO(bimage)
+    with Image.open(buffer) as img_reader:
+        width, height = img_reader.size
+        ratio_before = width / height
+        max_width = min(val for val in [max_width, width] if val is not None)
+        max_height = min(val for val in [max_height, height] if val is not None)
+
+        if max_width != width and max_height != height:
+            tmp_height = max_width / ratio_before
+            tmp_width = max_height * ratio_before
+            if tmp_height < max_height:
+                height = tmp_height
+                width = max_width
+            elif tmp_width < max_width:
+                width = tmp_width
+                height = max_height
+        elif max_width != width:
+            height = max_width / ratio_before
+            width = max_width
+        elif max_height != height:
+            width = max_height * ratio_before
+            height = max_height
+        if odt:
+            width = width * 35.4 * 0.75
+            height = height * 35.4 * 0.75
+        return width, height
+
+
+def resize(bimage, max_width, max_height, odt=True):
     """
     Automatically resize the image to fit the page. if no width or height has been specified,
     otherwise convert them.
@@ -82,11 +111,14 @@ def resize(bimage, width, height, odt=True):
     :param odt: Optional
     :type odt: boolean
     """
-    if not width and not height:
+    if not max_width and not max_height:
         width, height = automatically_resize(bimage, odt=odt)
-    else:
-        width = size_parser(width, odt=odt)
-        height = size_parser(height, odt=odt)
+        return width, height
+    if max_width:
+        max_width = size_parser(max_width, odt=odt)
+    if max_height:
+        max_height = size_parser(max_height, odt=odt)
+    width, height = resize_keep_ratio(bimage, max_width, max_height)
 
     return width, height
 

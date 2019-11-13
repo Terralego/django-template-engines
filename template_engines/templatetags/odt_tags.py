@@ -1,3 +1,4 @@
+import base64
 import logging
 import secrets
 import random
@@ -178,6 +179,8 @@ class ImageLoaderNodeURL(template.Node):
             self.width = self.width.resolve(context)
         if self.height:
             self.height = self.height.resolve(context)
+        if self.data:
+            self.data = self.data.resolve(context)
 
     def get_content_url(self):
         try:
@@ -225,15 +228,19 @@ class ImageLoaderNode(template.Node):
         self.width = width
         self.height = height
 
+    def base64_to_binary(self):
+        if isinstance(self.object, str) and 'base64' in self.object:
+            self.object = base64.b64decode(self.object.split(';base64,')[1])
+
     def render(self, context):
         # Evaluate the arguments in the current context
-        # TODO: Move content with the binary of the picture directly in self.object : context[image] = Binary
+        name = self.object
         self.get_value_context(context)
-        if isinstance(self.object, FilterExpression) or not self.object \
-                or not isinstance(self.object, bytes):
-            # if the object is still a FilterExpression, it means that resolve didn't work
-            logger.warning("{object} is not a valid picture".format(object=self.object))
+        self.base64_to_binary()
+        if isinstance(self.object, FilterExpression) or not self.object or not isinstance(self.object, bytes):
+            logger.warning("{object} is not a valid picture".format(object=name))
             return ""
+
         name = secrets.token_hex(15)
         width, height = resize(self.object, self.width, self.height, odt=True)
         context.setdefault('images', {})

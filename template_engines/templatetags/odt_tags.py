@@ -150,8 +150,8 @@ def from_html(value, is_safe=True):
 
 
 class ImageLoaderNodeURL(template.Node):
-    def __init__(self, url, data=None, request="GET", max_width=None,
-                 max_height=None, anchor="paragraph"):
+    def __init__(self, url, data=None, request=None, max_width=None,
+                 max_height=None, anchor=None):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
@@ -163,32 +163,28 @@ class ImageLoaderNodeURL(template.Node):
         self.anchor = anchor
 
     def render(self, context):
-        self.get_value_context(context)
+        url, type_request, max_width, max_height, anchor, data = self.get_value_context(context)
         name = secrets.token_hex(15)
-        response = self.get_content_url()
+        response = self.get_content_url(url, type_request or "get", data)
         if not response:
             return ""
-        width, height = resize(response.content, self.max_width, self.max_height, odt=True)
+        width, height = resize(response.content, max_width, max_height, odt=True)
         context.setdefault('images', {})
         context['images'].update({name: response.content})
-        return mark_safe(ODT_IMAGE.format(name, width, height, self.anchor))
+        return mark_safe(ODT_IMAGE.format(name, width, height, anchor or "paragraph"))
 
     def get_value_context(self, context):
-        self.url = self.url.resolve(context)
-        if self.request != "GET":
-            self.request = self.request.resolve(context)
-        if self.max_width:
-            self.max_width = self.max_width.resolve(context)
-        if self.max_height:
-            self.max_height = self.max_height.resolve(context)
-        if self.anchor != "paragraph":
-            self.anchor = self.anchor.resolve(context)
-        if self.data:
-            self.data = self.data.resolve(context)
+        final_url = self.url.resolve(context)
+        final_request = "get" if not self.request else self.request.resolve(context)
+        final_max_width = "" if not self.max_width else self.max_width.resolve(context)
+        final_max_height = "" if not self.max_height else self.max_height.resolve(context)
+        final_anchor = "paragraph" if not self.anchor else self.anchor.resolve(context)
+        final_data = "" if not self.data else self.data.resolve(context)
+        return final_url, final_request, final_max_width, final_max_height, final_anchor, final_data
 
-    def get_content_url(self):
+    def get_content_url(self, url, type_request, data):
         try:
-            response = getattr(requests, self.request.lower())(self.url, data=self.data)
+            response = getattr(requests, type_request.lower())(url, data=data)
         except requests.exceptions.ConnectionError:
             logger.warning("Connection Error, check the url given")
             return
@@ -223,7 +219,7 @@ def image_url_loader(parser, token):
 
 
 class ImageLoaderNode(template.Node):
-    def __init__(self, object, width=None, height=None, max_width=None, max_height=None, anchor="paragraph"):
+    def __init__(self, object, max_width=None, max_height=None, anchor=None):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
@@ -232,35 +228,32 @@ class ImageLoaderNode(template.Node):
         self.max_height = max_height
         self.anchor = anchor
 
-    def base64_to_binary(self):
-        if isinstance(self.object, str) and 'base64' in self.object:
-            self.object = base64.b64decode(self.object.split(';base64,')[1])
+    def base64_to_binary(self, picture):
+        if isinstance(picture, str) and 'base64' in picture:
+            picture = base64.b64decode(picture.split(';base64,')[1])
+        return picture
 
     def render(self, context):
         # Evaluate the arguments in the current context
         name = self.object
-        self.get_value_context(context)
-        self.base64_to_binary()
-        if isinstance(self.object, FilterExpression) or not self.object or not isinstance(self.object, bytes):
+        picture, max_width, max_height, anchor = self.get_value_context(context)
+        picture = self.base64_to_binary(picture)
+        if isinstance(picture, FilterExpression) or not picture or not isinstance(picture, bytes):
             logger.warning("{object} is not a valid picture".format(object=name))
             return ""
 
         name = secrets.token_hex(15)
-        width, height = resize(self.object, self.max_width, self.max_height, odt=True)
+        width, height = resize(picture, max_width, max_height, odt=True)
         context.setdefault('images', {})
-        context['images'].update({name: self.object})
-        return mark_safe(ODT_IMAGE.format(name, width, height, self.anchor))
+        context['images'].update({name: picture})
+        return mark_safe(ODT_IMAGE.format(name, width, height, anchor))
 
     def get_value_context(self, context):
-        object = self.object.resolve(context)
-        if object:
-            self.object = object
-        if self.max_width:
-            self.max_width = self.max_width.resolve(context)
-        if self.max_height:
-            self.max_height = self.max_height.resolve(context)
-        if self.anchor != "paragraph":
-            self.anchor = self.anchor.resolve(context)
+        final_object = self.object.resolve(context)
+        final_max_width = "" if not self.max_width else self.max_width.resolve(context)
+        final_max_height = "" if not self.max_height else self.max_height.resolve(context)
+        final_anchor = "paragraph" if not self.anchor else self.anchor.resolve(context)
+        return final_object, final_max_width, final_max_height, final_anchor
 
 
 @register.tag

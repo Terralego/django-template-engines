@@ -7,7 +7,6 @@ import requests
 
 from bs4 import BeautifulSoup
 from django import template
-from django.template.base import FilterExpression
 from django.utils.safestring import mark_safe
 
 from template_engines.backends.utils_odt import ODT_IMAGE

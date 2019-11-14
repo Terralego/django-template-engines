@@ -119,7 +119,7 @@ class ImageUrlLoaderTestCase(TestCase):
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')
@@ -132,7 +132,7 @@ class ImageUrlLoaderTestCase(TestCase):
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')
@@ -194,7 +194,7 @@ class ImageUrlLoaderTestCase(TestCase):
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.post')
@@ -206,7 +206,7 @@ class ImageUrlLoaderTestCase(TestCase):
         rendered_template = template_to_render.render(context)
         self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad">'
+                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')

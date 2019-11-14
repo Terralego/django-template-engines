@@ -32,25 +32,25 @@ class TestUtils(TestCase):
 
     def test_resize_max_width(self):
         width, height = resize(open(IMAGE_PATH, 'rb').read(), '50', None)
-        self.assertEqual(width, 1327.5)
-        self.assertEqual(round(height), 458)
+        self.assertEqual(width, 50)
+        self.assertEqual(round(height), 17)
 
     def test_resize_max_height(self):
         width, height = resize(open(IMAGE_PATH, 'rb').read(), None, '50')
-        self.assertEqual(round(width), 3846)
-        self.assertEqual(height, 1327.5)
+        self.assertEqual(round(width), 145)
+        self.assertEqual(height, 50)
 
     def test_resize_max_height_width(self):
         # Original picture is rectangular, we keep the ratio. max_width is smaller than original width
         width, height = resize(open(IMAGE_PATH, 'rb').read(), '50', '50')
-        self.assertEqual(width, 1327.5)
-        self.assertEqual(round(height), 458)
+        self.assertEqual(width, 50)
+        self.assertEqual(round(height), 17)
 
     def test_resize_max_height_width_2(self):
         # Original picture is rectangular, we keep the ratio. max_height is smaller than original height
         width, height = resize(open(IMAGE_PATH, 'rb').read(), '150', '50')
-        self.assertEqual(round(width), 3846)
-        self.assertEqual(height, 1327.5)
+        self.assertEqual(round(width), 145)
+        self.assertEqual(height, 50)
 
     def test_resize_image(self):
         img = open(IMAGE_PATH, 'rb').read()

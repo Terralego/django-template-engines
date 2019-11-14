@@ -175,8 +175,8 @@ class ImageLoaderNodeURL(template.Node):
     def get_value_context(self, context):
         final_url = self.url.resolve(context)
         final_request = "get" if not self.request else self.request.resolve(context)
-        final_max_width = "" if not self.max_width else self.max_width.resolve(context)
-        final_max_height = "" if not self.max_height else self.max_height.resolve(context)
+        final_max_width = None if not self.max_width else self.max_width.resolve(context)
+        final_max_height = None if not self.max_height else self.max_height.resolve(context)
         final_anchor = "paragraph" if not self.anchor else self.anchor.resolve(context)
         final_data = "" if not self.data else self.data.resolve(context)
         return final_url, final_request, final_max_width, final_max_height, final_anchor, final_data
@@ -249,8 +249,8 @@ class ImageLoaderNode(template.Node):
 
     def get_value_context(self, context):
         final_object = self.object.resolve(context)
-        final_max_width = "" if not self.max_width else self.max_width.resolve(context)
-        final_max_height = "" if not self.max_height else self.max_height.resolve(context)
+        final_max_width = None if not self.max_width else self.max_width.resolve(context)
+        final_max_height = None if not self.max_height else self.max_height.resolve(context)
         final_anchor = "paragraph" if not self.anchor else self.anchor.resolve(context)
         return final_object, final_max_width, final_max_height, final_anchor
 

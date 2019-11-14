@@ -89,11 +89,11 @@ def resize_keep_ratio(bimage, max_width, max_height, odt=True):
     with Image.open(buffer) as img_reader:
         width, height = img_reader.size
 
-    final_width, final_height = get_final_width_height(max_width, max_height, width, height)
-
     if odt:
-        final_width = final_width * 35.4 * 0.75
-        final_height = final_height * 35.4 * 0.75
+        width = width * 35.4 * 0.75
+        height = height * 35.4 * 0.75
+
+    final_width, final_height = get_final_width_height(max_width, max_height, width, height)
 
     return final_width, final_height
 

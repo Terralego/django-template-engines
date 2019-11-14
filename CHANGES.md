@@ -1,11 +1,16 @@
 # CHANGELOG
 
+1.2.19          (2019-11-14)
+----------------------------
+
+* Add anchor image_url_load, image_load
+* Replace width and height for image_url_load, image_load by max_width and max_height
+
+
 1.2.18          (2019-11-13)
 ----------------------------
 
 * fix odt image inclusion
-* Add anchor image_url_load, image_load
-* Replace width and height for image_url_load, image_load by max_width and max_height
 
 
 1.2.17          (2019-11-07)

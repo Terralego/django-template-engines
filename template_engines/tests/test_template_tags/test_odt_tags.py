@@ -85,7 +85,14 @@ class ImageLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_loader image max_width="100" max_height="100" %}')
         rendered_template = template_to_render.render(context)
         self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
-        self.assertIn('svg:width="2655.0" svg:height="916.4467005076142"', rendered_template)
+        self.assertIn('svg:width="100.0" svg:height="34.51776649746193"', rendered_template)
+
+    def test_image_url_loader_resize_one_argument(self, token):
+        context = Context({'image': open(IMAGE_PATH, 'rb').read()})
+        template_to_render = Template('{% load odt_tags %}{% image_loader image max_height="100" %}')
+        rendered_template = template_to_render.render(context)
+        self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
+        self.assertIn('svg:width="289.70588235294116" svg:height="100.0"', rendered_template)
 
     def test_image_loader_fail(self, token):
         with self.assertRaises(TemplateSyntaxError) as cm:
@@ -143,7 +150,17 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url max_width="100" max_height="100" %}')
         rendered_template = template_to_render.render(context)
         self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
-        self.assertIn('svg:width="2655.0" svg:height="916.4467005076142"', rendered_template)
+        self.assertIn('svg:width="100.0" svg:height="34.51776649746193"', rendered_template)
+
+    @mock.patch('requests.get')
+    def test_image_url_loader_resize_one_argument(self, mocked_get, token):
+        mocked_get.return_value.status_code = 200
+        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        context = Context({'url': "https://test.com"})
+        template_to_render = Template('{% load odt_tags %}{% image_url_loader url max_height="100" %}')
+        rendered_template = template_to_render.render(context)
+        self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
+        self.assertIn('svg:width="289.70588235294116" svg:height="100.0"', rendered_template)
 
     @mock.patch('requests.get')
     def test_image_url_loader_fail(self, mocked_get, token):

@@ -1,7 +1,9 @@
 # CHANGELOG
 
-1.2.20.dev0     (XXXX-XX-XX)
+1.2.20          (2019-11-15)
 ----------------------------
+
+* fix max_height and max_width
 
 
 1.2.19          (2019-11-14)

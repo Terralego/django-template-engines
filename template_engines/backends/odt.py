@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.template import Context
 from django.template.context import make_context
 
 from .abstract import AbstractTemplate, ZipAbstractEngine
@@ -167,7 +166,7 @@ class OdtTemplate(AbstractTemplate):
 
     def render(self, context=None, request=None):
         context = make_context(context, request)
-        rendered = self.template.render(Context(context))
+        rendered = self.template.render(context)
         soup = BeautifulSoup(rendered, features='xml')
         soup = self.clean(soup)
         soup = self.replace_inputs(soup)

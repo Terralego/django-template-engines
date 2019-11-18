@@ -1,6 +1,6 @@
 # CHANGELOG
 
-1.2.21.dev0     (XXXX-XX-XX)
+1.2.21          (2019-11-18)
 ----------------------------
 
 * Fix context rendering odt.

@@ -4,7 +4,6 @@ from os.path import join
 
 from django.core.files.storage import default_storage
 from django.template.backends.django import DjangoTemplates
-from django.template.engine import Engine
 from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
 

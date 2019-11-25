@@ -1,6 +1,6 @@
 # CHANGELOG
 
-1.2.22.dev0     (XXXX-XX-XX)
+1.2.22          (2019-11-25)
 ----------------------------
 
 * Change AbstractEngine, inheritate from DjangoTemplates

@@ -260,8 +260,7 @@ def image_loader(parser, token):
     """
     Replace a tag by an image you specified.
     You must add an entry to the ``context`` var that is a dict with at least a ``content`` key
-    whose value is a byte object. You can also specify ``width`` and ``height``, otherwise it will
-    automatically resize your image.
+    whose value is a byte object. You can also specify ``max_width`` and ``max_height``.
     The necessary key is image
     - image : content of your picture in binary or base64
     Other keys : max_width, max_height, anchor

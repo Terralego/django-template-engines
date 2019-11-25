@@ -1,5 +1,11 @@
 # CHANGELOG
 
+1.2.23          xxxxxxxxxxxx
+----------------------------
+
+* Remove automatically resize
+* Change value conversion px to odt
+
 1.2.22          (2019-11-25)
 ----------------------------
 

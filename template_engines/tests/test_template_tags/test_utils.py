@@ -55,5 +55,5 @@ class TestUtils(TestCase):
     def test_resize_image(self):
         img = open(IMAGE_PATH, 'rb').read()
         width, height = resize(img, None, None)
-        self.assertEqual(width, 16697.0)
-        self.assertEqual(height, 5763.431472081218)
+        self.assertEqual(width, 5910.0)
+        self.assertEqual(height, 2040.0)

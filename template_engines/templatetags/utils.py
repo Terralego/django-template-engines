@@ -25,6 +25,12 @@ CONV_MAPPING = {
 }
 
 
+def size_to_odt(width, height):
+    width = CONV_MAPPING['px'](width)
+    height = CONV_MAPPING['px'](height)
+    return width, height
+
+
 def size_parser(dim, odt=True):
     """
     Convert `dxa`, `pt`, `px`, `in`, `cm`, `emu` to `dxa` if odt else to `emu`.
@@ -43,26 +49,6 @@ def size_parser(dim, odt=True):
         return CONV_MAPPING[unit](value)
     else:
         return CONV_MAPPING[unit](value) * 635
-
-
-def automatically_resize(bimage, odt=True):
-    """
-    Automatically resize the image to fit the page.
-
-    param bimage: an image.
-    :type bimage: bytes
-
-    :param odt: Optional
-    :type odt: boolean
-    """
-    buffer = BytesIO(bimage)
-    with Image.open(buffer) as img_reader:
-        width, height = img_reader.size
-        if odt:
-            ratio = min(ODT_PAGE_WIDTH / width, ODT_PAGE_HEIGHT / height)
-        else:
-            ratio = min(DOCX_PAGE_WIDTH / width, DOCX_PAGE_HEIGHT / height)
-        return (width * ratio), (height * ratio)
 
 
 def get_final_width_height(max_width, max_height, width, height):
@@ -90,8 +76,7 @@ def resize_keep_ratio(bimage, max_width, max_height, odt=True):
         width, height = img_reader.size
 
     if odt:
-        width = width * 35.4 * 0.75
-        height = height * 35.4 * 0.75
+        width, height = size_to_odt(width, height)
 
     final_width, final_height = get_final_width_height(max_width, max_height, width, height)
 
@@ -116,8 +101,13 @@ def resize(bimage, max_width, max_height, odt=True):
     :type odt: boolean
     """
     if not max_width and not max_height:
-        width, height = automatically_resize(bimage, odt=odt)
+        buffer = BytesIO(bimage)
+        with Image.open(buffer) as img_reader:
+            width, height = img_reader.size
+            if odt:
+                width, height = size_to_odt(width, height)
         return width, height
+
     if max_width:
         max_width = size_parser(max_width, odt=odt)
     if max_height:

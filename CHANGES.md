@@ -3,6 +3,7 @@
 1.2.22.dev0     (XXXX-XX-XX)
 ----------------------------
 
+* Change AbstractEngine, inheritate from DjangoTemplates
 
 1.2.21          (2019-11-18)
 ----------------------------

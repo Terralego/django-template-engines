@@ -3,8 +3,7 @@ import zipfile
 from os.path import join
 
 from django.core.files.storage import default_storage
-from django.template.backends.base import BaseEngine
-from django.template.engine import Engine
+from django.template.backends.django import DjangoTemplates
 from django.template.loader import TemplateDoesNotExist
 from django.utils.functional import cached_property
 
@@ -35,7 +34,7 @@ class AbstractTemplate:
         raise NotImplementedError()
 
 
-class ZipAbstractEngine(BaseEngine):
+class ZipAbstractEngine(DjangoTemplates):
     """
     Gives the architecture of a basic zip base template engine.
 
@@ -50,12 +49,6 @@ class ZipAbstractEngine(BaseEngine):
     sub_dirname = None
     template_class = None
     zip_root_file = None
-
-    def __init__(self, params):
-        params = params.copy()
-        options = params.pop('OPTIONS')
-        super().__init__(params)
-        self.engine = Engine(**options)
 
     def get_template_content(self, filename):
         """

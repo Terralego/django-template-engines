@@ -85,7 +85,7 @@ def resize_keep_ratio(bimage, max_width, max_height, odt=True):
 
 def resize(bimage, max_width, max_height, odt=True):
     """
-    Automatically resize the image to fit the page. if no width or height has been specified,
+    Resize the image with max_width or/and max_height has been specified,
     otherwise convert them.
 
     :param bimage: an image.

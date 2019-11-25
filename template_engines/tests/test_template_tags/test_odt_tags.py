@@ -124,7 +124,7 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url %}')
 
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
@@ -137,7 +137,7 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
 
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
@@ -149,7 +149,7 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({'url': "https://test.com"})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url max_width="100" max_height="100" %}')
         rendered_template = template_to_render.render(context)
-        self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
+        self.assertNotIn('svg:width="5910.0" svg:height="2040.0"', rendered_template)
         self.assertIn('svg:width="100.0" svg:height="34.51776649746193"', rendered_template)
 
     @mock.patch('requests.get')
@@ -159,7 +159,7 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({'url': "https://test.com"})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url max_height="100" %}')
         rendered_template = template_to_render.render(context)
-        self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
+        self.assertNotIn('svg:width="5910.0" svg:height="2040.0"', rendered_template)
         self.assertIn('svg:width="289.70588235294116" svg:height="100.0"', rendered_template)
 
     @mock.patch('requests.get')
@@ -209,7 +209,7 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({'data': {'data_to_send': 'bob'}})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" data=data %}')
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
@@ -221,7 +221,7 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="POST" %}')
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="16697.0" svg:height="5763.431472081218" '
+        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
                          '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)

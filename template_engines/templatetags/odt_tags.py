@@ -1,5 +1,4 @@
 import base64
-from io import BytesIO
 import logging
 import secrets
 import random
@@ -7,12 +6,11 @@ import re
 import requests
 
 from bs4 import BeautifulSoup
-from PIL import Image
 from django import template
 from django.utils.safestring import mark_safe
 
 from template_engines.backends.utils_odt import ODT_IMAGE
-from .utils import parse_tag, resize
+from .utils import get_extension_picture, parse_tag, resize
 
 register = template.Library()
 
@@ -172,16 +170,10 @@ class ImageLoaderNodeURL(template.Node):
         width, height = resize(response.content, max_width, max_height, odt=True)
         context.setdefault('images', {})
         picture = response.content
-        extension = self.get_extension(picture)
+        extension = get_extension_picture(picture)
         full_name = '{}.{}'.format(name, extension)
         context['images'].update({full_name: picture})
         return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph"))
-
-    def get_extension(self, image):
-        bimage = BytesIO(image)
-        with Image.open(bimage) as img_reader:
-            extension = img_reader.format.lower()
-        return extension
 
     def get_value_context(self, context):
         final_url = self.url.resolve(context)
@@ -255,16 +247,10 @@ class ImageLoaderNode(template.Node):
         name = secrets.token_hex(15)
         width, height = resize(picture, max_width, max_height, odt=True)
         context.setdefault('images', {})
-        extension = self.get_extension(picture)
+        extension = get_extension_picture(picture)
         full_name = '{}.{}'.format(name, extension)
         context['images'].update({full_name: picture})
         return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph"))
-
-    def get_extension(self, image):
-        bimage = BytesIO(image)
-        with Image.open(bimage) as img_reader:
-            extension = img_reader.format.lower()
-        return extension
 
     def get_value_context(self, context):
         final_object = self.object.resolve(context)

@@ -78,7 +78,7 @@ class ImageLoaderTestCase(TestCase):
         context = Context({'image': open(IMAGE_PATH, 'rb').read()})
         template_to_render = Template('{% load odt_tags %}{% image_loader image %}{% image_loader image %}')
         rendered_template = template_to_render.render(context)
-        self.assertEqual(rendered_template.count('<draw:frame draw:name="{name}"'.format(name=token.return_value)), 2)
+        self.assertEqual(rendered_template.count('<draw:frame draw:name="{name}.png"'.format(name=token.return_value)), 2)
 
     def test_image_loader_resize(self, token):
         context = Context({'image': open(IMAGE_PATH, 'rb').read()})
@@ -104,7 +104,7 @@ class ImageLoaderTestCase(TestCase):
         context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
         template_to_render = Template('{% load odt_tags %}{% image_loader image %}')
         rendered_template = template_to_render.render(context)
-        self.assertIn('<draw:frame draw:name="{name}"'.format(name=token.return_value), rendered_template)
+        self.assertIn('<draw:frame draw:name="{name}.png"'.format(name=token.return_value), rendered_template)
 
     def test_image_loader_anchor(self, token):
         context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
@@ -124,9 +124,9 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url %}')
 
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
+        self.assertEqual('<draw:frame draw:name="{name}.png" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
+                         '<draw:image xlink:href="Pictures/{name}.png" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')
@@ -137,9 +137,9 @@ class ImageUrlLoaderTestCase(TestCase):
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
 
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
+        self.assertEqual('<draw:frame draw:name="{name}.png" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
+                         '<draw:image xlink:href="Pictures/{name}.png" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')
@@ -209,9 +209,9 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({'data': {'data_to_send': 'bob'}})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" data=data %}')
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
+        self.assertEqual('<draw:frame draw:name="{name}.png" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
+                         '<draw:image xlink:href="Pictures/{name}.png" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.post')
@@ -221,9 +221,9 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="POST" %}')
         rendered_template = template_to_render.render(context)
-        self.assertEqual('<draw:frame draw:name="{name}" svg:width="5910.0" svg:height="2040.0" '
+        self.assertEqual('<draw:frame draw:name="{name}.png" svg:width="5910.0" svg:height="2040.0" '
                          'text:anchor-type="paragraph" draw:z-index="0">'
-                         '<draw:image xlink:href="Pictures/{name}" xlink:show="embed" xlink:actuate="onLoad"/>'
+                         '<draw:image xlink:href="Pictures/{name}.png" xlink:show="embed" xlink:actuate="onLoad"/>'
                          '</draw:frame>'.format(name=token.return_value), rendered_template)
 
     @mock.patch('requests.get')

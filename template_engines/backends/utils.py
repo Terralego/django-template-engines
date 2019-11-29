@@ -2,6 +2,7 @@
 Contains all generic functions that can be used to build test_backends.
 """
 import io
+import os
 import re
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
@@ -9,30 +10,43 @@ from zipfile import ZipFile
 from django.core.files.storage import default_storage
 
 
-def modify_content_document(file_path, xml_path, rendered):
+def get_rendered_by_xml(xml_paths, soup):
+    dict_xml = {}
+    for xml_path in xml_paths:
+        name, _ = os.path.splitext(xml_path)
+        version = '<?xml version="1.0" encoding="UTF-8"?>\n'
+        rendered = str('{}{}'.format(version, soup.find('{}-merged'.format(name)).contents[0]))
+        dict_xml[xml_path] = rendered
+    return dict_xml
+
+
+def modify_content_document(file_path, xml_paths, soup):
     """
     Modify a libreoffice document (docx and odt only for the moment).
 
     :param file_path: the path of the zip file.
     :type file_path: str
 
-    :param xml_path: path to the xml representation of the document.
-    :type xml_path: str
+    :param xml_paths: path to the xml representation of the document.
+    :type xml_paths: List[str]
 
     :param rendered: content to put in the xml representation of the document.
     :type rendered: str
 
     :returns: the modified file as a byte object.
     """
-    temp_file = NamedTemporaryFile()
 
+    temp_file = NamedTemporaryFile()
+    dict_xml_render =get_rendered_by_xml(xml_paths, soup)
     template_buffer = io.BytesIO(default_storage.open(file_path, 'rb').read())
+
     with ZipFile(template_buffer, 'r') as read_zip_file:
         info_list = read_zip_file.infolist()
+
         with ZipFile(temp_file.name, 'w') as write_zip_file:
             for item in info_list:
-                if item.filename == xml_path:
-                    write_zip_file.writestr(item, rendered)
+                if item.filename in xml_paths:
+                    write_zip_file.writestr(item, dict_xml_render[item.filename])
                 else:
                     write_zip_file.writestr(item, read_zip_file.read(item.filename))
 

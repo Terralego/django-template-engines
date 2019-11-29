@@ -41,7 +41,7 @@ class DocxTemplate(AbstractTemplate):
         context = make_context(context, request)
         rendered = self.template.render(Context(context))
         rendered = self.clean(rendered)
-        docx_content = modify_content_document(self.template_path, 'word/document.xml', rendered)
+        docx_content = modify_content_document(self.template_path, ['word/document.xml'], rendered)
         for key, image in context.get('images', {}).items():
             docx_content = add_image_in_docx_template(docx_content, image)
         return docx_content
@@ -60,7 +60,7 @@ class DocxEngine(ZipAbstractEngine):
     sub_dirname = getattr(settings, 'DOCX_ENGINE_SUB_DIRNAME', 'docx')
     app_dirname = getattr(settings, 'DOCX_ENGINE_APP_DIRNAME', 'templates')
     template_class = DocxTemplate
-    zip_root_file = 'word/document.xml'
+    zip_root_files = ['word/document.xml']
 
     def __init__(self, params):
         params['OPTIONS'].setdefault('builtins', [])

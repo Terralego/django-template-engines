@@ -14,9 +14,8 @@ def get_rendered_by_xml(xml_paths, soup):
     dict_xml = {}
     for xml_path in xml_paths:
         name, _ = os.path.splitext(xml_path)
-        version = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        rendered = str('{}{}'.format(version, soup.find('{}-merged'.format(name)).contents[0]))
-        dict_xml[xml_path] = rendered
+        merged = soup.find('{}-merged'.format(name.replace('/', '-')))
+        dict_xml[xml_path] = merged.contents[0] if merged.contents else ''
     return dict_xml
 
 
@@ -37,7 +36,7 @@ def modify_content_document(file_path, xml_paths, soup):
     """
 
     temp_file = NamedTemporaryFile()
-    dict_xml_render =get_rendered_by_xml(xml_paths, soup)
+    dict_xml_render = get_rendered_by_xml(xml_paths, soup)
     template_buffer = io.BytesIO(default_storage.open(file_path, 'rb').read())
 
     with ZipFile(template_buffer, 'r') as read_zip_file:
@@ -46,10 +45,10 @@ def modify_content_document(file_path, xml_paths, soup):
         with ZipFile(temp_file.name, 'w') as write_zip_file:
             for item in info_list:
                 if item.filename in xml_paths:
-                    write_zip_file.writestr(item, dict_xml_render[item.filename])
+                    version = read_zip_file.read(item.filename).decode().split('\n')[0]
+                    write_zip_file.writestr(item, '{0}\n{1}'.format(version, dict_xml_render[item.filename]))
                 else:
                     write_zip_file.writestr(item, read_zip_file.read(item.filename))
-
     with open(temp_file.name, 'rb') as read_file:
         return read_file.read()
 

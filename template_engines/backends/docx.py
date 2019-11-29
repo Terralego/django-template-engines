@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.template import Context
 from django.template.context import make_context
@@ -39,9 +40,10 @@ class DocxTemplate(AbstractTemplate):
         parameters and returns a docx file as a byte object.
         """
         context = make_context(context, request)
-        rendered = self.template.render(Context(context))
+        rendered = self.template.render(context)
         rendered = self.clean(rendered)
-        docx_content = modify_content_document(self.template_path, ['word/document.xml'], rendered)
+        soup = BeautifulSoup(rendered, features='lxml')
+        docx_content = modify_content_document(self.template_path, ['word/document.xml'], soup)
         for key, image in context.get('images', {}).items():
             docx_content = add_image_in_docx_template(docx_content, image)
         return docx_content

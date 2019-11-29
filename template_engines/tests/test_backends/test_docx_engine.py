@@ -40,6 +40,7 @@ class TestDocxEngine(TestCase):
             self.odt_engine.get_template_path('bad_name')
 
     def test_get_template_content_works(self):
+        self.maxDiff = None
         with open(DOCX_CONTENT_SCREENSHOT, 'r') as read_file:
             self.assertEqual(self.odt_engine.get_template_content(DOCX_TEMPLATE_PATH),
                              read_file.read())
@@ -55,6 +56,7 @@ class TestDocxEngine(TestCase):
             self.odt_engine.get_template(ODT_TEMPLATE_PATH)
 
     def test_render(self):
+        self.maxDiff = None
         template = self.odt_engine.get_template('template.docx')
         rendered = template.render(context={'object': {"name": "Michel"}})
         self.assertIsInstance(rendered, bytes)

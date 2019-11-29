@@ -59,12 +59,13 @@ class ZipAbstractEngine(DjangoTemplates):
             template_buffer = io.BytesIO(default_storage.open(filename, 'rb').read())
             with zipfile.ZipFile(template_buffer, 'r') as zip_file:
                 list_content = []
-
                 for file_to_merge in self.zip_root_files:
-
                     name, _ = os.path.splitext(file_to_merge)
-                    list_content.append('<{0}-merged>{1}</{0}-merged>'.format(name,
-                                                                              zip_file.read(file_to_merge).decode().replace(version, '')))
+                    content = zip_file.read(file_to_merge).decode()
+                    version = zip_file.read(file_to_merge).decode().split('\n')[0]
+                    final_content = content.replace(version, '').replace('\n', '')
+                    # Some file are in directories we get / which is not possible to add in a xml, we replace by '-'
+                    list_content.append('<{0}-merged>{1}</{0}-merged>'.format(name.replace('/', '-'),  final_content))
             final_content = ''.join(list_content)
             return '{}{}'.format(version, final_content)
         except KeyError:

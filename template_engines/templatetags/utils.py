@@ -155,3 +155,10 @@ def parse_tag(token, parser):
             args.append(FilterExpression(bit, parser))
 
     return tag_name, args, kwargs
+
+
+def get_extension_picture(image):
+    bimage = BytesIO(image)
+    with Image.open(bimage) as img_reader:
+        extension = img_reader.format.lower()
+    return extension

@@ -10,7 +10,7 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from template_engines.backends.utils_odt import ODT_IMAGE
-from .utils import parse_tag, resize
+from .utils import get_extension_picture, parse_tag, resize
 
 register = template.Library()
 
@@ -169,8 +169,11 @@ class ImageLoaderNodeURL(template.Node):
             return ""
         width, height = resize(response.content, max_width, max_height, odt=True)
         context.setdefault('images', {})
-        context['images'].update({name: response.content})
-        return mark_safe(ODT_IMAGE.format(name, width, height, anchor or "paragraph"))
+        picture = response.content
+        extension = get_extension_picture(picture)
+        full_name = '{}.{}'.format(name, extension)
+        context['images'].update({full_name: picture})
+        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph"))
 
     def get_value_context(self, context):
         final_url = self.url.resolve(context)
@@ -244,8 +247,10 @@ class ImageLoaderNode(template.Node):
         name = secrets.token_hex(15)
         width, height = resize(picture, max_width, max_height, odt=True)
         context.setdefault('images', {})
-        context['images'].update({name: picture})
-        return mark_safe(ODT_IMAGE.format(name, width, height, anchor))
+        extension = get_extension_picture(picture)
+        full_name = '{}.{}'.format(name, extension)
+        context['images'].update({full_name: picture})
+        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph"))
 
     def get_value_context(self, context):
         final_object = self.object.resolve(context)

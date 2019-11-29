@@ -47,11 +47,11 @@ def add_image_in_odt_template(bfile, image, name):
 
             # Add the image in the word/media folder
             temp_image = NamedTemporaryFile()
+
             with open(temp_image.name, 'wb') as writer:
                 writer.write(image)
             write_zip_file.write(
                 temp_image.name,
                 arcname='Pictures/{}'.format(name))
-
     with open(temp_doc.name, 'rb') as read_file:
         return read_file.read()

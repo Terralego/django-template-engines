@@ -1,11 +1,12 @@
 # CHANGELOG
 
-1.2.23          xxxxxxxxxxxx
+1.2.23          (2019-11-29)
 ----------------------------
 
 * Remove automatically resize
 * Change value conversion px to odt
 * Add extension at the end of the generated file
+
 
 1.2.22          (2019-11-25)
 ----------------------------

@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.template import Context
 from django.template.context import make_context
 
 from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES

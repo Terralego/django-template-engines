@@ -1,6 +1,7 @@
 """
 Contains all generic functions that can be used to build test_backends.
 """
+from bs4 import BeautifulSoup
 import io
 import os
 import re
@@ -45,8 +46,10 @@ def modify_content_document(file_path, xml_paths, soup):
         with ZipFile(temp_file.name, 'w') as write_zip_file:
             for item in info_list:
                 if item.filename in xml_paths:
-                    version = read_zip_file.read(item.filename).decode().split('\n')[0]
-                    write_zip_file.writestr(item, '{0}\n{1}'.format(version, dict_xml_render[item.filename]))
+                    version = BeautifulSoup(read_zip_file.read(item.filename).decode(), 'html.parser')
+                    version.findChild().decompose()
+                    version.append(dict_xml_render[item.filename])
+                    write_zip_file.writestr(item, str(version))
                 else:
                     write_zip_file.writestr(item, read_zip_file.read(item.filename))
     with open(temp_file.name, 'rb') as read_file:

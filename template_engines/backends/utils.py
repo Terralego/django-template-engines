@@ -14,7 +14,7 @@ from django.core.files.storage import default_storage
 def get_rendered_by_xml(xml_paths, soup):
     dict_xml = {}
     for xml_path in xml_paths:
-        name, _ = os.path.splitext(xml_path)
+        name = os.path.splitext(xml_path)[0]
         merged = soup.find('{}-merged'.format(name.replace('/', '-')))
         dict_xml[xml_path] = merged.contents[0] if merged.contents else ''
     return dict_xml

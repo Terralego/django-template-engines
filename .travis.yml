@@ -31,7 +31,7 @@ install:
 - python setup.py install
 - pip install codecov coverage
 - if [[ $DJANGO_VERSION == dev ]]; then
-  pip install -e git+https://github.com/django/django@master#egg=django;
+  pip install -e git+https://github.com/django/django@master#egg=django -U;
   else
   pip install Django==$DJANGO_VERSION -U;
   fi

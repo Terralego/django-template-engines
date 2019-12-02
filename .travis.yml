@@ -5,6 +5,7 @@ language: python
 python:
 - '3.6'
 - '3.7'
+- '3.8'
 
 stages:
   - lint
@@ -13,14 +14,17 @@ stages:
 
 env:
   matrix:
-  - DJANGO_VERSION=2.2
-  - DJANGO_VERSION=3.0rc1
+  - DJANGO_VERSION=2.2.*
+  - DJANGO_VERSION=3.0.*
+  - DJANGO_VERSION=dev
 
 matrix:
   allow_failures:
     - python: 3.6
       env: DJANGO_VERSION=dev
     - python: 3.7
+      env: DJANGO_VERSION=dev
+    - python: 3.8
       env: DJANGO_VERSION=dev
 
 install:
@@ -34,7 +38,9 @@ install:
 
 script:
 - coverage run --source=template_engines ./manage.py test
-- codecov
+
+after_success:
+  - codecov
 
 jobs:
   include:
@@ -43,8 +49,10 @@ jobs:
         - DJANGO_VERSION=none
       install:
         - pip3 install flake8
+      before_script: skip
       script:
         - flake8 template_engines
+      after_success: skip
 
     - stage: deploy
       env:

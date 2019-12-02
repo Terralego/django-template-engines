@@ -1,6 +1,7 @@
+from bs4 import BeautifulSoup
 import io
 import zipfile
-from os.path import join
+import os
 
 from django.core.files.storage import default_storage
 from django.template.backends.django import DjangoTemplates
@@ -48,17 +49,26 @@ class ZipAbstractEngine(DjangoTemplates):
     app_dirname = None
     sub_dirname = None
     template_class = None
-    zip_root_file = None
+    zip_root_files = None
 
     def get_template_content(self, filename):
         """
         Returns the contents of a template before modification, as a string.
         """
         try:
+            soup = BeautifulSoup('', 'html.parser')
+            global_tag = soup.new_tag("global-merged")
             template_buffer = io.BytesIO(default_storage.open(filename, 'rb').read())
             with zipfile.ZipFile(template_buffer, 'r') as zip_file:
-                b_content = zip_file.read(self.zip_root_file)
-                return b_content.decode()
+                for file_to_merge in self.zip_root_files:
+                    name, _ = os.path.splitext(file_to_merge)
+                    content = zip_file.read(file_to_merge).decode()
+                    content_soup = BeautifulSoup(content, 'xml')
+                    tag_file = content_soup.new_tag('{0}-merged'.format(name.replace('/', '-')))
+                    tag_file.append(content_soup)
+                    global_tag.append(tag_file)
+            soup.append(global_tag)
+            return str(soup)
         except KeyError:
             raise TemplateDoesNotExist('Bad format.')
 
@@ -66,7 +76,7 @@ class ZipAbstractEngine(DjangoTemplates):
     def template_dirs(self):
         t_dirs = super().template_dirs
         if self.sub_dirname:
-            t_dirs += tuple([join(p, self.sub_dirname) for p in t_dirs])
+            t_dirs += tuple([os.path.join(p, self.sub_dirname) for p in t_dirs])
         return t_dirs
 
     def from_string(self, template_code, **kwargs):
@@ -80,7 +90,7 @@ class ZipAbstractEngine(DjangoTemplates):
         if default_storage.exists(filename):
             return filename
         for directory in self.template_dirs:
-            abstract_path = default_storage.generate_filename(join(directory, filename))
+            abstract_path = default_storage.generate_filename(os.path.join(directory, filename))
             if default_storage.exists(abstract_path):
                 return abstract_path
         raise TemplateDoesNotExist(f'Unknown: {filename}')

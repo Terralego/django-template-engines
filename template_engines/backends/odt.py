@@ -167,10 +167,11 @@ class OdtTemplate(AbstractTemplate):
     def render(self, context=None, request=None):
         context = make_context(context, request)
         rendered = self.template.render(context)
-        soup = BeautifulSoup(rendered, features='xml')
+        soup = BeautifulSoup(rendered, features='html.parser')
         soup = self.clean(soup)
         soup = self.replace_inputs(soup)
-        odt_content = modify_content_document(self.template_path, 'content.xml', str(soup))
+
+        odt_content = modify_content_document(self.template_path, ['content.xml', 'styles.xml'], soup)
         for key, image in context.get('images', {}).items():
             odt_content = add_image_in_odt_template(odt_content, image, key)
         return odt_content
@@ -189,7 +190,7 @@ class OdtEngine(ZipAbstractEngine):
     sub_dirname = getattr(settings, 'ODT_ENGINE_SUB_DIRNAME', 'odt')
     app_dirname = getattr(settings, 'ODT_ENGINE_APP_DIRNAME', 'templates')
     template_class = OdtTemplate
-    zip_root_file = 'content.xml'
+    zip_root_files = ['content.xml', 'styles.xml']
 
     def __init__(self, params):
         params['OPTIONS'].setdefault('builtins', [])

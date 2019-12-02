@@ -3,7 +3,7 @@
 1.2.24.dev0     (XXXX-XX-XX)
 ----------------------------
 
-*
+* Add rendering of footer and header
 
 
 1.2.23          (2019-11-29)

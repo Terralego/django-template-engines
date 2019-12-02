@@ -1,6 +1,6 @@
 # CHANGELOG
 
-1.2.24.dev0     (XXXX-XX-XX)
+1.2.24          (2019-12-02)
 ----------------------------
 
 * Add rendering of footer and header

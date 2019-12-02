@@ -14,7 +14,7 @@ class TestUtils(TestCase):
 
     def test_modify_content_document_with_odt_works(self):
         new_file = modify_content_document(ODT_TEMPLATE_PATH, ['content.xml'],
-                                           BeautifulSoup('<content-merged></content-merged>', 'lxml'))
+                                           BeautifulSoup('<content-merged></content-merged>', 'html.parser'))
         # Checks the return type
         self.assertIsInstance(new_file, bytes)
 
@@ -31,11 +31,11 @@ class TestUtils(TestCase):
                         # Checks that the files are dientical
                         self.assertEqual(buffer_zip_obj.read(filename), odt_zip_obj.read(filename))
                     else:
-                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8"?>')
+                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8"?>\n')
 
     def test_modify_content_document_with_docx_works(self):
         new_file = modify_content_document(DOCX_TEMPLATE_PATH, ['word/document.xml'],
-                                           BeautifulSoup('<word-document-merged></word-document-merged>', 'lxml'))
+                                           BeautifulSoup('<word-document-merged></word-document-merged>', 'html.parser'))
         # Checks the return type
         self.assertIsInstance(new_file, bytes)
 
@@ -52,7 +52,7 @@ class TestUtils(TestCase):
                         # Checks that the files are dientical
                         self.assertEqual(buffer_zip_obj.read(filename), odt_zip_obj.read(filename))
                     else:
-                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
+                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n')
 
     def test_add_image_in_docx_template_works(self):
         img_content = open(IMAGE_PATH, 'rb').read()

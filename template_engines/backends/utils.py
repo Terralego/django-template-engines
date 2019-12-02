@@ -46,7 +46,7 @@ def modify_content_document(file_path, xml_paths, soup):
         with ZipFile(temp_file.name, 'w') as write_zip_file:
             for item in info_list:
                 if item.filename in xml_paths:
-                    version = BeautifulSoup(read_zip_file.read(item.filename).decode(), 'lxml')
+                    version = BeautifulSoup(read_zip_file.read(item.filename).decode(), 'html.parser')
                     version.findChild().decompose()
                     version.append(dict_xml_render[item.filename])
                     write_zip_file.writestr(item, str(version))

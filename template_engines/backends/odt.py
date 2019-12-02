@@ -167,7 +167,7 @@ class OdtTemplate(AbstractTemplate):
     def render(self, context=None, request=None):
         context = make_context(context, request)
         rendered = self.template.render(context)
-        soup = BeautifulSoup(rendered, features='lxml')
+        soup = BeautifulSoup(rendered, features='html.parser')
         soup = self.clean(soup)
         soup = self.replace_inputs(soup)
 

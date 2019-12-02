@@ -56,7 +56,7 @@ class ZipAbstractEngine(DjangoTemplates):
         Returns the contents of a template before modification, as a string.
         """
         try:
-            soup = BeautifulSoup('', 'lxml')
+            soup = BeautifulSoup('', 'html.parser')
             global_tag = soup.new_tag("global-merged")
             template_buffer = io.BytesIO(default_storage.open(filename, 'rb').read())
             with zipfile.ZipFile(template_buffer, 'r') as zip_file:

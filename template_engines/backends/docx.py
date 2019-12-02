@@ -41,7 +41,7 @@ class DocxTemplate(AbstractTemplate):
         context = make_context(context, request)
         rendered = self.template.render(context)
         rendered = self.clean(rendered)
-        soup = BeautifulSoup(rendered, features='lxml')
+        soup = BeautifulSoup(rendered, features='html.parser')
         docx_content = modify_content_document(self.template_path, ['word/document.xml'], soup)
         for key, image in context.get('images', {}).items():
             docx_content = add_image_in_docx_template(docx_content, image)

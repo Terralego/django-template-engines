@@ -31,7 +31,7 @@ class TestUtils(TestCase):
                         # Checks that the files are dientical
                         self.assertEqual(buffer_zip_obj.read(filename), odt_zip_obj.read(filename))
                     else:
-                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8"?>\n')
+                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8"?>')
 
     def test_modify_content_document_with_docx_works(self):
         new_file = modify_content_document(DOCX_TEMPLATE_PATH, ['word/document.xml'],
@@ -52,7 +52,7 @@ class TestUtils(TestCase):
                         # Checks that the files are dientical
                         self.assertEqual(buffer_zip_obj.read(filename), odt_zip_obj.read(filename))
                     else:
-                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n')
+                        self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>')
 
     def test_add_image_in_docx_template_works(self):
         img_content = open(IMAGE_PATH, 'rb').read()

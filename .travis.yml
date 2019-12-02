@@ -33,7 +33,7 @@ install:
 - if [[ $DJANGO_VERSION == dev ]]; then
   pip install -e git+https://github.com/django/django@master#egg=django;
   else
-  pip install -q Django==$DJANGO_VERSION;
+  pip install Django==$DJANGO_VERSION -U;
   fi
 
 script:

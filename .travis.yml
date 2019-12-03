@@ -20,12 +20,7 @@ env:
 
 matrix:
   allow_failures:
-    - python: 3.6
-      env: DJANGO_VERSION=dev
-    - python: 3.7
-      env: DJANGO_VERSION=dev
-    - python: 3.8
-      env: DJANGO_VERSION=dev
+    - env: DJANGO_VERSION=dev
 
 install:
 - python setup.py install
@@ -45,8 +40,6 @@ after_success:
 jobs:
   include:
     - stage: lint
-      env:
-        - DJANGO_VERSION=none
       install:
         - pip3 install flake8
       before_script: skip
@@ -55,8 +48,6 @@ jobs:
       after_success: skip
 
     - stage: deploy
-      env:
-        - DJANGO_VERSION=none
       install: skip
       before_script: skip
       script: skip

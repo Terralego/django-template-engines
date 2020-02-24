@@ -50,7 +50,6 @@ jobs:
     - stage: deploy
       install: skip
       before_script: skip
-      script: skip
       deploy:
         stage: deploy
         provider: pypi

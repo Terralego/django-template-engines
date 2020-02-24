@@ -1,9 +1,9 @@
 # CHANGELOG
 
-1.2.25.dev0     (XXXX-XX-XX)
+1.2.25          (2020-02-24)
 ----------------------------
 
-* Fix span tags with text:span
+* Fix span tags with text:span in from_html
 
 
 1.2.24          (2019-12-02)

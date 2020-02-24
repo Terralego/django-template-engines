@@ -146,6 +146,7 @@ def from_html(value, is_safe=True):
     """ Convert HTML from rte fields to odt compatible format """
     soup = BeautifulSoup(value, "html.parser")
     soup = parse_p(soup)
+    soup = parse_span(soup)
     soup = parse_strong(soup)
     soup = parse_italic(soup)
     soup = parse_underline(soup)
@@ -154,7 +155,6 @@ def from_html(value, is_safe=True):
     soup = parse_a(soup)
     soup = parse_h(soup)
     soup = parse_br(soup)
-    soup = parse_span(soup)
     return mark_safe(str(soup))
 
 

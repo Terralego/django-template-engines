@@ -50,6 +50,7 @@ jobs:
       before_install: skip
       install: skip
       before_script: skip
+      script: skip
       after_script: skip
 
       deploy:

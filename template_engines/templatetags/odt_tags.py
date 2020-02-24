@@ -28,10 +28,10 @@ def parse_p(soup):
 
 def parse_span(soup):
     """ Replace span tags with text:span """
-    paragraphs = soup.find_all("span")
+    spans = soup.find_all("span")
 
-    for p_tag in paragraphs:
-        p_tag.name = 'text:span'
+    for span_tag in spans:
+        span_tag.name = 'text:span'
     return soup
 
 
@@ -145,8 +145,8 @@ def parse_br(soup):
 def from_html(value, is_safe=True):
     """ Convert HTML from rte fields to odt compatible format """
     soup = BeautifulSoup(value, "html.parser")
-    soup = parse_p(soup)
     soup = parse_span(soup)
+    soup = parse_p(soup)
     soup = parse_strong(soup)
     soup = parse_italic(soup)
     soup = parse_underline(soup)

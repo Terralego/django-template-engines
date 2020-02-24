@@ -18,10 +18,6 @@ env:
   - DJANGO_VERSION=3.0.*
   - DJANGO_VERSION=dev
 
-matrix:
-  allow_failures:
-    - env: DJANGO_VERSION=dev
-
 install:
 - python setup.py install
 - pip install codecov coverage
@@ -38,6 +34,9 @@ after_success:
   - codecov
 
 jobs:
+  allow_failures:
+    - env: DJANGO_VERSION=dev
+
   include:
     - stage: lint
       install:
@@ -48,8 +47,11 @@ jobs:
       after_success: skip
 
     - stage: deploy
+      before_install: skip
       install: skip
       before_script: skip
+      after_script: skip
+
       deploy:
         stage: deploy
         provider: pypi

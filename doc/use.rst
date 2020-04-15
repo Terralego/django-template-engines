@@ -27,7 +27,7 @@ Now you can add images in the right place:
 
  Additional arguments are max_width, max_height, request, data, anchor
 
-   ``{% image_loader image_in_the_context max_width="50" max_height="50" anchor="as-char" %}``
+   ``{% image_loader image_in_the_context max_width="50px" max_height="50px" anchor="as-char" %}``
 
  * From url :
     * From an url directly :
@@ -41,7 +41,7 @@ Now you can add images in the right place:
 
     Additional arguments are max_width, max_height, request, data, anchor
 
-     ``{% image_url_loader url_in_the_context max_width="50" max_height="50" request="POST" data="" anchor="frame" %}``
+     ``{% image_url_loader url_in_the_context max_width="50px" max_height="50px" request="POST" data="" anchor="frame" %}``
 
 max_height and max_width allow to define the maximum your picture should be. It will keep the ratio of the original picture.
 It will also not enlarge your picture if you define a value higher than the original picture.

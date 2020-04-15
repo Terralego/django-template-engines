@@ -284,7 +284,7 @@ def image_loader(parser, token):
     - anchor : Type of anchor, paragraph, as-char, char, frame, page
     """
     tag_name, args, kwargs = parse_tag(token, parser)
-    usage = '{{% {tag_name} [image] max_width="5000" max_height="5000" anchor="as-char" %}}'.format(tag_name=tag_name)
+    usage = '{{% {tag_name} [image] max_width="5000px" max_height="5000px" anchor="as-char" %}}'.format(tag_name=tag_name)
     if len(args) > 1 or not all(key in ['max_width', 'max_height', 'anchor']
                                 for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)

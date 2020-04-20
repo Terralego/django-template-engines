@@ -97,7 +97,7 @@ class ImageLoaderTestCase(TestCase):
     def test_image_loader_fail(self, token):
         with self.assertRaises(TemplateSyntaxError) as cm:
             Template('{% load odt_tags %}{% image_loader image=image %}')
-        self.assertEqual('Usage: {% image_loader [image] max_width="5000" max_height="5000" '
+        self.assertEqual('Usage: {% image_loader [image] max_width="5000px" max_height="5000px" '
                          'anchor="as-char" %}', str(cm.exception))
 
     def test_image_loader_object_base64(self, token):
@@ -168,8 +168,8 @@ class ImageUrlLoaderTestCase(TestCase):
         mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
         with self.assertRaises(TemplateSyntaxError) as cm:
             Template('{% load odt_tags %}{% image_url_loader url="https://test.com" %}')
-        self.assertEqual('Usage: {% image_url_loader [url] max_width="5000" '
-                         'max_height="5000" request="GET" data="{"data": "example"}" '
+        self.assertEqual('Usage: {% image_url_loader [url] max_width="5000px" '
+                         'max_height="5000px" request="GET" data="{"data": "example"}" '
                          'anchor="as-char" %}', str(cm.exception))
 
     @mock.patch('requests.get')

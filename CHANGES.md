@@ -1,6 +1,6 @@
 # CHANGELOG
 
-1.2.26.dev0     (XXXX-XX-XX)
+1.2.26          (2020-05-04)
 ----------------------------
 
 * Fix deprecation warnings and bad closing files

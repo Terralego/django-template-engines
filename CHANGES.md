@@ -3,7 +3,7 @@
 1.2.26.dev0     (XXXX-XX-XX)
 ----------------------------
 
-*
+* Fix deprecation warnings and bad closing files
 
 
 1.2.25          (2020-02-24)

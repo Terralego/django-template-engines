@@ -58,17 +58,18 @@ class ZipAbstractEngine(DjangoTemplates):
         try:
             soup = BeautifulSoup('', 'html.parser')
             global_tag = soup.new_tag("global-merged")
-            template_buffer = io.BytesIO(default_storage.open(filename, 'rb').read())
-            with zipfile.ZipFile(template_buffer, 'r') as zip_file:
-                for file_to_merge in self.zip_root_files:
-                    name, _ = os.path.splitext(file_to_merge)
-                    content = zip_file.read(file_to_merge).decode()
-                    content_soup = BeautifulSoup(content, 'xml')
-                    tag_file = content_soup.new_tag('{0}-merged'.format(name.replace('/', '-')))
-                    tag_file.append(content_soup)
-                    global_tag.append(tag_file)
-            soup.append(global_tag)
-            return str(soup)
+            with default_storage.open(filename, 'rb') as template_file:
+                template_buffer = io.BytesIO(template_file.read())
+                with zipfile.ZipFile(template_buffer, 'r') as zip_file:
+                    for file_to_merge in self.zip_root_files:
+                        name, _ = os.path.splitext(file_to_merge)
+                        content = zip_file.read(file_to_merge).decode()
+                        content_soup = BeautifulSoup(content, 'xml')
+                        tag_file = content_soup.new_tag('{0}-merged'.format(name.replace('/', '-')))
+                        tag_file.append(content_soup)
+                        global_tag.append(tag_file)
+                    soup.append(global_tag)
+                    return str(soup)
         except KeyError:
             raise TemplateDoesNotExist('Bad format.')
 

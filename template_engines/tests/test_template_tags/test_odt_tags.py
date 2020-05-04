@@ -75,20 +75,23 @@ class FilterFromHTMLTestCase(TestCase):
 @mock.patch('secrets.token_hex', return_value='test')
 class ImageLoaderTestCase(TestCase):
     def test_image_loader_object(self, token):
-        context = Context({'image': open(IMAGE_PATH, 'rb').read()})
+        with open(IMAGE_PATH, 'rb') as image_file:
+            context = Context({'image': image_file.read()})
         template_to_render = Template('{% load odt_tags %}{% image_loader image %}{% image_loader image %}')
         rendered_template = template_to_render.render(context)
         self.assertEqual(rendered_template.count('<draw:frame draw:name="{name}.png"'.format(name=token.return_value)), 2)
 
     def test_image_loader_resize(self, token):
-        context = Context({'image': open(IMAGE_PATH, 'rb').read()})
+        with open(IMAGE_PATH, 'rb') as image_file:
+            context = Context({'image': image_file.read()})
         template_to_render = Template('{% load odt_tags %}{% image_loader image max_width="100" max_height="100" %}')
         rendered_template = template_to_render.render(context)
         self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
         self.assertIn('svg:width="100.0" svg:height="34.51776649746193"', rendered_template)
 
     def test_image_url_loader_resize_one_argument(self, token):
-        context = Context({'image': open(IMAGE_PATH, 'rb').read()})
+        with open(IMAGE_PATH, 'rb') as image_file:
+            context = Context({'image': image_file.read()})
         template_to_render = Template('{% load odt_tags %}{% image_loader image max_height="100" %}')
         rendered_template = template_to_render.render(context)
         self.assertNotIn('svg:width="16697.0" svg:height="5763.431472081218"', rendered_template)
@@ -101,13 +104,16 @@ class ImageLoaderTestCase(TestCase):
                          'anchor="as-char" %}', str(cm.exception))
 
     def test_image_loader_object_base64(self, token):
-        context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
+        with open(IMAGE_PATH, 'rb') as image_file:
+            context = Context({'image': ';base64,%s' % base64.b64encode(image_file.read()).decode()})
+
         template_to_render = Template('{% load odt_tags %}{% image_loader image %}')
         rendered_template = template_to_render.render(context)
         self.assertIn('<draw:frame draw:name="{name}.png"'.format(name=token.return_value), rendered_template)
 
     def test_image_loader_anchor(self, token):
-        context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
+        with open(IMAGE_PATH, 'rb') as image_file:
+            context = Context({'image': ';base64,%s' % base64.b64encode(image_file.read()).decode()})
         template_to_render = Template('{% load odt_tags %}{% image_loader image anchor="as-char" %}')
         rendered_template = template_to_render.render(context)
         self.assertIn('text:anchor-type="as-char"', rendered_template)
@@ -119,7 +125,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.get')
     def test_image_url_loader_object(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
         context = Context({'url': "https://test.com"})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url %}')
 
@@ -132,7 +139,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.get')
     def test_image_url_loader_url(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
 
@@ -145,7 +153,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.get')
     def test_image_url_loader_resize(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
         context = Context({'url': "https://test.com"})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url max_width="100" max_height="100" %}')
         rendered_template = template_to_render.render(context)
@@ -155,7 +164,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.get')
     def test_image_url_loader_resize_one_argument(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
         context = Context({'url': "https://test.com"})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader url max_height="100" %}')
         rendered_template = template_to_render.render(context)
@@ -165,7 +175,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.get')
     def test_image_url_loader_fail(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
         with self.assertRaises(TemplateSyntaxError) as cm:
             Template('{% load odt_tags %}{% image_url_loader url="https://test.com" %}')
         self.assertEqual('Usage: {% image_url_loader [url] max_width="5000px" '
@@ -195,7 +206,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('sys.stderr', new_callable=io.StringIO)
     def test_image_url_loader_picture_wrong_request(self, mock_out, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="WRONG" %}')
         template_to_render.render(context)
@@ -205,7 +217,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('sys.stderr', new_callable=io.StringIO)
     def test_image_url_loader_picture_with_datas(self, mock_out, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
         context = Context({'data': {'data_to_send': 'bob'}})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" data=data %}')
         rendered_template = template_to_render.render(context)
@@ -217,7 +230,8 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.post')
     def test_image_url_loader_picture_post_request(self, mocked_post, token):
         mocked_post.return_value.status_code = 200
-        mocked_post.return_value.content = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_post.return_value.content = image_file.read()
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" request="POST" %}')
         rendered_template = template_to_render.render(context)
@@ -229,8 +243,10 @@ class ImageUrlLoaderTestCase(TestCase):
     @mock.patch('requests.get')
     def test_image_loader_anchor(self, mocked_get, token):
         mocked_get.return_value.status_code = 200
-        mocked_get.return_value.content = open(IMAGE_PATH, 'rb').read()
-        context = Context({'image': ';base64,%s' % base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode()})
+        with open(IMAGE_PATH, 'rb') as image_file:
+            content = image_file.read()
+            mocked_get.return_value.content = content
+            context = Context({'image': ';base64,%s' % base64.b64encode(content).decode()})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" data=data '
                                       'anchor="as-char" %}')
         rendered_template = template_to_render.render(context)

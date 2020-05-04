@@ -12,7 +12,8 @@ class OdtTemplateView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['image'] = open(IMAGE_PATH, 'rb').read()
+        with open(IMAGE_PATH, 'rb') as image_file:
+            context['image'] = image_file.read()
         context['emtpy_image'] = b''
         context['bad_content_image'] = 'bad'
         return context
@@ -25,20 +26,22 @@ class DocxTemplateView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['images'] = {
-            'image': {
-                'content': open(IMAGE_PATH, 'rb').read(),
-                'name': 'michel1',
-            },
-            'emtpy_image': {
-                'content': b'',
-                'name': 'michel2',
-            },
-            'resize': {
-                'name': 'michel4',
-                'content': open(IMAGE_PATH, 'rb').read(),
-                'width': '500pt',
-                'height': '500pt'
-            },
-        }
+        with open(IMAGE_PATH, 'rb') as image_file:
+            content = image_file.read()
+            context['images'] = {
+                'image': {
+                    'content': content,
+                    'name': 'michel1',
+                },
+                'emtpy_image': {
+                    'content': b'',
+                    'name': 'michel2',
+                },
+                'resize': {
+                    'name': 'michel4',
+                    'content': content,
+                    'width': '500pt',
+                    'height': '500pt'
+                },
+            }
         return context

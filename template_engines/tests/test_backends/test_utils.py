@@ -55,13 +55,16 @@ class TestUtils(TestCase):
                         self.assertEqual(buffer_zip_obj.read(filename), b'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n')
 
     def test_add_image_in_docx_template_works(self):
-        img_content = open(IMAGE_PATH, 'rb').read()
-        new_file = add_image_in_docx_template(
-            open(DOCX_TEMPLATE_PATH, 'rb').read(),
-            {
-                'name': 'makinacorpus.png',
-                'content': img_content,
-            })
+        with open(IMAGE_PATH, 'rb') as image_file:
+            img_content = image_file.read()
+
+        with open(DOCX_TEMPLATE_PATH, 'rb') as template_file:
+            new_file = add_image_in_docx_template(
+                template_file.read(),
+                {
+                    'name': 'makinacorpus.png',
+                    'content': img_content,
+                })
         self.assertIsInstance(new_file, bytes)
         buffer = BytesIO(new_file)
         with ZipFile(buffer, 'r') as buffer_zip_obj:

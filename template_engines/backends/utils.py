@@ -38,7 +38,8 @@ def modify_content_document(file_path, xml_paths, soup):
 
     temp_file = NamedTemporaryFile()
     dict_xml_render = get_rendered_by_xml(xml_paths, soup)
-    template_buffer = io.BytesIO(default_storage.open(file_path, 'rb').read())
+    with default_storage.open(file_path, 'rb') as template_file:
+        template_buffer = io.BytesIO(template_file.read())
 
     with ZipFile(template_buffer, 'r') as read_zip_file:
         info_list = read_zip_file.infolist()

@@ -141,6 +141,20 @@ def parse_br(soup):
     return soup
 
 
+def parse_img(soup):
+    """ Replace img tags with text:p """
+    imgs = soup.find_all("img")
+    # TODO: if src starts with http / https, download file and use local path in odt
+    for img in imgs:
+        img.name = 'text:p'
+        src = img.attrs.pop('src')
+        img.attrs = {}
+        img.string.replace_with('{% image_url_loader {src} %}'.format(src=src))
+        # replace content with fake call to imageloader url
+
+    return soup
+
+
 @register.filter()
 def from_html(value, is_safe=True):
     """ Convert HTML from rte fields to odt compatible format """
@@ -155,6 +169,7 @@ def from_html(value, is_safe=True):
     soup = parse_a(soup)
     soup = parse_h(soup)
     soup = parse_br(soup)
+    soup = parse_img(soup)
     return mark_safe(str(soup))
 
 
@@ -280,7 +295,7 @@ def image_loader(parser, token):
     - image : content of your picture in binary or base64
     Other keys : max_width, max_height, anchor
     - max_width : Width of the picture rendered
-    - max_heigth : Height of the picture rendered
+    - max_height : Height of the picture rendered
     - anchor : Type of anchor, paragraph, as-char, char, frame, page
     """
     tag_name, args, kwargs = parse_tag(token, parser)

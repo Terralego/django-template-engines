@@ -149,7 +149,7 @@ def parse_img(soup):
         img.name = 'text:p'
         src = img.attrs.pop('src')
         img.attrs = {}
-        img.string.replace_with('{% image_url_loader {src} %}'.format(src=src))
+        img.string = ('{% image_url_loader {src} %}'.format(src=src))
         # replace content with fake call to imageloader url
 
     return soup

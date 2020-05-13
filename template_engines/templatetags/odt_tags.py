@@ -149,7 +149,7 @@ def parse_img(soup):
         img.name = 'text:p'
         src = img.attrs.pop('src')
         img.attrs = {}
-        img.string = ('{% image_url_loader {src} %}'.format(src=src))
+        img.string = ("{{% image_url_loader {src} %}}".format(src=src))
         # replace content with fake call to imageloader url
 
     return soup
@@ -240,7 +240,8 @@ def image_url_loader(parser, token):
     tag_name, args, kwargs = parse_tag(token, parser)
     usage = '{{% {tag_name} [url] max_width="5000px" max_height="5000px" ' \
             'request="GET" data="{{"data": "example"}}" anchor="as-char" %}}'.format(tag_name=tag_name)
-    if len(args) > 1 or not all(key in ['max_width', 'max_height', 'request', 'data', 'anchor'] for key in kwargs.keys()):
+    if len(args) > 1 or not all(
+            key in ['max_width', 'max_height', 'request', 'data', 'anchor'] for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)
     return ImageLoaderNodeURL(*args, **kwargs)
 
@@ -299,7 +300,8 @@ def image_loader(parser, token):
     - anchor : Type of anchor, paragraph, as-char, char, frame, page
     """
     tag_name, args, kwargs = parse_tag(token, parser)
-    usage = '{{% {tag_name} [image] max_width="5000px" max_height="5000px" anchor="as-char" %}}'.format(tag_name=tag_name)
+    usage = '{{% {tag_name} [image] max_width="5000px" max_height="5000px" anchor="as-char" %}}'.format(
+        tag_name=tag_name)
     if len(args) > 1 or not all(key in ['max_width', 'max_height', 'anchor']
                                 for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)

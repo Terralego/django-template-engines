@@ -3,6 +3,8 @@
 1.2.27.dev0     (XXXX-XX-XX)
 ----------------------------
 
+* Translate img tag in from_html for odt templates
+
 
 1.2.26          (2020-05-04)
 ----------------------------

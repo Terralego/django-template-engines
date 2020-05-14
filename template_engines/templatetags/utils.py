@@ -165,7 +165,11 @@ def get_extension_picture(image):
 
 
 def get_image_size_and_dimensions_from_uri(uri):
-    # get image size (None if not known)
+    """ get image size and dimensions """
+    if not uri.lower().startswith('http'):
+        # protect use of urlopen from filesystem read
+        return None, (None, None)
+
     file = urlopen(uri)
     size = file.headers.get("content-length")
     dimensions = (None, None)

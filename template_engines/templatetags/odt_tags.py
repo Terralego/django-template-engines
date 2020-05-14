@@ -12,30 +12,11 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from template_engines.backends.utils_odt import ODT_IMAGE
-from .utils import get_extension_picture, parse_tag, resize
+from .utils import get_extension_picture, parse_tag, resize, get_image_size_and_dimensions_from_uri
 
 register = template.Library()
 
 logger = logging.getLogger(__name__)
-
-
-def get_image_size_from_uri(uri):
-    # get image size (None if not known)
-    file = urlopen(uri)
-    size = file.headers.get("content-length")
-    if size:
-        size = int(size)
-    p = ImageFile.Parser()
-    while True:
-        data = file.read(1024)
-        if not data:
-            break
-        p.feed(data)
-        if p.image:
-            return p.image.size
-            break
-    file.close()
-    return size
 
 
 def parse_p(soup):
@@ -176,12 +157,12 @@ def parse_img(soup):
             'xlink:show': "embed",
             'xlink:activate': "onload"
         }
-        width, height = get_image_size_from_uri(src)
+        size, dimensions = get_image_size_and_dimensions_from_uri(src)
         img.attrs = {
             'draw:style-name': "fr1",
             'text:anchor-type': "char",
-            'svg:width': f"{width}px",
-            'svg:height': f"{height}px",
+            'svg:width': f"{dimensions[0]}px",
+            'svg:height': f"{dimensions[1]}px",
             'draw:z-index': "37",
         }
         img.append(content)
@@ -281,11 +262,11 @@ def image_url_loader(parser, token):
 
 
 class ImageLoaderNode(template.Node):
-    def __init__(self, object, max_width=None, max_height=None, anchor=None):
+    def __init__(self, instance, max_width=None, max_height=None, anchor=None):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
-        self.object = object
+        self.object = instance
         self.max_width = max_width
         self.max_height = max_height
         self.anchor = anchor

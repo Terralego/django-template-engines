@@ -165,7 +165,7 @@ def parse_img(soup):
             height = int(width / ratio)
         img.attrs = {
             'draw:style-name': "fr1",
-            #'text:anchor-type': "as-char",
+            # 'text:anchor-type': "as-char",
             'svg:width': f"{width}px",
             'svg:height': f"{height}px",
             'draw:z-index': "37",

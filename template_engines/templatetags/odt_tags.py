@@ -158,7 +158,7 @@ def parse_img(soup):
         size, dimensions = get_image_size_and_dimensions_from_uri(src)
         img.attrs = {
             'draw:style-name': "fr1",
-            'text:anchor-type': "char",
+            #'text:anchor-type': "as-char",
             'svg:width': f"{dimensions[0]}px",
             'svg:height': f"{dimensions[1]}px",
             'draw:z-index': "37",

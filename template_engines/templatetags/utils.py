@@ -1,8 +1,8 @@
 import re
 from io import BytesIO
+from urllib.request import urlopen
 
-from PIL import Image
-
+from PIL import Image, ImageFile
 from django.template.base import FilterExpression, kwarg_re
 
 
@@ -162,3 +162,28 @@ def get_extension_picture(image):
     with Image.open(bimage) as img_reader:
         extension = img_reader.format.lower()
     return extension
+
+
+def get_image_size_and_dimensions_from_uri(uri):
+    """ get image size and dimensions """
+    if not uri.lower().startswith('http'):
+        # protect use of urlopen from filesystem read
+        return None, (None, None)
+
+    file = urlopen(uri)
+    size = file.headers.get("content-length")
+    dimensions = (None, None)
+
+    if size:
+        size = int(size)
+    p = ImageFile.Parser()
+    while True:
+        data = file.read(1024)
+        if not data:
+            break
+        p.feed(data)
+        if p.image:
+            dimensions = p.image.size
+            break
+    file.close()
+    return size, dimensions

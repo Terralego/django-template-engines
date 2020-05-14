@@ -1,16 +1,16 @@
 import base64
 import logging
-import secrets
 import random
 import re
-import requests
+import secrets
 
+import requests
 from bs4 import BeautifulSoup
 from django import template
 from django.utils.safestring import mark_safe
 
 from template_engines.backends.utils_odt import ODT_IMAGE
-from .utils import get_extension_picture, parse_tag, resize
+from .utils import get_extension_picture, parse_tag, resize, get_image_size_and_dimensions_from_uri
 
 register = template.Library()
 
@@ -141,6 +141,33 @@ def parse_br(soup):
     return soup
 
 
+def parse_img(soup):
+    """ Replace img tags with text:p """
+    imgs = soup.find_all("img")
+    # TODO: if src starts with http / https, download file and use local path in odt
+    for img in imgs:
+        img.name = 'draw:frame'
+        src = img.attrs.pop('src')
+        content = soup.new_tag('draw:image')
+        content.attrs = {
+            'xlink:href': src,
+            'xlink:type': "simple",
+            'xlink:show': "embed",
+            'xlink:activate': "onload"
+        }
+        size, dimensions = get_image_size_and_dimensions_from_uri(src)
+        img.attrs = {
+            'draw:style-name': "fr1",
+            'text:anchor-type': "char",
+            'svg:width': f"{dimensions[0]}px",
+            'svg:height': f"{dimensions[1]}px",
+            'draw:z-index': "37",
+        }
+        img.append(content)
+
+    return soup
+
+
 @register.filter()
 def from_html(value, is_safe=True):
     """ Convert HTML from rte fields to odt compatible format """
@@ -155,6 +182,7 @@ def from_html(value, is_safe=True):
     soup = parse_a(soup)
     soup = parse_h(soup)
     soup = parse_br(soup)
+    soup = parse_img(soup)
     return mark_safe(str(soup))
 
 
@@ -225,17 +253,18 @@ def image_url_loader(parser, token):
     tag_name, args, kwargs = parse_tag(token, parser)
     usage = '{{% {tag_name} [url] max_width="5000px" max_height="5000px" ' \
             'request="GET" data="{{"data": "example"}}" anchor="as-char" %}}'.format(tag_name=tag_name)
-    if len(args) > 1 or not all(key in ['max_width', 'max_height', 'request', 'data', 'anchor'] for key in kwargs.keys()):
+    if len(args) > 1 or not all(
+            key in ['max_width', 'max_height', 'request', 'data', 'anchor'] for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)
     return ImageLoaderNodeURL(*args, **kwargs)
 
 
 class ImageLoaderNode(template.Node):
-    def __init__(self, object, max_width=None, max_height=None, anchor=None):
+    def __init__(self, instance, max_width=None, max_height=None, anchor=None):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
-        self.object = object
+        self.object = instance
         self.max_width = max_width
         self.max_height = max_height
         self.anchor = anchor
@@ -280,11 +309,12 @@ def image_loader(parser, token):
     - image : content of your picture in binary or base64
     Other keys : max_width, max_height, anchor
     - max_width : Width of the picture rendered
-    - max_heigth : Height of the picture rendered
+    - max_height : Height of the picture rendered
     - anchor : Type of anchor, paragraph, as-char, char, frame, page
     """
     tag_name, args, kwargs = parse_tag(token, parser)
-    usage = '{{% {tag_name} [image] max_width="5000px" max_height="5000px" anchor="as-char" %}}'.format(tag_name=tag_name)
+    usage = '{{% {tag_name} [image] max_width="5000px" max_height="5000px" anchor="as-char" %}}'.format(
+        tag_name=tag_name)
     if len(args) > 1 or not all(key in ['max_width', 'max_height', 'anchor']
                                 for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)

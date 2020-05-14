@@ -159,11 +159,15 @@ def parse_img(soup):
         width, height = dimensions
         if width and width > 600:
             # if sized and sized > 600, it will not fit to page width
+            ratio = width / height
+            # keep ratio
             width = 600
+            height = int(width / ratio)
         img.attrs = {
             'draw:style-name': "fr1",
             #'text:anchor-type': "as-char",
             'svg:width': f"{width}px",
+            'svg:height': f"{height}px",
             'draw:z-index': "37",
         }
         img.append(content)

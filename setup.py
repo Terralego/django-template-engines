@@ -50,6 +50,7 @@ setup(
             'flake8',
             'coverage',
             'codecov',
+            'bpython'
         ]
     },
 )

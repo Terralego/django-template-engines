@@ -1,6 +1,6 @@
 # CHANGELOG
 
-1.2.27.dev0     (XXXX-XX-XX)
+1.2.27          (2020-04-14)
 ----------------------------
 
 * Translate img tag in from_html for odt templates

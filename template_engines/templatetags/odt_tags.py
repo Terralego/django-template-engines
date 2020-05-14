@@ -156,11 +156,13 @@ def parse_img(soup):
             'xlink:activate': "onload"
         }
         size, dimensions = get_image_size_and_dimensions_from_uri(src)
+        if dimensions[0] and dimensions[0] > 600:
+            # if sized and sized > 600, it will not fit to page width
+            dimensions[0] = 600
         img.attrs = {
             'draw:style-name': "fr1",
             #'text:anchor-type': "as-char",
             'svg:width': f"{dimensions[0]}px",
-            'svg:height': f"{dimensions[1]}px",
             'draw:z-index': "37",
         }
         img.append(content)

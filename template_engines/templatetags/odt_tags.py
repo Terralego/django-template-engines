@@ -3,10 +3,8 @@ import logging
 import random
 import re
 import secrets
-from urllib.request import urlopen
 
 import requests
-from PIL import ImageFile
 from bs4 import BeautifulSoup
 from django import template
 from django.utils.safestring import mark_safe

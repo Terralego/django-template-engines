@@ -1,10 +1,12 @@
 import base64
 import logging
-import secrets
 import random
 import re
-import requests
+import secrets
+from urllib.request import urlopen
 
+import requests
+from PIL import ImageFile
 from bs4 import BeautifulSoup
 from django import template
 from django.utils.safestring import mark_safe
@@ -15,6 +17,25 @@ from .utils import get_extension_picture, parse_tag, resize
 register = template.Library()
 
 logger = logging.getLogger(__name__)
+
+
+def get_image_size_from_uri(uri):
+    # get image size (None if not known)
+    file = urlopen(uri)
+    size = file.headers.get("content-length")
+    if size:
+        size = int(size)
+    p = ImageFile.Parser()
+    while True:
+        data = file.read(1024)
+        if not data:
+            break
+        p.feed(data)
+        if p.image:
+            return p.image.size
+            break
+    file.close()
+    return size
 
 
 def parse_p(soup):
@@ -153,9 +174,15 @@ def parse_img(soup):
             'xlink:href': src,
             'xlink:type': "simple",
             'xlink:show': "embed",
-            'xlink:activate': "onload"}
+            'xlink:activate': "onload"
+        }
+        width, height = get_image_size_from_uri(src)
         img.attrs = {
-            'draw:style-name': "fr1"
+            'draw:style-name': "fr1",
+            'text:anchor-type': "char",
+            'svg:width': f"{width}px",
+            'svg:height': f"{height}px",
+            'draw:z-index': "37",
         }
         img.append(content)
 

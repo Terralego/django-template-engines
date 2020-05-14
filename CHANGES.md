@@ -3,8 +3,10 @@
 CHANGELOG
 =========
 
-1.2.28.dev0     (XXXX-XX-XX)
+1.2.28          (2020-04-14)
 ----------------------------
+
+* Fix cases when image didn't fit page
 
 
 1.2.27          (2020-04-14)

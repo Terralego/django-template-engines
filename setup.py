@@ -45,6 +45,7 @@ setup(
         'beautifulsoup4',
         'requests',
     ],
+    setup_requires=["wheel"],
     extras_require={
         'dev': [
             'flake8',

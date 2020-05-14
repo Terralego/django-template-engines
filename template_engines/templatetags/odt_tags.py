@@ -146,11 +146,18 @@ def parse_img(soup):
     imgs = soup.find_all("img")
     # TODO: if src starts with http / https, download file and use local path in odt
     for img in imgs:
-        img.name = 'text:p'
+        img.name = 'draw:frame'
         src = img.attrs.pop('src')
-        img.attrs = {}
-        img.string = ("{{% image_url_loader {src} %}}".format(src=src))
-        # replace content with fake call to imageloader url
+        content = soup.new_tag('draw:image')
+        content.attrs = {
+            'xlink:href': src,
+            'xlink:type': "simple",
+            'xlink:show': "embed",
+            'xlink:activate': "onload"}
+        img.attrs = {
+            'draw:style-name': "fr1"
+        }
+        img.append(content)
 
     return soup
 

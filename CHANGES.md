@@ -3,7 +3,7 @@
 CHANGELOG
 =========
 
-1.2.29.dev0     (XXXX-XX-XX)
+1.2.29          (2020-06-05)
 ----------------------------
 
 * Verify if ODT or DOCX file are zippable file to avoid exceptions

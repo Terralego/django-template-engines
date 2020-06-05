@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.template.context import make_context
+from django.template.exceptions import TemplateDoesNotExist
 
 from .abstract import AbstractTemplate, ZipAbstractEngine
 from .utils import modify_content_document
@@ -196,3 +199,10 @@ class OdtEngine(ZipAbstractEngine):
         params['OPTIONS'].setdefault('builtins', [])
         params['OPTIONS']['builtins'].extend(['template_engines.templatetags.odt_tags'])
         super().__init__(params)
+
+    def get_template_path(self, filename):
+        path = super().get_template_path(filename)
+        path_object = Path(path)
+        if path_object.suffix.lower() != '.odt':
+            raise TemplateDoesNotExist('This is not an ODT file')
+        return path

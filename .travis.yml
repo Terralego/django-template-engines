@@ -1,5 +1,4 @@
 dist: bionic
-
 language: python
 
 python:
@@ -8,9 +7,9 @@ python:
 - '3.8'
 
 stages:
-  - lint
-  - test
-  - deploy
+- lint
+- test
+- deploy
 
 env:
   matrix:
@@ -19,45 +18,40 @@ env:
   - DJANGO_VERSION=dev
 
 install:
-- python setup.py install
+- pip install .[dev]
 - pip install codecov coverage
-- if [[ $DJANGO_VERSION == dev ]]; then
-  pip install -e git+https://github.com/django/django@master#egg=django -U;
-  else
-  pip install Django==$DJANGO_VERSION -U;
-  fi
+- if [[ $DJANGO_VERSION == dev ]]; then pip install -e git+https://github.com/django/django@master#egg=django
+  -U; else pip install Django==$DJANGO_VERSION -U; fi
 
 script:
 - coverage run --source=template_engines ./manage.py test
 
 after_success:
-  - codecov
+- codecov
 
 jobs:
   allow_failures:
-    - env: DJANGO_VERSION=dev
+  - env: DJANGO_VERSION=dev
 
   include:
-    - stage: lint
-      install:
-        - pip3 install flake8
-      before_script: skip
-      script:
-        - flake8 template_engines
-      after_success: skip
+  - stage: lint
+    install:
+    - pip3 install flake8
+    before_script: skip
+    script:
+    - flake8 template_engines
+    after_success: skip
 
-    - stage: deploy
-      before_install: skip
-      install: skip
-      before_script: skip
-      script: skip
-      after_script: skip
-
-      deploy:
-        stage: deploy
-        provider: pypi
-        user: "$PYPI_USER"
-        password:
-          secure: bAce8SPDSv+iVtOFVPXU6sbOF9L9a8YVL9RwuIiLFGqXurpRjiY6m1YmR0dQaN8mh5l42ZxlkGZaCEKazziRDc2KRTmKD5U7UKIPgoMSOxHTccMq8P5VC7MRNOCYXfO/qgfSlddbK7ztlrQQym8gjg5Qq4XM2f/HNRzx5eOeBIEGH7TiMzABp7BGDeJsHCaIswJ1NQyWsUxPWk43YPv7MDF7BdIozx/AL+Bua/UhgwVWS7HmDjfH8NtbSLWuInFsBZ7n4qdbDic4hJH4qZaf1MWcOOcWAZrRtRuL0sPcOZK9dv6JjvgIzxbM8ANzzd/eA0OBc+K5PUQb1jps6K+lPsODt6yyLR5yujdG039Cfozd2q8HJ44ItkUZNPQc/ORoDx4/WsiRaMLlIdDduybzK2WAlBsxIiXxi133luxdYYI6UVQkPFqjPSjKTjYyQ800wmIAATRLuxd0b4zaiq09v8mS/CozA7bXYnLQRt+ue5SuJvGXyxQV3JOvW5AWdEB3ccb6XWMMtEVRStogxCtJ9JJgh/60nr/u8KxsXQSM31Xvb/7dzS5VFxGddfMioWyEAkWX18L3cHVwhl91wKuGk8tNeDojO3jBHRj1A1gA5enBc2e/RUdDbC22UJsg7LtYCT93bIadq+/7DYqRpXJq0DM1BkSmgjAB2sFcUsMbAz8=
-        on:
-          tags: true
+  - stage: deploy
+    before_install: skip
+    install: skip
+    before_script: skip
+    script: skip
+    after_script: skip
+    deploy:
+      provider: pypi
+      username: __token__
+      password:
+        secure: VK+W+bZdrOWf7OwvWGwVDnRdZgF2456RM1iqVyTf18Rzra2cL55EHW7g3BQLy4fZu5liQB0HnOnF20XvrGesfF1YqRBciZiqNTFONzfGx5p/LSkCobCPQLh7sZ054IRNbWRKVXb4Uz7YnXfjJefKuaLc9jFqq6mNLJd1L5IvignZYmhGHSXFKI5gNmGeM8tg+YL/NFhqCHEuvAFDeT68R7z3wg/Xp+8OHu2deVzdn/iP4iVvvyBg3++IEwCqSH7RKiAuHerTVeUU9rjdcPRaLv1S0dB4efCPk57vzsuM0rM1bVTd0YXnMqJ6QuB6Cwxc42r5tO6uaJ/IF2JuAIKXY/jNceSUc1iQeoO0PL32+rQgrWmsd/nog3rLFeIVRbNayo7N+C/H5z8SvcXPqRUaasU/Gdn7sNdAVjl2aUdoSgn6D2yNBvfCdp7hpRqedBs2w4YwH8gs5FRWudtcwKYzK6Yadv8Weys6wYmvcvEaU284YSe7h4k6kPtPiQOPgDBNhBF2mGlvh0wxImk5rl4bo+Fy2/LvnhcCxn7nJpmzBpy8HYNVZUjGLi5tG+kACx4BR/YPw6ZlsNDTuSVVGV9xysi8Sn2FkYm49KCsNRJs1wcNNhl877S8n5vnZRSUeurymwUFedSFJv8Ym3UEPnvUGIyFdGG7ouDoSgED2CIqYkE=
+      on:
+        tags: true

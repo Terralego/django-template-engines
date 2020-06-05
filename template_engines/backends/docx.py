@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.template.exceptions import TemplateDoesNotExist
 from django.template.context import make_context
 
 from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES
@@ -67,3 +70,10 @@ class DocxEngine(ZipAbstractEngine):
         params['OPTIONS'].setdefault('builtins', [])
         params['OPTIONS']['builtins'].extend(['template_engines.templatetags.docx_tags'])
         super().__init__(params)
+
+    def get_template_path(self, filename):
+        path = super().get_template_path(filename)
+        path_object = Path(path)
+        if path_object.suffix.lower() != '.docx':
+            raise TemplateDoesNotExist('This is not a DOCX file')
+        return path

@@ -6,6 +6,8 @@ CHANGELOG
 1.2.29.dev0     (XXXX-XX-XX)
 ----------------------------
 
+* Verify if ODT or DOCX file are zippable file to avoid exceptions
+
 
 1.2.28          (2020-04-14)
 ----------------------------

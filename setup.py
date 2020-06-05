@@ -8,6 +8,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(HERE, 'README.md')).read()
 CHANGES = open(os.path.join(HERE, 'CHANGES.md')).read()
 
+test_requires = ['factory-boy']
 
 setup(
     name='django-template-engines',
@@ -45,13 +46,13 @@ setup(
         'beautifulsoup4',
         'requests',
     ],
-    setup_requires=["wheel"],
+    test_requires=test_requires,
     extras_require={
         'dev': [
             'flake8',
             'coverage',
             'codecov',
             'bpython'
-        ]
+        ] + test_requires
     },
 )

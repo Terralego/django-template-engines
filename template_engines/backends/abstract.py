@@ -75,7 +75,7 @@ class ZipAbstractEngine(DjangoTemplates):
 
                     soup.append(global_tag)
                     return str(soup)
-        except KeyError, BadZipFile:
+        except (KeyError, BadZipFile):
             raise TemplateDoesNotExist('Bad format.')
 
     @cached_property

@@ -12,6 +12,8 @@
 
 Additional template engines for Django.
 
+Generate ODT (beta) and DOCX (alpha) files with django template engine.
+
 ## How to use a specific template backend
 
 In the settings, add:
@@ -23,8 +25,16 @@ INSTALLED_APPS = [
 ]
 
 ...
-
+# Put custom engines before DjangoTemplates Engine
 TEMPLATES = [
+    {
+        'BACKEND': 'template_engines.backends.odt.OdtEngine',
+        ...,
+    },
+    {
+        'BACKEND': 'template_engines.backends.docx.DocxEngine',
+        ...,
+    },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
@@ -39,26 +49,9 @@ TEMPLATES = [
             ],
         },
     },
-    {
-        'BACKEND': 'template_engines.backends.odt.OdtEngine',
-        ...,
-    },
 ]
 ```
 
-## A view exemple
+## Documentation
 
-```
-from django.views.generic.detail import DetailView
-
-
-class TemplateView(DetailView):
-    queryset = AModel.objects.all()
-    template_engine = 'odt'
-    content_type = 'application/vnd.oasis.opendocument.text'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['image'] = {'content': open(path, 'rb').read()}
-        return context
-```
+https://django-template-engines.readthedocs.io/

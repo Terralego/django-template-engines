@@ -1,2 +1,2 @@
-sphinx-rtd-theme
+https://github.com/makinacorpus/makina-sphinx-theme/archive/master.zip
 

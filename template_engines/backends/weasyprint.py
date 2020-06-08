@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import weasyprint
-from django.template import RequestContext
 from django.template.backends.utils import csrf_input_lazy, csrf_token_lazy
+from django.template.context import make_context
 from django.template.exceptions import TemplateDoesNotExist
 
 from template_engines import settings as app_settings, settings
@@ -30,7 +30,7 @@ class WeasyprintTemplate(AbstractTemplate):
             context['csrf_token'] = csrf_token_lazy(request)
 
         html = weasyprint.HTML(
-            string=self.template.render(RequestContext(context)),
+            string=self.template.render(make_context(context)),
             base_url=base_url,
         )
         html.render()

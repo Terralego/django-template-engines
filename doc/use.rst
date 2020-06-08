@@ -1,5 +1,5 @@
 How it works ?
-===============
+==============
 
 Simple template
 ----------------
@@ -10,6 +10,22 @@ These services work like the Django service, so they are subject to the same rul
  * ``{{ ...|... }}`` allows you to use filters
 
 Please consult the Django documentation for more information.
+
+Specific tags by engine
+=======================
+
+* ODT and DOCX have specific tags available and auto loaded to handle specific cases
+
+Translate HTML content
+----------------------
+
+* Some HTML tags can be translated for ODT and DOCX
+
+example :
+
+```
+{{ object.value_html|from_html }}
+```
 
 Include images
 --------------

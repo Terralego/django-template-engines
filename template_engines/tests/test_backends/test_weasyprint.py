@@ -11,7 +11,7 @@ class OdtTemplateTestCase(TestCase):
         self.request = self.factory.get('')
 
     def test_view_works(self):
-        WeasyprintTemplateView.template_name = 'pdf/template.html'
+        WeasyprintTemplateView.template_name = 'pdf/template.pdf'
         response = WeasyprintTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.content)

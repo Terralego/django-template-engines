@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from django import template
 from django.utils.safestring import mark_safe
 
-from template_engines.backends.utils_odt import ODT_IMAGE
+from template_engines.utils.odt import ODT_IMAGE
 from .utils import get_extension_picture, parse_tag, resize, get_image_size_and_dimensions_from_uri
 
 register = template.Library()

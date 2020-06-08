@@ -5,10 +5,10 @@ from django.conf import settings
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.context import make_context
 
-from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES
-from .abstract import AbstractTemplate, ZipAbstractEngine
-from .utils import modify_content_document
-from .utils_docx import add_image_in_docx_template
+from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES, AbstractTemplate, ZipAbstractEngine
+from template_engines.utils import modify_content_document
+from template_engines.utils.docx import add_image_in_docx_template
+from template_engines import settings as app_settings
 
 
 class DocxTemplate(AbstractTemplate):
@@ -61,8 +61,8 @@ class DocxEngine(ZipAbstractEngine):
     an ``DOCX_ENGINE_SUB_DIRNAME`` setting in your settings.
     By default, ``DocxTemplate`` is used as template_class.
     """
-    sub_dirname = getattr(settings, 'DOCX_ENGINE_SUB_DIRNAME', 'docx')
-    app_dirname = getattr(settings, 'DOCX_ENGINE_APP_DIRNAME', 'templates')
+    sub_dirname = app_settings.DOCX_ENGINE_SUB_DIRNAME
+    app_dirname = app_settings.DOCX_ENGINE_APP_DIRNAME
     template_class = DocxTemplate
     zip_root_files = ['word/document.xml']
 

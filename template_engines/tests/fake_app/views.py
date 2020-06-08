@@ -45,3 +45,9 @@ class DocxTemplateView(DetailView):
                 },
             }
         return context
+
+
+class WeasyprintTemplateView(DetailView):
+    queryset = Bidon.objects.all()
+    template_engine = 'weasyprint'
+    content_type = 'application/pdf'

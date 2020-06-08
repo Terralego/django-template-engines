@@ -1,17 +1,18 @@
+import os
 from io import BytesIO
 from zipfile import ZipFile
 
-from django.template import Template
-from django.template.exceptions import TemplateDoesNotExist
-from django.test import TestCase
+from django.template import TemplateDoesNotExist, Template
+from django.test import TestCase, RequestFactory
 
 from template_engines.backends.docx import DocxEngine, DocxTemplate
-from ..settings import (
-    DOCX_CONTENT_SCREENSHOT, DOCX_TEMPLATE_PATH, ODT_TEMPLATE_PATH,
-    DOCX_RENDERED_CONTENT_SCREENSHOT, TEMPLATES_PATH)
+from template_engines.tests.fake_app.models import Bidon
+from template_engines.tests.fake_app.views import DocxTemplateView
+from template_engines.tests.settings import TEMPLATES_PATH, DOCX_TEMPLATE_PATH, DOCX_CONTENT_SCREENSHOT, \
+    ODT_TEMPLATE_PATH, DOCX_RENDERED_CONTENT_SCREENSHOT
 
 
-class TestDocxEngine(TestCase):
+class DocxEngineTestCase(TestCase):
 
     def setUp(self):
         self.params = {
@@ -65,3 +66,41 @@ class TestDocxEngine(TestCase):
         with ZipFile(buffer, 'r') as zip_read_file:
             with open(DOCX_RENDERED_CONTENT_SCREENSHOT, 'r') as read_file:
                 self.assertEqual(zip_read_file.read('word/document.xml').decode(), read_file.read())
+
+
+class DocxTemplateTestCase(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.object = Bidon.objects.create(name='Michel')
+        self.request = self.factory.get('')
+
+    def test_view_works(self):
+        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.docx')
+        response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content)
+
+    def test_view_works_with_new_line(self):
+        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.docx')
+        obj = Bidon.objects.create(name='Michel\nPierre')
+        response = DocxTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content)
+
+    def test_view_works_with_bold_text(self):
+        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.docx')
+        obj = Bidon.objects.create(name='Michel <b>Pierre</b>')
+        response = DocxTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content)
+
+    def test_view_empty_image(self):
+        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'empty_image.docx')
+        with self.assertRaises(IOError):
+            DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+
+    def test_view_resize(self):
+        DocxTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'resize.docx')
+        response = DocxTemplateView.as_view()(self.request, **{'pk': self.object.pk}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content)

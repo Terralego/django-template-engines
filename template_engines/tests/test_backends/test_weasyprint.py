@@ -1,5 +1,4 @@
 from django.test import TestCase, RequestFactory
-
 from template_engines.tests.fake_app.models import Bidon
 from template_engines.tests.fake_app.views import WeasyprintTemplateView
 

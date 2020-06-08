@@ -9,6 +9,7 @@ SCREENSHOTS_PATH = join(DATA_PATH, 'screenshots')
 
 ODT_TEMPLATE_PATH = join(TEMPLATES_PATH, 'odt', 'template.odt')
 DOCX_TEMPLATE_PATH = join(TEMPLATES_PATH, 'docx', 'template.docx')
+PDF_TEMPLATE_PATH = join(TEMPLATES_PATH, 'pdf', 'template.pdf')
 
 CONTENT_SCREENSHOT_PATH = join(SCREENSHOTS_PATH, 'content_screenshot.xml')
 DOCX_CONTENT_SCREENSHOT = join(SCREENSHOTS_PATH, 'docx_content_screenshot.xml')

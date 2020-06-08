@@ -1,33 +1,20 @@
 import io
 import os
-import re
 import zipfile
 from zipfile import BadZipFile
 
 from bs4 import BeautifulSoup
 from django.core.files.storage import default_storage
-from django.template import TemplateDoesNotExist
+from django.template.exceptions import TemplateDoesNotExist
 from django.template.backends.django import DjangoTemplates
 from django.utils.functional import cached_property
 
 from template_engines.utils import clean_tags
 
-TO_CHANGE_RE = re.compile(r'\n|&lt;b&gt;|&lt;/b&gt;')
-
-DOCX_PARAGRAPH_RE = re.compile(
-    r'<w:r><w:rPr>([^>]*)</w:rPr><w:t>[^<]+</w:t></w:r\>')
-DOCX_CHANGES = {
-    '\n': '</w:t><w:br/><w:t>',
-    '&lt;b&gt;': '</w:t></w:r><w:r><w:rPr>{}<w:b w:val="true"/></w:rPr><w:t>&#xA0;',
-    '&lt;/b&gt;': '&#xA0;</w:t></w:r><w:r><w:rPr>{}<w:b w:val="false"/></w:rPr><w:t>',
-}
-
 
 class AbstractTemplate:
     """
     Gives the architecture of a basic template.
-
-    ``clean`` and ``render`` must be implemented.
     """
 
     def __init__(self, template):
@@ -47,7 +34,21 @@ class AbstractTemplate:
         raise NotImplementedError()
 
 
-class ZipAbstractEngine(DjangoTemplates):
+class BaseEngine(DjangoTemplates):
+    app_dirname = None
+    sub_dirname = None
+    template_class = None
+
+    @cached_property
+    def template_dirs(self):
+        t_dirs = super().template_dirs
+        if self.sub_dirname:
+            t_dirs += tuple([os.path.join(p, self.sub_dirname) for p in t_dirs])
+            raise Exception(t_dirs)
+        return t_dirs
+
+
+class ZipAbstractEngine(BaseEngine):
     """
     Gives the architecture of a basic zip base template engine.
 
@@ -58,9 +59,6 @@ class ZipAbstractEngine(DjangoTemplates):
     * ``template_class``, your own template class with a ``render`` method,
     * ``zip_root_file``, the file to fill.
     """
-    app_dirname = None
-    sub_dirname = None
-    template_class = None
     zip_root_files = None
 
     def get_template_content(self, filename):
@@ -87,13 +85,6 @@ class ZipAbstractEngine(DjangoTemplates):
                     return str(soup)
         except (KeyError, BadZipFile):
             raise TemplateDoesNotExist('Bad format.')
-
-    @cached_property
-    def template_dirs(self):
-        t_dirs = super().template_dirs
-        if self.sub_dirname:
-            t_dirs += tuple([os.path.join(p, self.sub_dirname) for p in t_dirs])
-        return t_dirs
 
     def from_string(self, template_code, **kwargs):
         return self.template_class(self.engine.from_string(template_code), **kwargs)

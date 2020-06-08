@@ -6,8 +6,8 @@ from django.template.exceptions import TemplateDoesNotExist
 
 from template_engines import settings as app_settings
 from template_engines.utils import modify_content_document
-from template_engines.utils.docx import add_image_in_docx_template
-from . import DOCX_PARAGRAPH_RE, TO_CHANGE_RE, DOCX_CHANGES, AbstractTemplate, ZipAbstractEngine
+from template_engines.utils.docx import add_image_in_docx_template, DOCX_PARAGRAPH_RE, DOCX_CHANGES, TO_CHANGE_RE
+from . import AbstractTemplate, ZipAbstractEngine
 
 
 class DocxTemplate(AbstractTemplate):

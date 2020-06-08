@@ -2,20 +2,17 @@ from pathlib import Path
 
 import weasyprint
 from django.template import RequestContext
-from django.template.backends.django import DjangoTemplates, Template
 from django.template.backends.utils import csrf_input_lazy, csrf_token_lazy
 from django.template.exceptions import TemplateDoesNotExist
 
 from template_engines import settings as app_settings, settings
+from template_engines.backends import AbstractTemplate, BaseEngine
 
 
-class WeasyprintTemplate(Template):
-    def __init__(self, template):
-        self.template = template
-
+class WeasyprintTemplate(AbstractTemplate):
     def get_base_url(self, request):
         """
-        Determine base URL to fetch CSS files from `WEASYPRINT_BASEURL` or
+        Determine base URL to fetch static and media files from `WEASYPRINT_BASEURL` or
         fall back to using the root path of the URL used in the request.
         """
         return getattr(
@@ -40,7 +37,7 @@ class WeasyprintTemplate(Template):
         return html.write_pdf()
 
 
-class WeasyprintEngine(DjangoTemplates):
+class WeasyprintEngine(BaseEngine):
     sub_dirname = app_settings.WEASYPRINT_ENGINE_SUB_DIRNAME
     app_dirname = app_settings.WEASYPRINT_ENGINE_APP_DIRNAME
     template_class = WeasyprintTemplate

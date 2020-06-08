@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import weasyprint
 from django.template import RequestContext
 from django.template.backends.django import DjangoTemplates, Template
 from django.template.backends.utils import csrf_input_lazy, csrf_token_lazy
+from django.template.exceptions import TemplateDoesNotExist
 
 from template_engines import settings as app_settings, settings
 
@@ -43,4 +46,7 @@ class WeasyprintEngine(DjangoTemplates):
     template_class = WeasyprintTemplate
 
     def get_template(self, template_name):
+        template_path = Path(template_name)
+        if template_path.suffix.lower() != '.pdf':
+            raise TemplateDoesNotExist('This is not a template PDF file')
         return self.template_class(self.engine.get_template(template_name))

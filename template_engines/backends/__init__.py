@@ -44,7 +44,6 @@ class BaseEngine(DjangoTemplates):
         t_dirs = super().template_dirs
         if self.sub_dirname:
             t_dirs += tuple([os.path.join(p, self.sub_dirname) for p in t_dirs])
-            raise Exception(t_dirs)
         return t_dirs
 
 

@@ -5,7 +5,6 @@ from urllib.request import urlopen
 from PIL import Image, ImageFile
 from django.template.base import FilterExpression, kwarg_re
 
-
 DIM_REGEX = r'^(?P<v>(\d|\.)+)(?P<u>[a-z]*)$'
 
 DOCX_PAGE_WIDTH = 6120130

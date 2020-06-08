@@ -1,8 +1,5 @@
-import os
-
 from django.test import TestCase, RequestFactory
 
-from template_engines.tests.settings import TEMPLATES_PATH
 from template_engines.tests.fake_app.models import Bidon
 from template_engines.tests.fake_app.views import WeasyprintTemplateView
 

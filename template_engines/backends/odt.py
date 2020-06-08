@@ -1,14 +1,13 @@
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from django.conf import settings
 from django.template.context import make_context
 from django.template.exceptions import TemplateDoesNotExist
 
-from . import AbstractTemplate, ZipAbstractEngine
+from template_engines import settings as app_settings
 from template_engines.utils import modify_content_document
 from template_engines.utils.odt import add_image_in_odt_template
-from template_engines import settings as app_settings
+from . import AbstractTemplate, ZipAbstractEngine
 
 
 class OdtTemplate(AbstractTemplate):

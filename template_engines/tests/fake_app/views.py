@@ -1,7 +1,6 @@
 from django.views.generic.detail import DetailView
 
 from template_engines.tests.settings import IMAGE_PATH
-
 from .models import Bidon
 
 

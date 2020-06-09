@@ -1,13 +1,13 @@
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from django.conf import settings
 from django.template.context import make_context
 from django.template.exceptions import TemplateDoesNotExist
 
-from .abstract import AbstractTemplate, ZipAbstractEngine
-from .utils import modify_content_document
-from .utils_odt import add_image_in_odt_template
+from template_engines import settings as app_settings
+from template_engines.utils import modify_content_document
+from template_engines.utils.odt import add_image_in_odt_template
+from . import AbstractTemplate, ZipAbstractEngine
 
 
 class OdtTemplate(AbstractTemplate):
@@ -190,8 +190,8 @@ class OdtEngine(ZipAbstractEngine):
     ``ODT_ENGINE_SUB_DIRNAME`` setting in your settings.
     By default, ``OdtTemplate`` is used as template_class.
     """
-    sub_dirname = getattr(settings, 'ODT_ENGINE_SUB_DIRNAME', 'odt')
-    app_dirname = getattr(settings, 'ODT_ENGINE_APP_DIRNAME', 'templates')
+    sub_dirname = app_settings.ODT_ENGINE_SUB_DIRNAME
+    app_dirname = app_settings.ODT_ENGINE_APP_DIRNAME
     template_class = OdtTemplate
     zip_root_files = ['content.xml', 'styles.xml']
 

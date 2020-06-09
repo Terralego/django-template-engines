@@ -1,12 +1,12 @@
-import io
 import base64
-from bs4 import BeautifulSoup
-from requests.exceptions import ConnectionError
+import io
 from unittest import mock
 
+from bs4 import BeautifulSoup
 from django.template import Context, Template
 from django.template.exceptions import TemplateSyntaxError
 from django.test import TestCase
+from requests.exceptions import ConnectionError
 
 from template_engines.templatetags import odt_tags
 from template_engines.tests.settings import IMAGE_PATH

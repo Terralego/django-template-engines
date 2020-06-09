@@ -1,13 +1,13 @@
-from bs4 import BeautifulSoup
 from io import BytesIO
 from zipfile import ZipFile
 
+from bs4 import BeautifulSoup
 from django.test import TestCase
 
-from template_engines.backends.utils import clean_tags, modify_content_document
-from template_engines.backends.utils_docx import add_image_in_docx_template
-from ..settings import (ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH, IMAGE_PATH, BAD_TAGS_XML,
-                        CLEAN_CONTENT)
+from template_engines.tests.settings import (ODT_TEMPLATE_PATH, DOCX_TEMPLATE_PATH, IMAGE_PATH, BAD_TAGS_XML,
+                                             CLEAN_CONTENT)
+from template_engines.utils import modify_content_document, clean_tags
+from template_engines.utils.docx import add_image_in_docx_template
 
 
 class TestUtils(TestCase):

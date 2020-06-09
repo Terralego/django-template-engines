@@ -12,7 +12,16 @@
 
 Additional template engines for Django.
 
-Generate ODT (beta) and DOCX (alpha) files with django template engine.
+Generate :
+
+ * PDF (with weasyprint)
+ * ODT (beta)
+ * DOCX (alpha)
+
+## Requirements
+
+* Weasyprint has specific requirements https://weasyprint.readthedocs.io/en/stable/install.html
+
 
 ## How to use a specific template backend
 
@@ -25,8 +34,22 @@ INSTALLED_APPS = [
 ]
 
 ...
-# Put custom engines before DjangoTemplates Engine
+# Put custom engines before DjangoTemplates Engine (Custom engines will search ONLY template ending with .pdf (weasyprint) .odt (odt) and .docx (docx)
 TEMPLATES = [
+    {
+        'BACKEND': 'template_engines.backends.weasyprint.WeasyprintEngine',
+        'APP_DIRS': True,
+        'DIRS': [
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
     {
         'BACKEND': 'template_engines.backends.odt.OdtEngine',
         ...,

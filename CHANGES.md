@@ -6,6 +6,7 @@ CHANGELOG
 1.2.30.dev0     (XXXX-XX-XX)
 ----------------------------
 
+* Implement Weasyprint PDF Template Engine
 
 1.2.29          (2020-06-05)
 ----------------------------

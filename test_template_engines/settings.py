@@ -52,6 +52,31 @@ MIDDLEWARE = [
 ]
 
 TEMPLATES = [
+    # Put ODT and DOCX before DjangoTemplate Engine because django can't handle zipped template files
+    {
+        'BACKEND': 'template_engines.backends.odt.OdtEngine',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+    {
+        'BACKEND': 'template_engines.backends.docx.DocxEngine',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -65,13 +90,20 @@ TEMPLATES = [
             ],
         },
     },
+    # As weasyprint use DjangoTemplate as Base, Django template engine will be selected by default.
+    # Use specific directory to your Weasyprint templates, or keep APP_DIRS=True
+    # but manually select weasyprint backend in your code
     {
-        'BACKEND': 'template_engines.backends.odt.OdtEngine',
+        'BACKEND': 'template_engines.backends.weasyprint.WeasyprintEngine',
         'APP_DIRS': True,
-    },
-    {
-        'BACKEND': 'template_engines.backends.docx.DocxEngine',
-        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
     },
 ]
 

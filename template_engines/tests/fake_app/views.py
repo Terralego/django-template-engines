@@ -1,7 +1,6 @@
 from django.views.generic.detail import DetailView
 
 from template_engines.tests.settings import IMAGE_PATH
-
 from .models import Bidon
 
 
@@ -45,3 +44,9 @@ class DocxTemplateView(DetailView):
                 },
             }
         return context
+
+
+class WeasyprintTemplateView(DetailView):
+    queryset = Bidon.objects.all()
+    template_engine = 'weasyprint'
+    content_type = 'application/pdf'

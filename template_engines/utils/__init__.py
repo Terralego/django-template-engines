@@ -1,13 +1,10 @@
-"""
-Contains all generic functions that can be used to build test_backends.
-"""
-from bs4 import BeautifulSoup
 import io
 import os
 import re
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
+from bs4 import BeautifulSoup
 from django.core.files.storage import default_storage
 
 

@@ -1,5 +1,5 @@
 How it works ?
-===============
+==============
 
 Simple template
 ----------------
@@ -11,10 +11,26 @@ These services work like the Django service, so they are subject to the same rul
 
 Please consult the Django documentation for more information.
 
+Specific tags and filters by engine
+=======================
+
+* ODT and DOCX have specific tags available and auto loaded to handle specific cases
+
+Translate HTML content
+----------------------
+
+* Some HTML tags can be translated for ODT and DOCX
+
+example :
+
+```
+{{ object.value_html|from_html }}
+```
+
 Include images
 --------------
 
-Two template tags are available to dynamically include images, one for ODT and the other for DOCX.
+Two template tags are available to dynamically include images in generated zip files, one for ODT and the other for DOCX.
 
 For this to work you need to include the binary content of each image in the context transmitted to your template.
 
@@ -48,6 +64,15 @@ It will also not enlarge your picture if you define a value higher than the orig
 
 If you need any information about anchor, check http://docs.oasis-open.org/office/v1.2/os/OpenDocument-v1.2-os-part1.html#__RefHeading__1418758_253892949
 
+
+ODT specific cases
+------------------
+
+To avoid tags and values splitted with Office or Libreoffice editor, use Field to handle custom data
+
+-> Menu -> Insert -> Field -> Other Field -> put your value here
+
+
 Example of easy use of the ODT engine
 -------------------------------------
 
@@ -63,10 +88,5 @@ available an image that can be loaded with ``libreoffice_image_loader``.
     class TemplateView(DetailView):
         queryset = AModel.objects.all()
         template_engine = 'odt'
-        template_name = 'path'
+        template_name = 'path/to/template.odt'
         content_type = 'application/vnd.oasis.opendocument.text'
-
-        def get_context_data(self, **kwargs):
-            context = super().get_context_data(**kwargs)
-            context['image'] = {'content': open(path, 'rb').read()}
-            return context

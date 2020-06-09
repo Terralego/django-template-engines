@@ -37,6 +37,20 @@ INSTALLED_APPS = [
 # Put custom engines before DjangoTemplates Engine
 TEMPLATES = [
     {
+        'BACKEND': 'template_engines.backends.weasyprint.WeasyprintEngine',
+        'APP_DIRS': False,
+        'DIRS': [
+        ],
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+    {
         'BACKEND': 'template_engines.backends.odt.OdtEngine',
         ...,
     },
@@ -49,23 +63,6 @@ TEMPLATES = [
         'DIRS': [
         ],
         'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-    # As weasyprint use DjangoTemplate as Base, Django template engine will be selected by default for pdf rendering.
-    # Use specific directory to your Weasyprint templates, or keep APP_DIRS=True
-    # but manually select weasyprint backend in your code
-    {
-        'BACKEND': 'template_engines.backends.weasyprint.WeasyprintEngine',
-        'APP_DIRS': False,
-        'DIRS': [
-        ],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

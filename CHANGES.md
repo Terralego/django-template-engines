@@ -3,7 +3,7 @@
 CHANGELOG
 =========
 
-1.2.30.dev0     (XXXX-XX-XX)
+1.3.0           (2020-06-09)
 ----------------------------
 
 * Implement Weasyprint PDF Template Engine

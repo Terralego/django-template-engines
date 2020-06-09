@@ -34,11 +34,11 @@ INSTALLED_APPS = [
 ]
 
 ...
-# Put custom engines before DjangoTemplates Engine
+# Put custom engines before DjangoTemplates Engine (Custom engines will search ONLY template ending with .pdf (weasyprint) .odt (odt) and .docx (docx)
 TEMPLATES = [
     {
         'BACKEND': 'template_engines.backends.weasyprint.WeasyprintEngine',
-        'APP_DIRS': False,
+        'APP_DIRS': True,
         'DIRS': [
         ],
         'OPTIONS': {

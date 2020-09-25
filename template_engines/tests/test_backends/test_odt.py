@@ -82,6 +82,13 @@ class OdtTemplateTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.content)
 
+    def test_view_works_with_from_html(self):
+        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'html.odt')
+        obj = Bidon.objects.create(name='<p>Michel\nPierre</p>')
+        response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content)
+
     def test_view_works_with_bold_text(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'works.odt')
         obj = Bidon.objects.create(name='Michel <b>Pierre</b>')

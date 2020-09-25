@@ -159,11 +159,14 @@ class OdtTemplate(AbstractTemplate):
             for e in tag.contents:
                 # get tag content formatted (keep nested tags)
                 contents = f'{contents}{e}'
-
-            if BeautifulSoup(contents, 'html.parser').findChildren("text:p", recursive=False):
-                tag.find_parent('text:p').insert_after(BeautifulSoup(contents, 'html.parser'))
+            content_soup = BeautifulSoup(contents, 'html.parser')
+            if content_soup.findChildren("text:p", recursive=False):
+                style_parent_name = tag.find_parent('text:p')['text:style-name']
+                for child in content_soup.findChildren("text:p", recursive=False):
+                    child['text:style-name'] = style_parent_name
+                tag.find_parent('text:p').insert_after(content_soup)
             else:
-                tag.find_parent('text:p').append(BeautifulSoup(contents, 'html.parser'))
+                tag.find_parent('text:p').append(content_soup)
             tag.extract()
         return soup
 

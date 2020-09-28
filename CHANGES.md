@@ -2,7 +2,7 @@
 CHANGELOG
 =========
 
-1.3.2.dev0      (XXXX-XX-XX)
+1.3.2           (2020-09-28)
 ----------------------------
 
 * Fix defined police on input text for odt

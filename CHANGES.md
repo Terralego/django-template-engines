@@ -5,6 +5,8 @@ CHANGELOG
 1.3.2.dev0      (XXXX-XX-XX)
 ----------------------------
 
+* Fix defined police on input text for odt
+
 
 1.3.1           (2020-09-09)
 ----------------------------

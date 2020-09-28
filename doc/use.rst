@@ -12,7 +12,7 @@ These services work like the Django service, so they are subject to the same rul
 Please consult the Django documentation for more information.
 
 Specific tags and filters by engine
-=======================
+===================================
 
 * ODT and DOCX have specific tags available and auto loaded to handle specific cases
 
@@ -68,9 +68,18 @@ If you need any information about anchor, check http://docs.oasis-open.org/offic
 ODT specific cases
 ------------------
 
-To avoid tags and values splitted with Office or Libreoffice editor, use Field to handle custom data
+* Fields :
 
--> Menu -> Insert -> Field -> Other Field -> put your value here
+   To avoid tags and values splitted with Office or Libreoffice editor, use Field to handle custom data except for element in tables
+
+   -> Menu -> Insert -> Field -> Other Field -> put your value here
+
+* Tables :
+
+   If you need to dynamically create tables, do the following:
+
+   .. image:: table_test.png
+      :width: 600
 
 
 Example of easy use of the ODT engine

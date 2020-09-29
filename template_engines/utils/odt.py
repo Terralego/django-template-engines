@@ -4,8 +4,8 @@ from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
 ODT_IMAGE = (
-    '<draw:frame draw:name="{0}" svg:width="{1}" svg:height="{2}" text:anchor-type="{3}" draw:z-index="0">'
-    '<draw:image xlink:href="Pictures/{0}" xlink:show="embed" xlink:actuate="onLoad"/></draw:frame>'
+    '<draw:frame draw:name="{0}" svg:width="{1}" svg:height="{2}" text:anchor-type="{3}" draw:z-index="37">'
+    '<draw:image xlink:href="Pictures/{0}" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad" draw:mime-type="{4}" /></draw:frame>'
 )
 
 

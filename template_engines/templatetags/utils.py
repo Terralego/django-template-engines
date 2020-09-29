@@ -113,7 +113,7 @@ def resize(bimage, max_width, max_height, odt=True):
         max_height = size_parser(max_height, odt=odt)
     width, height = resize_keep_ratio(bimage, max_width, max_height)
 
-    return width, height
+    return f"{round(width / 1000, 2)}cm", f"{round(height / 1000, 2)}cm"
 
 
 def parse_tag(token, parser):
@@ -163,7 +163,7 @@ def get_extension_picture(image):
     return extension
 
 
-def get_image_size_and_dimensions_from_uri(uri):
+def get_image_infos_from_uri(uri):
     """ get image size and dimensions """
     if not uri.lower().startswith('http'):
         # protect use of urlopen from filesystem read
@@ -172,6 +172,7 @@ def get_image_size_and_dimensions_from_uri(uri):
     file = urlopen(uri)
     size = file.headers.get("content-length")
     dimensions = (None, None)
+    mime_type = None
 
     if size:
         size = int(size)
@@ -183,6 +184,8 @@ def get_image_size_and_dimensions_from_uri(uri):
         p.feed(data)
         if p.image:
             dimensions = p.image.size
+            mime_type = f"image/{p.image.format.lower()}"
             break
+
     file.close()
-    return size, dimensions
+    return size, dimensions, mime_type

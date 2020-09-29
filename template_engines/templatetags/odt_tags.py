@@ -10,7 +10,7 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from template_engines.utils.odt import ODT_IMAGE
-from .utils import get_extension_picture, parse_tag, resize, get_image_size_and_dimensions_from_uri
+from .utils import get_extension_picture, parse_tag, resize, get_image_infos_from_uri
 
 register = template.Library()
 
@@ -149,23 +149,25 @@ def parse_img(soup):
         img.name = 'draw:frame'
         src = img.attrs.pop('src')
         content = soup.new_tag('draw:image')
+        size, dimensions, mime_type = get_image_infos_from_uri(src)
         content.attrs = {
             'xlink:href': src,
             'xlink:type': "simple",
             'xlink:show': "embed",
-            'xlink:activate': "onload"
+            'xlink:actuate': "onload",
+            'draw:mime-type': mime_type
         }
-        size, dimensions = get_image_size_and_dimensions_from_uri(src)
+
         width, height = dimensions
-        if width and width > 600:
-            # if sized and sized > 600, it will not fit to page width
+        if width and width > 500:
+            # if sized and sized > 500, it will not fit to page width
             ratio = width / height
             # keep ratio
-            width = 600
+            width = 500
             height = int(width / ratio)
         img.attrs = {
             'draw:style-name': "fr1",
-            # 'text:anchor-type': "as-char",
+            'text:anchor-type': "as-char",
             'svg:width': f"{width}px",
             'svg:height': f"{height}px",
             'draw:z-index': "37",
@@ -218,7 +220,8 @@ class ImageLoaderNodeURL(template.Node):
         extension = get_extension_picture(picture)
         full_name = '{}.{}'.format(name, extension)
         context['images'].update({full_name: picture})
-        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph"))
+        return mark_safe(ODT_IMAGE.format(full_name, width, height,
+                                          anchor or "paragraph", f"image/{extension.lower()}"))
 
     def get_value_context(self, context):
         final_url = self.url.resolve(context)
@@ -296,7 +299,8 @@ class ImageLoaderNode(template.Node):
         extension = get_extension_picture(picture)
         full_name = '{}.{}'.format(name, extension)
         context['images'].update({full_name: picture})
-        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph"))
+        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph",
+                                          f"image/{extension.lower()}"))
 
     def get_value_context(self, context):
         final_object = self.object.resolve(context)

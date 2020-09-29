@@ -173,7 +173,7 @@ def get_image_infos_from_uri(uri):
     size = file.headers.get("content-length")
     dimensions = (None, None)
     mime_type = None
-    
+
     if size:
         size = int(size)
     p = ImageFile.Parser()

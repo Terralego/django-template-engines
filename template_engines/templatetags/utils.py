@@ -172,7 +172,8 @@ def get_image_infos_from_uri(uri):
     file = urlopen(uri)
     size = file.headers.get("content-length")
     dimensions = (None, None)
-
+    mime_type = None
+    
     if size:
         size = int(size)
     p = ImageFile.Parser()
@@ -183,7 +184,8 @@ def get_image_infos_from_uri(uri):
         p.feed(data)
         if p.image:
             dimensions = p.image.size
+            mime_type = f"image/{p.image.format.lower()}"
             break
-    mime_type = f"image/{file.format.lower()}"
+
     file.close()
     return size, dimensions, mime_type

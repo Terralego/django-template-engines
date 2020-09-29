@@ -220,7 +220,8 @@ class ImageLoaderNodeURL(template.Node):
         extension = get_extension_picture(picture)
         full_name = '{}.{}'.format(name, extension)
         context['images'].update({full_name: picture})
-        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph"))
+        return mark_safe(ODT_IMAGE.format(full_name, width, height,
+                                          anchor or "paragraph", f"image/{extension.lower()}"))
 
     def get_value_context(self, context):
         final_url = self.url.resolve(context)
@@ -298,7 +299,8 @@ class ImageLoaderNode(template.Node):
         extension = get_extension_picture(picture)
         full_name = '{}.{}'.format(name, extension)
         context['images'].update({full_name: picture})
-        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph", f"image/{extension.lower()}"))
+        return mark_safe(ODT_IMAGE.format(full_name, width, height, anchor or "paragraph",
+                                          f"image/{extension.lower()}"))
 
     def get_value_context(self, context):
         final_object = self.object.resolve(context)

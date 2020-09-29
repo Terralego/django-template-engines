@@ -157,11 +157,11 @@ def parse_img(soup):
         }
         size, dimensions = get_image_size_and_dimensions_from_uri(src)
         width, height = dimensions
-        if width and width > 600:
-            # if sized and sized > 600, it will not fit to page width
+        if width and width > 500:
+            # if sized and sized > 500, it will not fit to page width
             ratio = width / height
             # keep ratio
-            width = 600
+            width = 500
             height = int(width / ratio)
         img.attrs = {
             'draw:style-name': "fr1",

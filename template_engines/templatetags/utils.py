@@ -163,7 +163,7 @@ def get_extension_picture(image):
     return extension
 
 
-def get_image_size_and_dimensions_from_uri(uri):
+def get_image_infos_from_uri(uri):
     """ get image size and dimensions """
     if not uri.lower().startswith('http'):
         # protect use of urlopen from filesystem read
@@ -184,5 +184,6 @@ def get_image_size_and_dimensions_from_uri(uri):
         if p.image:
             dimensions = p.image.size
             break
+    mime_type = f"image/{file.format.lower()}"
     file.close()
-    return size, dimensions
+    return size, dimensions, mime_type

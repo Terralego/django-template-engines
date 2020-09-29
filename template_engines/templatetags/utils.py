@@ -113,7 +113,7 @@ def resize(bimage, max_width, max_height, odt=True):
         max_height = size_parser(max_height, odt=odt)
     width, height = resize_keep_ratio(bimage, max_width, max_height)
 
-    return width, height
+    return f"{round(width / 1000, 2)}cm", f"{round(height / 1000, 2)}cm"
 
 
 def parse_tag(token, parser):

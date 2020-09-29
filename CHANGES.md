@@ -5,6 +5,8 @@ CHANGELOG
 1.3.4.dev0      (XXXX-XX-XX)
 ----------------------------
 
+* Fix some cases where mimetype can't be guessed
+
 
 1.3.3           (2020-09-29)
 ----------------------------

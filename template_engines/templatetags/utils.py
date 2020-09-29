@@ -167,7 +167,7 @@ def get_image_infos_from_uri(uri):
     """ get image size and dimensions """
     if not uri.lower().startswith('http'):
         # protect use of urlopen from filesystem read
-        return None, (None, None)
+        return None, (None, None), None
 
     file = urlopen(uri)
     size = file.headers.get("content-length")

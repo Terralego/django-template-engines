@@ -2,7 +2,7 @@
 CHANGELOG
 =========
 
-1.3.3.dev0      (XXXX-XX-XX)
+1.3.4           (2020-09-29)
 ----------------------------
 
 * Fix ODT images display with Word.

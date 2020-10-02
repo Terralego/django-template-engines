@@ -144,7 +144,6 @@ def parse_br(soup):
 def parse_img(soup):
     """ Replace img tags with text:p """
     imgs = soup.find_all("img")
-    # TODO: if src starts with http / https, download file and use local path in odt
     for img in imgs:
         img.name = 'draw:frame'
         src = img.attrs.pop('src')

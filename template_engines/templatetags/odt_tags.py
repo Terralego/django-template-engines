@@ -4,13 +4,13 @@ import random
 import re
 import secrets
 
-import requests
 from bs4 import BeautifulSoup
 from django import template
 from django.utils.safestring import mark_safe
 
+from template_engines.utils import get_content_url, get_extension_picture
 from template_engines.utils.odt import ODT_IMAGE
-from .utils import get_extension_picture, parse_tag, resize, get_image_infos_from_uri
+from .utils import parse_tag, resize, get_image_infos_from_uri
 
 register = template.Library()
 
@@ -211,7 +211,7 @@ class ImageLoaderNodeURL(template.Node):
     def render(self, context):
         url, type_request, max_width, max_height, anchor, data = self.get_value_context(context)
         name = secrets.token_hex(15)
-        response = self.get_content_url(url, type_request or "get", data)
+        response = get_content_url(url, type_request or "get", data)
         if not response:
             return ""
         width, height = resize(response.content, max_width, max_height, odt=True)
@@ -231,20 +231,6 @@ class ImageLoaderNodeURL(template.Node):
         final_anchor = "paragraph" if not self.anchor else self.anchor.resolve(context)
         final_data = "" if not self.data else self.data.resolve(context)
         return final_url, final_request, final_max_width, final_max_height, final_anchor, final_data
-
-    def get_content_url(self, url, type_request, data):
-        try:
-            response = getattr(requests, type_request.lower())(url, data=data)
-        except requests.exceptions.ConnectionError:
-            logger.warning("Connection Error, check the url given")
-            return
-        except AttributeError:
-            logger.warning("Type of request specified not allowed")
-            return
-        if response.status_code != 200:
-            logger.warning("The picture is not accessible (Error: %s)" % response.status_code)
-            return
-        return response
 
 
 @register.tag

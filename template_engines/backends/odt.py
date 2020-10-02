@@ -174,7 +174,7 @@ class OdtTemplate(AbstractTemplate):
     def replace_pictures(self, soup, context):
         draw_list = soup.find_all("draw:image")
         for tag in draw_list:
-            if not 'Pictures' in tag['xlink:href']:
+            if 'Pictures' not in tag['xlink:href']:
                 name = secrets.token_hex(15)
                 response = get_content_url(tag['xlink:href'], "get", {})
                 if response:

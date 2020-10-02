@@ -10,8 +10,8 @@ from template_engines.backends.odt import OdtEngine, OdtTemplate
 from ..fake_app.models import Bidon
 from ..fake_app.views import OdtTemplateView
 from ..settings import (
-    DOCX_TEMPLATE_PATH, ODT_TEMPLATE_PATH,
-    TEMPLATES_PATH
+    DOCX_TEMPLATE_PATH, IMAGE_PATH,
+    TEMPLATES_PATH, ODT_TEMPLATE_PATH
 )
 
 
@@ -85,6 +85,17 @@ class OdtTemplateTestCase(TestCase):
     def test_view_works_with_from_html(self):
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'html.odt')
         obj = Bidon.objects.create(name='<p>Michel\nPierre</p>')
+        response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.content)
+
+    @mock.patch('requests.get')
+    def test_view_works_with_from_html_with_image(self, mocked_get):
+        mocked_get.return_value.status_code = 200
+        with open(IMAGE_PATH, 'rb') as image_file:
+            mocked_get.return_value.content = image_file.read()
+        OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'html.odt')
+        obj = Bidon.objects.create(name='<img src="http://images.com/monimage.jpeg">')
         response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.content)

@@ -156,13 +156,6 @@ def parse_tag(token, parser):
     return tag_name, args, kwargs
 
 
-def get_extension_picture(image):
-    bimage = BytesIO(image)
-    with Image.open(bimage) as img_reader:
-        extension = img_reader.format.lower()
-    return extension
-
-
 def get_image_infos_from_uri(uri):
     """ get image size and dimensions """
     if not uri.lower().startswith('http'):

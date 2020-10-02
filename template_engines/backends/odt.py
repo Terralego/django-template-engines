@@ -1,3 +1,4 @@
+import secrets
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -5,7 +6,7 @@ from django.template.context import make_context
 from django.template.exceptions import TemplateDoesNotExist
 
 from template_engines import settings as app_settings
-from template_engines.utils import modify_content_document
+from template_engines.utils import get_content_url, get_extension_picture, modify_content_document
 from template_engines.utils.odt import add_image_in_odt_template
 from . import AbstractTemplate, ZipAbstractEngine
 
@@ -170,12 +171,31 @@ class OdtTemplate(AbstractTemplate):
             tag.extract()
         return soup
 
+    def change_pictures_tag(self, tag, context):
+        name = secrets.token_hex(15)
+        response = get_content_url(tag['xlink:href'], "get", {})
+        if response:
+            context.setdefault('images', {})
+            picture = response.content
+            extension = get_extension_picture(picture)
+            full_name = '{}.{}'.format(name, extension)
+            context['images'].update({full_name: picture})
+            tag['xlink:href'] = 'Pictures/%s' % full_name
+
+    def replace_pictures(self, soup, context):
+        draw_list = soup.find_all("draw:image")
+        for tag in draw_list:
+            if 'Pictures' not in tag['xlink:href']:
+                self.change_pictures_tag(tag, context)
+        return soup
+
     def render(self, context=None, request=None):
         context = make_context(context, request)
         rendered = self.template.render(context)
         soup = BeautifulSoup(rendered, features='html.parser')
         soup = self.clean(soup)
         soup = self.replace_inputs(soup)
+        soup = self.replace_pictures(soup, context)
 
         odt_content = modify_content_document(self.template_path, ['content.xml', 'styles.xml'], soup)
         for key, image in context.get('images', {}).items():

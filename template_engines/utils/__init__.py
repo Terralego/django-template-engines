@@ -1,11 +1,16 @@
 import io
+import logging
 import os
 import re
+import requests
+from PIL import Image
 from tempfile import NamedTemporaryFile
 from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
 from django.core.files.storage import default_storage
+
+logger = logging.getLogger(__name__)
 
 
 def get_rendered_by_xml(xml_paths, soup):
@@ -61,3 +66,25 @@ def clean_tags(content):
         lambda e: bad_content.sub('', e.group(0)),
         content,
     )
+
+
+def get_content_url(url, type_request, data):
+    try:
+        response = getattr(requests, type_request.lower())(url, data=data)
+    except requests.exceptions.ConnectionError:
+        logger.warning("Connection Error, check the url given")
+        return
+    except AttributeError:
+        logger.warning("Type of request specified not allowed")
+        return
+    if response.status_code != 200:
+        logger.warning("The picture is not accessible (Error: %s)" % response.status_code)
+        return
+    return response
+
+
+def get_extension_picture(image):
+    bimage = io.BytesIO(image)
+    with Image.open(bimage) as img_reader:
+        extension = img_reader.format.lower()
+    return extension

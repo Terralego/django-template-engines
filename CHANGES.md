@@ -5,6 +5,7 @@ CHANGELOG
 1.3.5.dev0      (XXXX-XX-XX)
 ----------------------------
 
+* Fix ODT images from html, add src in Pictures
 
 1.3.4           (2020-09-29)
 ----------------------------

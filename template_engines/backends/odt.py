@@ -171,20 +171,22 @@ class OdtTemplate(AbstractTemplate):
             tag.extract()
         return soup
 
+    def change_pictures_tag(self, tag, context):
+        name = secrets.token_hex(15)
+        response = get_content_url(tag['xlink:href'], "get", {})
+        if response:
+            context.setdefault('images', {})
+            picture = response.content
+            extension = get_extension_picture(picture)
+            full_name = '{}.{}'.format(name, extension)
+            context['images'].update({full_name: picture})
+            tag['xlink:href'] = 'Pictures/%s' % full_name
+
     def replace_pictures(self, soup, context):
         draw_list = soup.find_all("draw:image")
         for tag in draw_list:
             if 'Pictures' not in tag['xlink:href']:
-                name = secrets.token_hex(15)
-                response = get_content_url(tag['xlink:href'], "get", {})
-                if not response:
-                    continue
-                context.setdefault('images', {})
-                picture = response.content
-                extension = get_extension_picture(picture)
-                full_name = '{}.{}'.format(name, extension)
-                context['images'].update({full_name: picture})
-                tag['xlink:href'] = 'Pictures/%s' % full_name
+                self.change_pictures_tag(tag, context)
         return soup
 
     def render(self, context=None, request=None):

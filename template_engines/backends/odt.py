@@ -177,13 +177,14 @@ class OdtTemplate(AbstractTemplate):
             if 'Pictures' not in tag['xlink:href']:
                 name = secrets.token_hex(15)
                 response = get_content_url(tag['xlink:href'], "get", {})
-                if response:
-                    context.setdefault('images', {})
-                    picture = response.content
-                    extension = get_extension_picture(picture)
-                    full_name = '{}.{}'.format(name, extension)
-                    context['images'].update({full_name: picture})
-                    tag['xlink:href'] = 'Pictures/%s' % full_name
+                if not response:
+                    continue
+                context.setdefault('images', {})
+                picture = response.content
+                extension = get_extension_picture(picture)
+                full_name = '{}.{}'.format(name, extension)
+                context['images'].update({full_name: picture})
+                tag['xlink:href'] = 'Pictures/%s' % full_name
         return soup
 
     def render(self, context=None, request=None):

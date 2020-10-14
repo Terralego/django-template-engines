@@ -11,7 +11,7 @@ register = template.Library()
 
 class ImageLoaderURLNode(template.Node):
     def __init__(self, url, data=None, request=None, max_width=None,
-                 max_height=None, anchor=None):
+                 max_height=None):
         # saves the passed obj parameter for later use
         # this is a template.Variable, because that way it can be resolved
         # against the current context in the render method
@@ -20,7 +20,6 @@ class ImageLoaderURLNode(template.Node):
         self.request = request
         self.max_width = max_width
         self.max_height = max_height
-        self.anchor = anchor
 
     def render(self, context):
         url, type_request, max_width, max_height, data = self.get_value_context(context)
@@ -31,6 +30,7 @@ class ImageLoaderURLNode(template.Node):
         extension = get_extension_picture(picture)
         base64_encoded_data = base64.b64encode(picture)
         base64_message = base64_encoded_data.decode('utf-8')
+        raise Exception(base64_message)
         return mark_safe(f"data:image/{extension};base64,{base64_message}")
 
     def get_value_context(self, context):

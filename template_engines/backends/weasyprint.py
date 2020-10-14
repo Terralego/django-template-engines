@@ -43,6 +43,10 @@ class WeasyprintEngine(BaseEngine):
     template_class = WeasyprintTemplate
 
     def get_template(self, template_name):
+        """
+        Pdf template are discovered becaused they end by .pdf.html
+        Django storage can change suffix to add hash like 'example.pdf_csdfre.html'
+        """
         template_path = Path(template_name)
         if template_path.suffix.lower() != '.html':
             if ".pdf" not in template_path.suffixes[0]:

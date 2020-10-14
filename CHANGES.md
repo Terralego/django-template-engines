@@ -2,7 +2,7 @@
 CHANGELOG
 =========
 
-1.3.7.dev0      (XXXX-XX-XX)
+1.3.7           (2020-10-14)
 ----------------------------
 
 * allow cases where django change pdf suffix

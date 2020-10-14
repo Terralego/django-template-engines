@@ -77,9 +77,11 @@ TEMPLATES = [
             ],
         },
     },
+    # As weasyprint use DjangoTemplate as Base, Django template engine will be selected by default.
+    # Use specific directory to your Weasyprint templates, or keep APP_DIRS=True
+    # but manually select weasyprint backend in your code
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'BACKEND': 'template_engines.backends.weasyprint.WeasyprintEngine',
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,11 +92,9 @@ TEMPLATES = [
             ],
         },
     },
-    # As weasyprint use DjangoTemplate as Base, Django template engine will be selected by default.
-    # Use specific directory to your Weasyprint templates, or keep APP_DIRS=True
-    # but manually select weasyprint backend in your code
     {
-        'BACKEND': 'template_engines.backends.weasyprint.WeasyprintEngine',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

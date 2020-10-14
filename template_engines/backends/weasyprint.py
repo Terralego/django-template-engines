@@ -44,6 +44,6 @@ class WeasyprintEngine(BaseEngine):
 
     def get_template(self, template_name):
         template_path = Path(template_name)
-        if template_path.suffix.lower() != '.pdf':
+        if template_path.suffixes != ['.pdf', '.html']:
             raise TemplateDoesNotExist('This is not a template PDF file')
         return self.template_class(self.engine.get_template(template_name))

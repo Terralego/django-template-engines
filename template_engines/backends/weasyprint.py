@@ -42,6 +42,11 @@ class WeasyprintEngine(BaseEngine):
     app_dirname = app_settings.WEASYPRINT_ENGINE_APP_DIRNAME
     template_class = WeasyprintTemplate
 
+    def __init__(self, params):
+        params['OPTIONS'].setdefault('builtins', [])
+        params['OPTIONS']['builtins'].extend(['template_engines.templatetags.pdf_tags'])
+        super().__init__(params)
+
     def get_template(self, template_name):
         """
         Pdf template are discovered becaused they end by .pdf.html

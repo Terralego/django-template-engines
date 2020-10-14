@@ -2,9 +2,12 @@
 CHANGELOG
 =========
 
-1.3.6.dev0      (XXXX-XX-XX)
+1.3.6           (2020-10-14)
 ----------------------------
 
+* WARNING : Breaking change
+  * PDF autodiscovering by WEASYPRINT renderer should now be suffixed by .pdf.html
+  
 
 1.3.5           (2020-10-02)
 ----------------------------

@@ -30,7 +30,7 @@ class ImageLoaderURLNode(template.Node):
         extension = get_extension_picture(picture)
         base64_encoded_data = base64.b64encode(picture)
         base64_message = base64_encoded_data.decode('utf-8')
-        raise Exception(base64_message)
+        raise template.TemplateSyntaxError(base64_message)
         return mark_safe(f"data:image/{extension};base64,{base64_message}")
 
     def get_value_context(self, context):

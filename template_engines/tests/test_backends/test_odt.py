@@ -89,7 +89,7 @@ class OdtTemplateTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.content)
 
-    @mock.patch('requests.get')
+    @mock.patch('requests.get',)
     def test_view_works_with_from_html_with_image(self, mocked_get):
         mocked_get.return_value.status_code = 200
         with open(IMAGE_PATH, 'rb') as image_file:

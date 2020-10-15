@@ -194,7 +194,7 @@ def from_html(value, is_safe=True):
     return mark_safe(str(soup))
 
 
-class ImageLoaderNodeURL(template.Node):
+class ImageLoaderURLNode(template.Node):
     def __init__(self, url, data=None, request=None, max_width=None,
                  max_height=None, anchor=None):
         # saves the passed obj parameter for later use
@@ -251,7 +251,7 @@ def image_url_loader(parser, token):
     if len(args) > 1 or not all(
             key in ['max_width', 'max_height', 'request', 'data', 'anchor'] for key in kwargs.keys()):
         raise template.TemplateSyntaxError("Usage: %s" % usage)
-    return ImageLoaderNodeURL(*args, **kwargs)
+    return ImageLoaderURLNode(*args, **kwargs)
 
 
 class ImageLoaderNode(template.Node):

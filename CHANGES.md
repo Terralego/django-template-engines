@@ -2,7 +2,7 @@
 CHANGELOG
 =========
 
-1.3.8.dev0      (XXXX-XX-XX)
+1.3.8           (2020-10-15)
 ----------------------------
 
 * allow to use image url loader in pdfs templates

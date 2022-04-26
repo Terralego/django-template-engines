@@ -200,7 +200,7 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
         template_to_render.render(context)
-        self.assertEqual(mock_out.getvalue(), 'The picture is not accessible (Error: 404)\n')
+        self.assertEqual(mock_out.getvalue(), 'The picture with url : https://test.com is not accessible (Error: 404)\n')
 
     @mock.patch('requests.get')
     @mock.patch('sys.stderr', new_callable=io.StringIO)

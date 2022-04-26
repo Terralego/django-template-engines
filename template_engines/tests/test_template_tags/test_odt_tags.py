@@ -209,7 +209,7 @@ class ImageUrlLoaderTestCase(TestCase):
         context = Context({})
         template_to_render = Template('{% load odt_tags %}{% image_url_loader "https://test.com" %}')
         template_to_render.render(context)
-        self.assertEqual(mock_out.getvalue(), 'Connection Error, check the url given\n')
+        self.assertEqual(mock_out.getvalue(), 'Connection Error, check the url given (https://test.com)\n')
 
     @mock.patch('requests.get')
     @mock.patch('sys.stderr', new_callable=io.StringIO)

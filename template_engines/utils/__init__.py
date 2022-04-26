@@ -72,7 +72,7 @@ def get_content_url(url, type_request, data):
     try:
         response = getattr(requests, type_request.lower())(url, data=data)
     except requests.exceptions.ConnectionError:
-        logger.error("Connection Error, check the url given")
+        logger.error(f"Connection Error, check the url given ({url})")
         return
     except AttributeError:
         logger.error("Type of request specified not allowed")

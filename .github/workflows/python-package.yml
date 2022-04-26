@@ -33,7 +33,7 @@ jobs:
 
     - name: Test with coverage
       run: |
-        coverage run --source=template_engines ./manage.py test
+        coverage run ./manage.py test
 
     - name: Coverage upload
       run: |

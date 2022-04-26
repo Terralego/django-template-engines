@@ -2,10 +2,11 @@
 CHANGELOG
 =========
 
-1.3.9.dev0      (XXXX-XX-XX)
+1.3.9           (2022-04-26)
 ----------------------------
 
 * Support django 3.2, django 4.0 and python 3.10
+* Add url in logger template tag `image_url_loader`
 
 
 1.3.8           (2020-10-15)

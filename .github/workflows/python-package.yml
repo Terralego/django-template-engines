@@ -28,6 +28,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install .[dev] -U
+        pip install weasyprint<53
         pip install Django==${{ matrix.django-version }} -U;
 
     - name: Test with coverage

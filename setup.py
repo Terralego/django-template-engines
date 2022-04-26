@@ -46,7 +46,7 @@ setup(
         'lxml',
         'beautifulsoup4',
         'requests',
-        'weasyprint'
+        'weasyprint<53'
     ],
     test_requires=test_requires,
     extras_require={

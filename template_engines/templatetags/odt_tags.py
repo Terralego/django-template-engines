@@ -275,7 +275,7 @@ class ImageLoaderNode(template.Node):
         picture, max_width, max_height, anchor = self.get_value_context(context)
         picture = self.base64_to_binary(picture)
         if not picture or not isinstance(picture, bytes):
-            logger.warning("{object} is not a valid picture".format(object=name))
+            logger.error(f"{name} is not a valid picture")
             return ""
 
         name = secrets.token_hex(15)

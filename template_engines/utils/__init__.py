@@ -72,13 +72,13 @@ def get_content_url(url, type_request, data):
     try:
         response = getattr(requests, type_request.lower())(url, data=data)
     except requests.exceptions.ConnectionError:
-        logger.warning("Connection Error, check the url given")
+        logger.error("Connection Error, check the url given")
         return
     except AttributeError:
-        logger.warning("Type of request specified not allowed")
+        logger.error("Type of request specified not allowed")
         return
     if response.status_code != 200:
-        logger.warning("The picture is not accessible (Error: %s)" % response.status_code)
+        logger.error(f"The picture with url : {url} is not accessible (Error: {response.status_code})")
         return
     return response
 

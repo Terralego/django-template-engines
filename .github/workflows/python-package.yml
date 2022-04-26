@@ -11,11 +11,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [ '3.6', '3.8', '3.9', '3.10']
-        django-version: [ 2.2.*, 3.2.*, dev ]
+        django-version: [ 2.2.*, 3.2.*, 4.0.*]
         exclude:
           - python-version: 3.6
             django-version: 4.0.*
@@ -29,11 +29,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install .[dev] -U
-        if [[ ${{ matrix.django-version }} == dev ]]; then
-          pip install -e git+https://github.com/django/django@master#egg=django;
-        else
-          pip install Django==${{ matrix.django-version }} -U;
-        fi
+        pip install Django==${{ matrix.django-version }} -U;
 
     - name: Test with coverage
       run: |

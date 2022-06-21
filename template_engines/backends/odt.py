@@ -85,6 +85,32 @@ class OdtTemplate(AbstractTemplate):
             soup, style_attrs, text_prop_attrs
         )
 
+    def get_automatic_style_sup(self, soup):
+        """ get style for underline """
+        style_attrs = {
+            "style:name": "SUP",
+            "style:family": "text"
+        }
+        text_prop_attrs = {
+            "style:text-position": "super 58%"
+        }
+        return self._get_automatic_style(
+            soup, style_attrs, text_prop_attrs
+        )
+
+    def get_automatic_style_sub(self, soup):
+        """ get style for underline """
+        style_attrs = {
+            "style:name": "SUP",
+            "style:family": "text"
+        }
+        text_prop_attrs = {
+            "style:text-position": "sub 58%"
+        }
+        return self._get_automatic_style(
+            soup, style_attrs, text_prop_attrs
+        )
+
     def get_automatic_style_orderedlist(self, soup):
         """ get style for orderedlist """
         style = soup.new_tag('text:list-style')
@@ -148,6 +174,12 @@ class OdtTemplate(AbstractTemplate):
         # add unorderedline style
         style_unorderedlist = self.get_automatic_style_unorderedlist(soup)
         automatic_styles.append(style_unorderedlist)
+        # add sup style
+        style_sup = self.get_automatic_style_sup(soup)
+        automatic_styles.append(style_sup)
+        # add sub style
+        style_sub = self.get_automatic_style_sub(soup)
+        automatic_styles.append(style_sub)
 
         return soup
 

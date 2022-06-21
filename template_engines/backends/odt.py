@@ -45,7 +45,7 @@ class OdtTemplate(AbstractTemplate):
         return style
 
     def get_automatic_style_bold(self, soup):
-        """ get style for italic """
+        """ get style for bold """
         style_attrs = {
             "style:name": "BOLD",
             "style:family": "text"
@@ -101,7 +101,7 @@ class OdtTemplate(AbstractTemplate):
     def get_automatic_style_sub(self, soup):
         """ get style for underline """
         style_attrs = {
-            "style:name": "SUP",
+            "style:name": "SUB",
             "style:family": "text"
         }
         text_prop_attrs = {

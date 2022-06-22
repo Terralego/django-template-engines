@@ -2,7 +2,7 @@
 CHANGELOG
 =========
 
-1.3.9+dev       (XXXX-XX-XX)
+1.3.10          (2022-06-22)
 ----------------------------
 
 * Add support for sub and sup html tags for odt

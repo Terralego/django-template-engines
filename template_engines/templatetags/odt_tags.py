@@ -36,7 +36,7 @@ def parse_span(soup):
 
 
 def parse_sup(soup):
-    """ Replace span tags with text:span """
+    """ Replace sup tags with text:span  with automatic style"""
     spans = soup.find_all("sup")
 
     for sup_tag in spans:
@@ -46,7 +46,7 @@ def parse_sup(soup):
 
 
 def parse_sub(soup):
-    """ Replace span tags with text:span """
+    """ Replace sub tags with text:span  with automatic style"""
     spans = soup.find_all("sub")
 
     for sub_tag in spans:

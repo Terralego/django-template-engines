@@ -86,7 +86,7 @@ class OdtTemplate(AbstractTemplate):
         )
 
     def get_automatic_style_sup(self, soup):
-        """ get style for underline """
+        """ get style for sup """
         style_attrs = {
             "style:name": "SUP",
             "style:family": "text"
@@ -99,7 +99,7 @@ class OdtTemplate(AbstractTemplate):
         )
 
     def get_automatic_style_sub(self, soup):
-        """ get style for underline """
+        """ get style for sub """
         style_attrs = {
             "style:name": "SUB",
             "style:family": "text"

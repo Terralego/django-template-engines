@@ -90,13 +90,18 @@ class OdtTemplateTestCase(TestCase):
         self.assertTrue(response.content)
 
     @mock.patch('requests.get',)
-    def test_view_works_with_from_html_with_image(self, mocked_get):
+    @mock.patch('template_engines.templatetags.utils.urlopen')
+    def test_view_works_with_from_html_with_image(self, mock_url, mocked_get):
         mocked_get.return_value.status_code = 200
         with open(IMAGE_PATH, 'rb') as image_file:
             mocked_get.return_value.content = image_file.read()
+        image_file = open(IMAGE_PATH, 'rb')
+        mock_url.return_value = image_file
+        setattr(image_file, 'headers', {'content-length': 100})
         OdtTemplateView.template_name = os.path.join(TEMPLATES_PATH, 'html.odt')
         obj = Bidon.objects.create(name='<img src="http://images.com/monimage.jpeg">')
         response = OdtTemplateView.as_view()(self.request, **{'pk': obj.pk}).render()
+        image_file.close()
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.content)
 

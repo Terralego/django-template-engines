@@ -35,6 +35,26 @@ def parse_span(soup):
     return soup
 
 
+def parse_sup(soup):
+    """ Replace sup tags with text:span  with automatic style"""
+    spans = soup.find_all("sup")
+
+    for sup_tag in spans:
+        sup_tag.name = 'text:span'
+        sup_tag.attrs['text:style-name'] = "SUP"
+    return soup
+
+
+def parse_sub(soup):
+    """ Replace sub tags with text:span  with automatic style"""
+    spans = soup.find_all("sub")
+
+    for sub_tag in spans:
+        sub_tag.name = 'text:span'
+        sub_tag.attrs['text:style-name'] = "SUB"
+    return soup
+
+
 def parse_italic(soup):
     """ Replace i tags with text:span with automatic style """
     italic_tags = soup.find_all("em")
@@ -184,6 +204,8 @@ def from_html(value, is_safe=True):
     soup = parse_p(soup)
     soup = parse_strong(soup)
     soup = parse_italic(soup)
+    soup = parse_sup(soup)
+    soup = parse_sub(soup)
     soup = parse_underline(soup)
     soup = parse_ul(soup)
     soup = parse_ol(soup)

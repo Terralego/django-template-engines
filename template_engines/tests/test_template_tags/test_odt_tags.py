@@ -49,6 +49,16 @@ class FilterFromHTMLTestCase(TestCase):
         odt_tags.parse_strong(soup)
         self.assertEqual('<text:span text:style-name="BOLD">Strong</text:span>', str(soup))
 
+    def test_sup(self):
+        soup = BeautifulSoup('<sup>Sup</sup>', "html.parser")
+        odt_tags.parse_sup(soup)
+        self.assertEqual('<text:span text:style-name="SUP">Sup</text:span>', str(soup))
+
+    def test_sub(self):
+        soup = BeautifulSoup('<sub>Sub</sub>', "html.parser")
+        odt_tags.parse_sub(soup)
+        self.assertEqual('<text:span text:style-name="SUB">Sub</text:span>', str(soup))
+
     def test_em(self):
         soup = BeautifulSoup('<em>Italic</em>', "html.parser")
         odt_tags.parse_italic(soup)
